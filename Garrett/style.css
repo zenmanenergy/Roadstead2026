@@ -1,0 +1,37 @@
+body {
+    font-family: monospace;
+    text-align: center;
+    /*this changes the backroughd color of the body*/
+    background-color: black;
+    color: white;
+    /*this changes a visual element that's wrapped around the body*/
+    padding: 20px;
+}
+
+#game-container {
+    width: 60%;
+    margin: auto;
+    /*setting the display to a specific type*/
+    display: flex;
+    /*if something goes off screen, it will flex the the page in a column*/
+    flex-direction: column;
+    align-items: center;
+}
+#output {
+    width: 100%;
+    height: 300px;
+    background-color: #222;
+    color: #0f0;
+    border: 1px solid #444;
+    padding: 10px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+#input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: white;
+}

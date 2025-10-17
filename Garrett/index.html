@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--UTF-8 isallowing different languages to be used inside the html document-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Adventure</title>
+    <!--Link tag tells html to refference css file-->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!--Outside of viewport, sets text in the game window (h1 is biggest, h2 is smaller and so on)-->
+    <h1>Text Adventure</h1>
+    <!-- Image acting as a play button -->
+      <!--<img src="D:\CompSci\Images\grrocbtb1z7d1.jpg" alt="Play Music" id="playButton" style="cursor: pointer;">-->  
+        <!-- Audio element (hidden) -->
+        <!--<audio id="audioPlayer">-->
+        <!--<source src="D:\CompSci\Sounds\eagle-355831.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio> -->
+        
+    <div id="game-container">
+        <div id="output"></div> 
+        <!--this is setting the input, and entering a placeholder command until the user inputs something.-->
+        <input type="text" id="input" placeholder="Enter Command..." autofocus>
+    </div>
+
+    <!--bringing in the script file-->
+    <script src="script.js"></script>
+</body>
+</html>
