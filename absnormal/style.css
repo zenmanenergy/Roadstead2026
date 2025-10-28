@@ -3,15 +3,13 @@
 /*The Adventures of Abs Normal - Week 1*/
 
 body{
-    /*display: flex;*/
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #222;
     margin: 0;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    color: rgb(247, 247, 140);
-    text-align: center;
 }
 
 /*center the canvas and make it clickable*/
@@ -19,5 +17,12 @@ canvas{
     border: 2px solid white;
     cursor: pointer;
     box-shadow: 0 0 20px rgba(255, 255, 0.2);
-    
+}
+
+/*style the title*/
+h1{
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
 }
