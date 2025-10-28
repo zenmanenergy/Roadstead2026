@@ -42,10 +42,10 @@ function handleClick(event) {
         const mouseY = event.clientY - rect.top;
 
         //Approximate clickable area for the Start button
-        const startX = 300; //left
-        const startY = 260; //top
+        const startX = 80; //left
+        const startY = 300; //top
         const startW = 200; //width
-        const startH = 80;  //height
+        const startH = 100;  //height
 
         if (
             mouseX >= startX &&
