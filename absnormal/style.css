@@ -9,7 +9,7 @@ body{
     height: 100vh;
     background-color: #222;
     margin: 0;
-    font-family: monospace;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     color: rgb(247, 247, 140);
     text-align: center;
 }
