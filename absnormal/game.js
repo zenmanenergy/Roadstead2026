@@ -1,4 +1,4 @@
-//created by Gort the Mighty
+//created by Gort the
 
 /*
 The Adventures of Abs Normal - Week 1
@@ -13,7 +13,7 @@ let gameState = "title";  //"title" or "playing"
 
 //Image Assests
 const titleScreen = new Image();
-background.src = "assests/backgrounds/title_screen.gif";
+titleScreen.src = "assests/backgrounds/title_screen.gif";
 
 const background = new Image();
 background.src = "assets/backgrounds/background_start.gif";
