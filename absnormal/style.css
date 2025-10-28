@@ -1,0 +1,19 @@
+/*created by cyprus*/
+
+/*The Adventures of Abs Normal - Week 1*/
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #222;
+    margin: 0;
+}
+
+/*center the canvas and make it clickable*/
+canvas{
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 255, 0.2);
+}
