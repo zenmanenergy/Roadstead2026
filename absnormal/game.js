@@ -13,7 +13,7 @@ let gameState = "title";  //"title" or "playing"
 
 //Image Assests
 const titleScreen = new Image();
-titleScreen.src = "assests/backgrounds/title_screen.gif";
+titleScreen.src = "assets/backgrounds/title_screen.gif";
 
 const background = new Image();
 background.src = "assets/backgrounds/background_start.gif";
@@ -31,7 +31,7 @@ titleScreen.onload = () => {
 
 function drawTitleScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    customElements.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 }
 
 //handle click
