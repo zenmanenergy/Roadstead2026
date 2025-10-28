@@ -1,3 +1,5 @@
+//created by Gort the Mighty
+
 /*
 The Adventures of Abs Normal - Week 1
 Displays title screen -> waits for Start click -> shows main scene
