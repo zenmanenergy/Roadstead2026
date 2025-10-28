@@ -11,6 +11,7 @@ body{
     margin: 0;
     font-family: monospace;
     color: rgb(247, 247, 140);
+    text-align: center;
 }
 
 /*center the canvas and make it clickable*/
