@@ -31,7 +31,7 @@ titleScreen.onload = () => {
 
 function drawTitleScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    customElements.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 }
 
 //handle click
