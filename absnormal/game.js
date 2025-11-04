@@ -13,7 +13,7 @@ let gameState = "title";  //"title" or "playing"
 
 //Image Assests
 const titleScreen = new Image();
-titleScreen.src = "assets/backgrounds/title_screen.gif";
+titleScreen.src = "assets/backgrounds/title_screen.png";
 
 const background = new Image();
 background.src = "assets/backgrounds/background_start.gif";
