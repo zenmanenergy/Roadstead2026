@@ -13,23 +13,37 @@ let gameState = "title";  //"title" or "playing"
 
 //Image Assests
 const titleScreen = new Image();
-titleScreen.src = "assets/backgrounds/title_screen.gif";
+titleScreen.src = "assets/backgrounds/title_screen.png";
 
 const background = new Image();
 background.src = "assets/backgrounds/background_start.gif";
 
-const abs = new Image();
-abs.src = "assets/characters/abs_placeholder.gif";
+const absSprites = {
+    up: new Image(),
+    down: new Image(),
+    left: new Image(),
+    right: new Image()
+};
+absSprites.up.src = "assets/characters/abs_up.gif"
+absSprites.down.src = "assets/characters/abs_down.gif"
+absSprites.left.src = "assets/characters/abs_left.gif"
+absSprites.right.src = "assets/characters/abs_right.gif"
+
+let absDirection = "down";
+let absX = 368;
+let absY = 268;
+let speed = 3;
+let keys = {};
 
 //Event Listener
 canvas.addEventListener("click", handleClick);
+window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
 //Draw Title Screen
-titleScreen.onload = () => {
-    drawTitleScreen();
-};
+titleScreen.onload = () => drawTitle();
 
-function drawTitleScreen() {
+function drawTitle() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 }
@@ -40,43 +54,27 @@ function handleClick(event) {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
-
-        //Approximate clickable area for the Start button
-        const startX = 80; //left
-        const startY = 300; //top
-        const startW = 200; //width
-        const startH = 100;  //height
-
-        if (
-            mouseX >= startX &&
-            mouseX <= startX + startW &&
-            mouseY >= startY &&
-            mouseY <= startY + startH
-        )
-        {
-            startGame();
+        if (mouseX >= 300 && mouseX <= 500 && mouseY >= 260 && mouseY <= 340) {
+            gameState = "playing";
+            requestAnimationFrame(update);
         }
     }
 }
 
-//Start the Game
-function startGame() {
-    gameState = "playing";
-    drawGameScene();
+function update() {
+    if (gameState === "playing") {
+        movePlayer();
+        drawGame();
+        requestAnimationFrame(update);
+    }
 }
 
-//Draw Main Scene
-function drawGameScene() {
+//Start the Game
+
+function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-    //Draw Abs Normal roughly centered
-    const absWidth = 64;
-    const absHeight = 64;
-    const absX = (canvas.width - absWidth) /2;
-    const absY = (canvas.height - absHeight) /2;
-    
-    ctx.drawImage(abs, absX, absY, absWidth, absHeight);
+    ctx.drawImage(absSprites[absDirection], absX, absY, 64, 64);
 }
 
 function movePlayer() {
@@ -97,5 +95,8 @@ function movePlayer() {
         absDirection = "right";
     }
 
-    
-}
+    if (absX < 0) absX = 0;
+    if (absY < 0) absY = 0;
+    if (absX > canvas.width - 64) absX = canvas.width - 64;
+    if (absY > canvas.height - 64) absY = canvas.height - 64;    
+} 
