@@ -103,5 +103,8 @@ function movePlayer() {
         absDirection = "right";
     }
 
-    
+    if (absX < 0) absX = 0;
+    if (absY < 0) absY = 0;
+    if (absX > canvas.width - 64) absX = canvas.width - 64;
+    if (absY > canvas.height - 64) absY = canvas.height - 64;    
 } 
