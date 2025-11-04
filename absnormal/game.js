@@ -16,7 +16,7 @@ const titleScreen = new Image();
 titleScreen.src = "assets/backgrounds/title_screen.png";
 
 const background = new Image();
-background.src = "assets/backgrounds/background_start.gif";
+background.src = "assets/backgrounds/room1.png";
 
 const absSprites = {
     up: new Image(),
