@@ -75,4 +75,33 @@ function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(absSprites[absDirection], absX, absY, 64, 64);
+
+    //Draw Abs Normal roughly centered
+    const absWidth = 64;
+    const absHeight = 64;
+    const absX = (canvas.width - absWidth) /2;
+    const absY = (canvas.height - absHeight) /2;
+    
+    ctx.drawImage(abs, absX, absY, absWidth, absHeight);
 }
+
+function movePlayer() {
+    if (keys["arrowup"] || keys["w"]) {
+        absY -= speed;
+        absDirection = "up";
+    }
+    if (keys["arrowdown"] || keys["s"]) {
+        absY += speed;
+        absDirection = "down";
+    }
+    if (keys["arrowleft"] || keys["a"]) {
+        absX -= speed;
+        absDirection = "left";
+    }
+    if (keys["arrowright"] || keys["d"]) {
+        absX += speed;
+        absDirection = "right";
+    }
+
+    
+} 
