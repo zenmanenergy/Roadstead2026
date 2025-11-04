@@ -32,7 +32,7 @@ absSprites.right.src = "assets/characters/abs_right.gif"
 let absDirection = "down";
 let absX = 368;
 let absY = 268;
-let speed = 3;
+let speed = 30;
 let keys = {};
 
 //Event Listener
