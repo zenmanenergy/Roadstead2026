@@ -78,3 +78,24 @@ function drawGameScene() {
     
     ctx.drawImage(abs, absX, absY, absWidth, absHeight);
 }
+
+function movePlayer() {
+    if (keys["arrowup"] || keys["w"]) {
+        absY -= speed;
+        absDirection = "up";
+    }
+    if (keys["arrowdown"] || keys["s"]) {
+        absY += speed;
+        absDirection = "down";
+    }
+    if (keys["arrowleft"] || keys["a"]) {
+        absX -= speed;
+        absDirection = "left";
+    }
+    if (keys["arrowright"] || keys["d"]) {
+        absX += speed;
+        absDirection = "right";
+    }
+
+    
+}
