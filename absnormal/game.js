@@ -102,28 +102,61 @@ function update() {
 //Start the Game
 
 function movePlayer() {
-    if (keys["arrowup"] || keys["w"]) {
-        absY -= speed;
-        absDirection = "up";
-    }
-    if (keys["arrowdown"] || keys["s"]) {
-        absY += speed;
-        absDirection = "down";
-    }
-    if (keys["arrowleft"] || keys["a"]) {
-        absX -= speed;
-        absDirection = "left";
-    }
-    if (keys["arrowright"] || keys["d"]) {
-        absX += speed;
-        absDirection = "right";
-    }
+	let moving = false; // Track if the player is moving this frame
 
-    if (absX < 0) absX = 0;
-    if (absY < 0) absY = 0;
-    if (absX > canvas.width - 64) absX = canvas.width - 64;
-    if (absY > canvas.height - 64) absY = canvas.height - 64;    
-} 
+	// Check pressed keys and move character accordingly
+	if (keys['arrowup'] || keys['w']) {
+		absY -= speed;
+		absDirection = 'up';
+		moving = true;
+	}
+	if (keys['arrowdown'] || keys['s']) {
+		absY += speed;
+		absDirection = 'down';
+		moving = true;
+	}
+	if (keys['arrowleft'] || keys['a']) {
+		absX -= speed;
+		absDirection = 'left';
+		moving = true;
+	}
+	if (keys['arrowright'] || keys['d']) {
+		absX += speed;
+		absDirection = 'right';
+		moving = true;
+	}
+
+	// Prevent player from leaving the visible area
+	if (absX < 0) absX = 0;
+	if (absY < 0) absY = 0;
+	if (absX > canvas.width - frameWidth) absX = canvas.width - frameWidth;
+	if (absY > canvas.height - frameHeight) absY = canvas.height - frameHeight;
+
+	// Update which frame of the animation to show
+	if (moving) {
+		frameCount++;
+		if (frameCount >= frameDelay) { 
+			frameCount = 0;
+			frameIndex = (frameIndex + 1) % framesPerAnimation; // cycle through 0–3
+		}
+	} else {
+		frameIndex = 0; // reset to first frame when idle
+	}
+}
+function changeRooms() {
+	// If in the lab and reach right edge → go to city
+	if (currentRoom === 'lab' && absX > canvas.width - frameWidth) {
+		currentRoom = 'city';
+		absX = 0;
+	}
+
+	// If in the city and reach left edge → go back to lab
+	if (currentRoom === 'city' && absX < 0) {
+		currentRoom = 'lab';
+		absX = canvas.width - frameWidth;
+	}
+}
+
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background[currentRoom], 0, 0, canvas.width, canvas.height);
