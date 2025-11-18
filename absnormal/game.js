@@ -33,10 +33,10 @@ const absWalk = {
     left: new Image(),
     right: new Image()
 };
-absSprites.up.src = "assets/characters/abs_walk_up.gif";
-absSprites.down.src = "assets/characters/abs_walk_down.gif";
-absSprites.left.src = "assets/characters/abs_walk_left.gif";
-absSprites.right.src = "assets/characters/abs_walk_right.gif";
+absWalk.up.src = "assets/characters/abs_walk_up.gif";
+absWalk.down.src = "assets/characters/abs_walk_down.gif";
+absWalk.left.src = "assets/characters/abs_walk_left.gif";
+absWalk.right.src = "assets/characters/abs_walk_right.gif";
 
 let absDirection = "down";
 let absX = 368;
