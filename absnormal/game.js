@@ -81,22 +81,52 @@ function movePlayer() {
     if (keys["arrowup"] || keys["w"]) {
         absY -= speed;
         absDirection = "up";
+        moving = true;
     }
     if (keys["arrowdown"] || keys["s"]) {
         absY += speed;
         absDirection = "down";
+        moving = true;
     }
     if (keys["arrowleft"] || keys["a"]) {
         absX -= speed;
         absDirection = "left";
+        moving = true;
     }
     if (keys["arrowright"] || keys["d"]) {
         absX += speed;
         absDirection = "right";
+        moving = true;
     }
-
+    //prevents player from leaving visible area
     if (absX < 0) absX = 0;
     if (absY < 0) absY = 0;
-    if (absX > canvas.width - 64) absX = canvas.width - 64;
-    if (absY > canvas.height - 64) absY = canvas.height - 64;    
+    if (absX > canvas.width - frameWidth) absX = canvas.width - frameWidth;
+    if (absY > canvas.height - frameHeight) absY = canvas.height - frameHeight;
+
+    //update which frame of animation to show
+    if (moving) {
+        frameCount++;
+        if (frameCount >= frameDelay) {
+            frameCount = 0;
+            frameIndex = (frameIndex + 1) % framesPerAnimation; //cycles frames
+        } else {
+            frameIndex = 0; //reset to first frame when idle
+        }
+    }
 } 
+
+function changeRooms() {
+    //if in the lab and reach right edge go to city
+    if (currentRoom === 'lab' && absX > canvas.width - frameWidth) {
+        currentRoom = 'city';
+        absX = 0;
+    }
+
+    //if in city and reach left edge go back to lab
+    if (currentRoom === 'city' && absX < 0) {
+    currentRoom = 'lab';
+    absX = canvas.width - rameWidth;
+    }
+}
+
