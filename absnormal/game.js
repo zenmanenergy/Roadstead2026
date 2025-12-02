@@ -9,7 +9,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 //Game State
-let gameState = "playing";  //"title" or "playing"
+let gameState = "title";  //"title" or "playing"
 
 //Image Assests
 const titleScreen = new Image();
@@ -43,7 +43,7 @@ let absX = 368;
 let absY = 268;
 
 //movement speed (pixels per frame)
-let speed = 3000;
+let speed = 3;
 //track keys for smooth movement
 let keys = {};
 
@@ -91,13 +91,6 @@ function handleClick(event) {
     }
 }
 
-function update() {
-    if (gameState === "playing") {
-        movePlayer();
-        drawGame();
-        requestAnimationFrame(update);
-    }
-}
 
 //Start the Game
 
@@ -166,7 +159,7 @@ function drawGame() {
 function drawAbsNormal() {
     //select correct abssprite
     const sprite = absWalk[absDirection];
-    //calculate sourse x
+    //calculate source x
     const sx = frameWidth * frameHeight;
     //drawing one sprite from the sprite sheet onto the canvas
     ctx.drawImage(sprite, sx, 0, frameWidth, frameHeight, absX, absY, frameWidth, frameHeight);
