@@ -1,4 +1,4 @@
-//created by Gort the
+//created by Gort the Mighty
 
 /*
 An Absnormal Adventure - Week 3
