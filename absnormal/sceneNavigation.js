@@ -1,63 +1,127 @@
 //Scene Setup
 //Each "scene" (room) has a background and a list of objects.
 //The currentScene variable tells us where Abs Normal is.
-let currentScene = "bedroom";
+let currentScene = "title";
+let absX = 500;
+let absY = 400;
+let absDirection = "down";
+let frame = 1;
+let moving = false;
+const speed = 40;
 
-const scenes = {
-    bedroom: { background: new Image(), objects: [] },
-    city: { background: new Image(), objects: [] },
-    pharmacy: { background: new Image(), objects: [] },
-    office: { background: new Image(), objects: [] },
+const backgrounds = {
+    title: new Image(),
+    bedroom: new Image(),
+    city: new Image(),
+    doctor: new Image(),
+    pharmacy: new Image(),
 };
 
 //load background images for each room.
-scenes.bedroom.background.src = "assets/backgrounds/room_bedroom.png"
-scenes.city.background.src = "assets/backgrounds/room_city.png";
-scenes.pharmacy.background.src = "assets/backgrounds/room_pharmacy.png";
-scenes.office.background.src = "assets/backgrounds/room_office.png";
+backgrounds.title.src = "assets/backgrounds/title_screen.png"
+backgrounds.bedroom.src = "assets/backgrounds/room_bedroom.png";
+backgrounds.city.src = "assets/backgrounds/room_city.png";
+backgrounds.doctor.src = "assets/backgrounds/room_doctor.png";
+backgrounds.pharmacy.src = "assets/backgrounds/room_pharmacy.png"
 
-//Door Objects
-//Each door connects one scene to another.
-scenes.bedroom.objects = [
-    { x: 950, y: 480, width: 96, height: 160, type: "door", action: "to _city", img: new Image() }
-];
+const startBox = { x: 520, y: 460, width: 240, height: 100 }; //placeholder
 
-scenes.city.objects = [
-    { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_bedroom", img: new Image() }
-];
+canvas.addEventListener("click", e => {
+    if (currentScene !== "title") return;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    if (
+        mouseX >= startBox.x && mouseY <= startBox.x +startBox.width && mouseY >= startBox.y && mouseY <= startBox.y + startBox.height
+    ) {
+        currentScene = "bedroom";
+        absX = canvas.width / 2 - 96;
+        absY = canvas.height /2 - 96;
+    }
+});
 
-scenes.pharmacy.objects = [
-    { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
-];
+const transitions = { 
+    bedroom: { x: 120, y:600, width: 150, height: 80, next: "city" }, 
+    city: { x: 950, y: 200, width: 150, height: 80, next: "doctor" },
+    doctor: { x: 400, y: 600, width: 150, height: 80, next: "pharmacy"},
+    pharymacy: { x: 700, y: 600, width: 150, height: 80, next: "bedroom"}
+};
 
-scenes.office.objects = [
-    { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
-];
-//load all door images so they can be drawn later
-for (const s in scenes) {
-    scenes[s].objects.forEach(o => o.img.src = `assets/objects/${o.type}.png`);
+const keys = {}; 
+window.addEventListener("keydown", e => (keys[e.key.toLowerCase()] = true));
+window.addEventListener("keyup", e => (keys[e.key.toLowerCase()] = false));
+
+function movePlayer() {
+    moving = false;
+    if (keys["w"]) { absY -= speed; absDirection = "up"; moving = true; }
+    if (keys["s"]) { absY =+ speed; absDirection = "down"; moving = true; }
+    if (keys["a"]) { absX -+ speed; absDirection = "left"; moving = true; }
+    if (keys["d"]) { absX += speed; absDirection = "right"; moving = true; }
+    if (moving) frame = frame === 1 ? 2 : 1;
 }
-//Door Transition Logi: Checks if Abs Normal is touching a door and switdches scenes.
-function handleDoors() {
-    const playerBox = { x:absX, y: absY, width: frameWidth, height: frameHeight };
-    for (let obj of scenes[currentScene].objects) {
-        if (isColliding(playerBox, obj) && obj.action) {
-            if (obj.action === "to_city") currentScene = "city";
-            if (obj.action === "to_bedroom") currentScene = "bedroom";
-            if (obj.action === "to_pharmacy") currentScene = "pharmacy";
-            if (obj.action === "to_office") currentScene = "office";
-            //reset player pos so they appear at the entrance
-            absX = 150;
-            absY = 420;
-            break;
-        }
+
+function checkTransitions() {
+    const t = transitions[currentScene];
+    if (!t) return;
+    if (
+        absX >= t.x && absX <= t.x + t.width &&
+        absY >= t.y && absY <= t.y + t.height
+    ) {
+        currentScene = t.next;
+        absX = canvas.width / 2 - 96;
+        absY = canvas.height / 2 - 96;
     }
 }
-//scene drawing
-function drawScene() {
-    const scene = scenes [currentScene];
-    ctx.drawImage(scene.background, 0, 0, canvas.width, canvas.height);
-    scene.objects.forEach(obj => {
-        ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
-    });
-}
+
+// //Door Objects
+// //Each door connects one scene to another.
+// scenes.bedroom.objects = [
+//     { x: 950, y: 480, width: 96, height: 160, type: "door", action: "to _city", img: new Image() }
+// ];
+
+// scenes.city.objects = [
+//     { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_bedroom", img: new Image() }
+// ];
+
+// scenes.pharmacy.objects = [
+//     { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
+// ];
+
+// scenes.office.objects = [
+//     { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
+// ];
+// //load all door images so they can be drawn later
+// for (const s in scenes) {
+//     scenes[s].objects.forEach(o => o.img.src = `assets/objects/${o.type}.png`);
+// }
+
+
+
+
+
+
+
+// //Door Transition Logi: Checks if Abs Normal is touching a door and switdches scenes.
+// function handleDoors() {
+//     const playerBox = { x:absX, y: absY, width: frameWidth, height: frameHeight };
+//     for (let obj of scenes[currentScene].objects) {
+//         if (isColliding(playerBox, obj) && obj.action) {
+//             if (obj.action === "to_city") currentScene = "city";
+//             if (obj.action === "to_bedroom") currentScene = "bedroom";
+//             if (obj.action === "to_pharmacy") currentScene = "pharmacy";
+//             if (obj.action === "to_office") currentScene = "office";
+//             //reset player pos so they appear at the entrance
+//             absX = 150;
+//             absY = 420;
+//             break;
+//         }
+//     }
+// }
+// //scene drawing
+// function drawScene() {
+//     const scene = scenes [currentScene];
+//     ctx.drawImage(scene.background, 0, 0, canvas.width, canvas.height);
+//     scene.objects.forEach(obj => {
+//         ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
+//     });
+// }
