@@ -1,13 +1,17 @@
 //Scene Setup
 //Each "scene" (room) has a background and a list of objects.
 //The currentScene variable tells us where Abs Normal is.
+
+console.log['sceneNavigation.js loaded'];
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 let currentScene = "title";
 let absX = 500;
 let absY = 400;
 let absDirection = "down";
 let frame = 1;
 let moving = false;
-const speed = 40;
+const speed = 10;
 
 const backgrounds = {
     title: new Image(),
@@ -24,27 +28,27 @@ backgrounds.city.src = "assets/backgrounds/room_city.png";
 backgrounds.doctor.src = "assets/backgrounds/room_doctor.png";
 backgrounds.pharmacy.src = "assets/backgrounds/room_pharmacy.png"
 
-const startBox = { x: 520, y: 460, width: 240, height: 100 }; //placeholder
+const startBox = { x: 520, y: 460, width: 140, height: 70 }; //placeholder
 
-canvas.addEventListener("click", e => {
-    if (currentScene !== "title") return;
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    if (
-        mouseX >= startBox.x && mouseY <= startBox.x +startBox.width && mouseY >= startBox.y && mouseY <= startBox.y + startBox.height
-    ) {
-        currentScene = "bedroom";
-        absX = canvas.width / 2 - 96;
-        absY = canvas.height /2 - 96;
-    }
-});
+// canvas.addEventListener("click", e => {
+//     if (currentScene !== "title") return;
+//     const rect = canvas.getBoundingClientRect();
+//     const mouseX = e.clientX - rect.left;
+//     const mouseY = e.clientY - rect.top;
+//     if (
+//         mouseX >= startBox.x && mouseX <= startBox.x +startBox.width && mouseY >= startBox.y && mouseY <= startBox.y + startBox.height //Steve this code was wrong... I had to fix it
+//     ) {
+//         currentScene = "bedroom";
+//         absX = canvas.width / 2 - 96;
+//         absY = canvas.height /2 - 96;
+//     }
+// });
 
 const transitions = { 
     bedroom: { x: 120, y:600, width: 150, height: 80, next: "city" }, 
     city: { x: 950, y: 200, width: 150, height: 80, next: "doctor" },
     doctor: { x: 400, y: 600, width: 150, height: 80, next: "pharmacy"},
-    pharymacy: { x: 700, y: 600, width: 150, height: 80, next: "bedroom"}
+    pharmacy: { x: 700, y: 600, width: 150, height: 80, next: "bedroom"}
 };
 
 const keys = {}; 
@@ -72,6 +76,8 @@ function checkTransitions() {
         absY = canvas.height / 2 - 96;
     }
 }
+
+
 
 // //Door Objects
 // //Each door connects one scene to another.
