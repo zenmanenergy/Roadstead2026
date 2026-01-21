@@ -1,3 +1,5 @@
+let lastX = 0;
+let lastY = 0;
 let frameDelay = 15;
 let frameCount = 0;
 
@@ -29,6 +31,8 @@ absImages.right[1].src =
 
 //drawing functions
 function movePlayer() {
+	lastX = absX;
+	lastY = absY;
     moving = false;
     if (keys["w"] || keys["arrowup"]) { absY -= speed; absDirection = "up"; moving = true; }
     if (keys["s"] || keys["arrowdown"]) { absY += speed; absDirection = "down"; moving = true; }
@@ -40,7 +44,8 @@ function movePlayer() {
     if (absY < 0) absY = 0;
     if (absX > canvas.width - 192) absX = canvas.width - 192;
     if (absY > canvas.height - 192) absY = canvas.height - 192;
-    
+   
+
     if (moving) {
         frameCount++;
         if (frameCount >= frameDelay) {
@@ -74,6 +79,9 @@ function drawPlayer(){
 		? absImages[absDirection][0]
 		:absImages[absDirection][1];
 		ctx.drawImage(img, absX, absY, 192, 192);
+		if (absX!=lastX || absY!=lastY){
+			console.log ("x",absX, "y",absY);
+		}
 }
 
 //game loop

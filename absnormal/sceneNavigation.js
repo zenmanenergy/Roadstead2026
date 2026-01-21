@@ -3,8 +3,8 @@
 //The currentScene variable tells us where Abs Normal is.
 
 console.log['sceneNavigation.js loaded'];
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+// const canvas = document.getElementById('gameCanvas');
+// const ctx = canvas.getContext('2d');
 let currentScene = "title";
 let absX = 500;
 let absY = 400;
@@ -25,7 +25,7 @@ const backgrounds = {
 backgrounds.title.src = "assets/backgrounds/title_screen.png"
 backgrounds.bedroom.src = "assets/backgrounds/room_bedroom.png";
 backgrounds.city.src = "assets/backgrounds/room_city.png";
-backgrounds.doctor.src = "assets/backgrounds/room_doctor.png";
+backgrounds.doctor.src = "assets/backgrounds/room_office.png";
 backgrounds.pharmacy.src = "assets/backgrounds/room_pharmacy.png"
 
 const startBox = { x: 520, y: 460, width: 140, height: 70 }; //placeholder
@@ -107,27 +107,27 @@ function checkTransitions() {
 
 
 
-// //Door Transition Logi: Checks if Abs Normal is touching a door and switdches scenes.
-// function handleDoors() {
-//     const playerBox = { x:absX, y: absY, width: frameWidth, height: frameHeight };
-//     for (let obj of scenes[currentScene].objects) {
-//         if (isColliding(playerBox, obj) && obj.action) {
-//             if (obj.action === "to_city") currentScene = "city";
-//             if (obj.action === "to_bedroom") currentScene = "bedroom";
-//             if (obj.action === "to_pharmacy") currentScene = "pharmacy";
-//             if (obj.action === "to_office") currentScene = "office";
-//             //reset player pos so they appear at the entrance
-//             absX = 150;
-//             absY = 420;
-//             break;
-//         }
-//     }
-// }
-// //scene drawing
-// function drawScene() {
-//     const scene = scenes [currentScene];
-//     ctx.drawImage(scene.background, 0, 0, canvas.width, canvas.height);
-//     scene.objects.forEach(obj => {
-//         ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
-//     });
-// }
+//Door Transition Logi: Checks if Abs Normal is touching a door and switdches scenes.
+function handleDoors() {
+    const playerBox = { x:absX, y: absY, width: frameWidth, height: frameHeight };
+    for (let obj of scenes[currentScene].objects) {
+        if (isColliding(playerBox, obj) && obj.action) {
+            if (obj.action === "to_city") currentScene = "city";
+            if (obj.action === "to_bedroom") currentScene = "bedroom";
+            if (obj.action === "to_pharmacy") currentScene = "pharmacy";
+            if (obj.action === "to_office") currentScene = "office";
+            //reset player pos so they appear at the entrance
+            absX = 150;
+            absY = 420;
+            break;
+        }
+    }
+}
+//scene drawing
+function drawScene() {
+    const scene = scenes [currentScene];
+    ctx.drawImage(scene.background, 0, 0, canvas.width, canvas.height);
+    scene.objects.forEach(obj => {
+        ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
+    });
+}
