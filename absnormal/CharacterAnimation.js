@@ -69,6 +69,9 @@ function drawScene() {
 		ctx.fillText("START", startBox.x + 80, startBox.y + 65);
 		return;
 	}
+	if (currentScene === "bedroom") {
+        ctx.drawImage(doorFrames[door.currentFrame], door.x, door.y, door.width, door.height);
+    }
 	drawPlayer();
 }
 
@@ -89,6 +92,7 @@ function update(){
 	if (currentScene !== "title"){
 		movePlayer();
 		checkTransitions();
+		checkDoor();
 	}
 	drawScene();
 	requestAnimationFrame(update);
