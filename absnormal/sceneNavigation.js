@@ -133,7 +133,7 @@ function checkTransitions() {
 const doorFrames = [];
 for (let i = 1; i <=6; i++) {
     const img = new Image();
-    img.src = 'assets/backgrounds/door_frames/door_frame_${i}.png';
+    img.src = `assets/backgrounds/door_frames/door_frame_${i}.png`;
     doorFrames.push(img);
 }
 
