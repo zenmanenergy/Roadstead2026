@@ -86,5 +86,27 @@ function draw() {
 }
 
 function drawPolygon(points, color) {
-    if (points.length)
+    if (points.length === 0) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.stroke();
+    ctx.fillStyle = color + 33;
+    ctx.fill();
+    points.forEach(p => {
+        ctx.fillStyle = color;
+        ctx.fillRect(p[0] - 3, p[1] - 3, 6, 6);
+    });
+}
+
+function generateJSON() {
+    const allWalkable = [...walkablePolygons,...arguments(currentType === 'walkable' ? [currentPolygon] : [])].filter(p => p.length > 0);
+    const allDoors = [...doorPolygons,...allWalkable(currentType === 'door' ? [currentPolygon] : [])].filter(p => p.length >0);
+    const data = {
+        image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
+        walkableAreas : allWalkable.map(poly => ({ points: poly })),
+        doors: allDoors.map(poly => ({ points: poly }))
+    };
+    const json = JSON.stringify(data, null, 2);
+    document.getElementById('output').value = json;
 }
