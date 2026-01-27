@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Scene Editor</title>
+        <link rel="stylesheet" href="style.css"
+    </head>
+<body>
+    <div id="editor">
+        <div id="controls">
+            <select id="imageSelect">
+                <option value="">Select a background image...</option>
+            </select>
+            <div style="display: inline-flex; gap: 10px; margin: 0 10px;">
+                <lable><input type="radio" name="polygonType" value="walkable" checked> Walkable</lable>
+                <lable><input type="radio" name="polygonType" value="door" checked> Door</lable>
+            </div>
+            <button onclick="clearPolygons()">Clear All</button>
+        </div>
+        <div id="workspace">
+            <canvas id="canvas" width="800" height="600"></canvas>
+            <div style="display: flex; flex-direction: column; flex: 1;">
+                <span id="filename" style="padding: 8px 12px; color: #aaa; font-size: 12px;">absnormal/data/[scenename].json</span>
+                <textarea id="output" readonly placeholder="JSON will appear here..."></textarea>
+            </div>
+        </div>
+    </div>
+    <script src="editor.js"></script>
+</body>
+</html>
