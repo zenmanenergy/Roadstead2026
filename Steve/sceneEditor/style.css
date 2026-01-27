@@ -1,0 +1,60 @@
+body {
+	font-family: Arial;
+	padding: 20px;
+	background: #333;
+	color: #fff;
+	margin: 0;
+}
+
+#editor {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+#controls {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 10px;
+	flex-wrap: wrap;
+}
+
+#workspace {
+	display: flex;
+	gap: 10px;
+	flex: 1;
+	overflow: hidden;
+}
+
+input, button, select {
+	padding: 8px 12px;
+	font-size: 14px;
+}
+
+button {
+	background: #0066cc;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+
+button:hover {
+	background: #0052a3;
+}
+
+canvas {
+	border: 2px solid #666;
+	cursor: crosshair;
+	flex-shrink: 0;
+}
+
+textarea {
+	flex: 1;
+	padding: 10px;
+	font-family: monospace;
+	font-size: 12px;
+	background: #222;
+	color: #0f0;
+	border: 1px solid #666;
+	resize: none;
+}
