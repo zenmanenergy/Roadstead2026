@@ -69,3 +69,22 @@ function finishPolygon() {
     }
 }
 
+function clearPolygons() {
+    walkablePolygons = [];
+    doorPolygons = [];
+    currentPolygon = [];
+    document.getElementById('output').value = '';
+    draw();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(image) ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    walkablePolygons.forEach(poly => drawPolygon(poly, '#00ff00'));
+    doorPolygons.forEach(poly => drawPolygon(poly, '#ff0000'));
+    drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
+}
+
+function drawPolygon(points, color) {
+    if (points.length)
+}
