@@ -139,10 +139,10 @@ for (let i = 1; i <=6; i++) {
 
 // const door = document.getElementById("door");
 const door = {
-    x:544,
-    y:200,
-    width: 196,
-    height:260,
+    x:547,
+    y:194,
+    width: 261,
+    height:266,
     currentFrame: 0,
     isAnimating: false
 }
