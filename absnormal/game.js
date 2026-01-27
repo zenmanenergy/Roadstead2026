@@ -150,17 +150,18 @@ function changeRooms() {
 	}
 }
 
-function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background[currentRoom], 0, 0, canvas.width, canvas.height);
-    drawAbsNormal();
-}
+// function drawGame() {
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.drawImage(background[currentRoom], 0, 0, canvas.width, canvas.height);
+//     drawAbsNormal();
+// }
 
-function drawAbsNormal() {
-    //select correct abssprite
-    const sprite = absWalk[absDirection];
-    //calculate source x
-    const sx = frameWidth * frameHeight;
-    //drawing one sprite from the sprite sheet onto the canvas
-    ctx.drawImage(sprite, sx, 0, frameWidth, frameHeight, absX, absY, frameWidth, frameHeight);
-}
+// function drawAbsNormal() {
+//     //select correct abssprite
+//     const sprite = absWalk[absDirection];
+//     //calculate source x
+//     const sx = frameWidth * frameHeight;
+//     //drawing one sprite from the sprite sheet onto the canvas
+//     ctx.drawImage(sprite, sx, 0, frameWidth, frameHeight, absX, absY, frameWidth, frameHeight);
+// }
+
