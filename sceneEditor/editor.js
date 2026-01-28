@@ -3,8 +3,10 @@ const ctx = canvas.getContext('2d');
 let image = null;
 let walkablePolygons = [];
 let doorPolygons = [];
+let startPoint = null;
 let currentPolygon = [];
 let currentType = 'walkable';
+
 const backgrounds = [
     'background_start.png',
     'CITY-absnormal.png',
@@ -16,6 +18,8 @@ const backgrounds = [
     'start_button.png',
     'title_screen.png'
 ];
+
+
 
 const select = document.getElementById('imageSelect');
 backgrounds.forEach(bg => {
@@ -51,9 +55,15 @@ canvas.addEventListener('click', (e) => {
     const scaleY = canvas.height / rect.height;
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
+    if (currentType === 'start') {
+        startPoint = [x, y];
+        draw();
+        generateJSON();
+    } else {
     currentPolygon.push([x, y]);
     draw();
-    generateJSON();    
+    generateJSON();   
+    } 
 });
 
 function finishPolygon() {
@@ -72,6 +82,7 @@ function finishPolygon() {
 function clearPolygons() {
     walkablePolygons = [];
     doorPolygons = [];
+    startPoint = null;
     currentPolygon = [];
     document.getElementById('output').value = '';
     draw();
@@ -83,6 +94,12 @@ function draw() {
     walkablePolygons.forEach(poly => drawPolygon(poly, '#00ff00'));
     doorPolygons.forEach(poly => drawPolygon(poly, '#ff0000'));
     drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
+    if (startPoint) {
+        ctx.fillStyle = '#00ccff';
+        ctx.beginPath ();
+        ctx.arc(startPoint [0], startPoint[1], 8, 0, Math.PI*2);
+        ctx.fill();
+    }
 }
 
 function drawPolygon(points, color) {
@@ -108,7 +125,8 @@ function generateJSON() {
     const data = {
         image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
         walkableAreas : allWalkable.map(poly => ({ points: poly })),
-        doors: allDoors.map(poly => ({ points: poly }))
+        doors: allDoors.map(poly => ({ points: poly })),
+        startPoint : startPoint
     };
     const json = JSON.stringify(data, null, 2);
     document.getElementById('output').value = json;
