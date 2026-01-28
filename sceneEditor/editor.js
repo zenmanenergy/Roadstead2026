@@ -100,8 +100,8 @@ function drawPolygon(points, color) {
 }
 
 function generateJSON() {
-    const allWalkable = [...walkablePolygons,...arguments(currentType === 'walkable' ? [currentPolygon] : [])].filter(p => p.length > 0);
-    const allDoors = [...doorPolygons,...allWalkable(currentType === 'door' ? [currentPolygon] : [])].filter(p => p.length >0);
+    const allWalkable = [...walkablePolygons,...(currentType === 'walkable' ? [currentPolygon] : [])].filter(p => p.length > 0);
+    const allDoors = [...doorPolygons,...(currentType === 'door' ? [currentPolygon] : [])].filter(p => p.length >0);
     const data = {
         image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
         walkableAreas : allWalkable.map(poly => ({ points: poly })),
