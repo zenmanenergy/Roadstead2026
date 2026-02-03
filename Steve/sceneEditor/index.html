@@ -3,6 +3,30 @@
 <head>
 	<title>Scene Editor</title>
 	<link rel="stylesheet" href="style.css">
+	<style>
+		#doorDestinationUI {
+			display: none;
+		}
+		#doorDestinationSelect {
+			padding: 4px 8px;
+			border-radius: 3px;
+			border: 1px solid #666;
+			background: #222;
+			color: #fff;
+			cursor: pointer;
+		}
+		#npcUI {
+			display: none;
+		}
+		#npcCharacterSelect {
+			padding: 4px 8px;
+			border-radius: 3px;
+			border: 1px solid #666;
+			background: #222;
+			color: #fff;
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
 	<div id="editor">
@@ -13,7 +37,10 @@
 			<div style="display: inline-flex; gap: 10px; margin: 0 10px;">
 				<label><input type="radio" name="polygonType" value="walkable" checked> Walkable</label>
 				<label><input type="radio" name="polygonType" value="door"> Door</label>
+				<label><input type="radio" name="polygonType" value="npc"> NPC</label>
+				<label><input type="radio" name="polygonType" value="start"> Start Point</label>
 			</div>
+			<button id="finishDoorBtn" onclick="finishPolygon()" style="display: none; background: #0a0; color: #000; padding: 6px 12px; border-radius: 3px; border: none; cursor: pointer; font-weight: bold;">Finish Door</button>
 			<button onclick="clearPolygons()">Clear All</button>
 		</div>
 		<div id="workspace">
@@ -27,3 +54,4 @@
 	<script src="editor.js"></script>
 </body>
 </html>
+

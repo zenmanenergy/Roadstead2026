@@ -38,14 +38,15 @@ const absWalk = {
 // absWalk.left.src = "assets/characters/abs_walk_left.png";
 // absWalk.right.src = "assets/characters/abs_walk_right.png";
 
-// let absDirection = "down";
-// let absX = 368;
-// let absY = 268;
+let absDirection = "down";
+let absX = 368;
+let absY = 268;
+let currentBackgroundImage = null;
 
 //movement speed (pixels per frame)
 // let speed = 3;
-//track keys for smooth movement
-// let keys = {};
+// track keys for smooth movement
+let keys = {};
 
 //animation constants
 const frameWidth = 192;  //width of one frame in sprite sheet
@@ -78,15 +79,51 @@ function drawTitle() {
     ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 }
 
+window.addEventListener('load', () => {
+    if (titleScreen.complete) {
+        drawTitle
+    }
+});
+
 //handle click
 function handleClick(event) {
+    console.log('!!! handleClick CALLED !!!');
+    console.log('gameState:', gameState);
     if (gameState === "title") {
+        console.log('In title screen - processing click');
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
         if (mouseX >= 300 && mouseX <= 500 && mouseY >= 260 && mouseY <= 340) {
             gameState = "playing";
-            requestAnimationFrame(update);
+            currentScene = "bedroom";
+            
+            if (sceneData[currentScene] && sceneData[currentScene].startPoint) {
+                absX = sceneData[currentScene].startPoint[0] - 96;
+                absY = sceneData[currentScene].startPoint[1] - 96;
+                absDirection = "down";
+            }
+            else {
+                absX = canvas.width / 2 - 96;
+                absY = canvas.height / 2 - 96;
+                absDirection = "down";
+            }
+            if (sceneData[currentScene] && sceneData[currentScene].image) {
+                currentBackgroundImage = new Image();
+                currentBackgroundImage.src = sceneData[currentScene].image;
+
+                if (currentBackgroundImage.complete) {
+                    requestAnimationFrame(update);
+                }
+                else {
+                    currentBackgroundImage.onload = () => {
+                        requestAnimationFrame(update);
+                    };
+                }
+            }
+            else {
+                requestAnimationFrame(update);
+            }
         }
     }
 }
@@ -220,14 +257,32 @@ function changeRooms() {
 // }
 
 //game loop
-// function update(){
-// 	if (currentScene !== "title"){
-// 		movePlayer();
-// 		checkTransitions();
-// 	}
-// 	drawScene();
-// 	requestAnimationFrame(update);
-// }
+function update(){
+	if (gameState !== "playing") {
+        requestAnimationFrame(update);
+        return;
+	}
+    if (!updateLogged) {
+        updateLogged = true;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (currentBackgroundImage && currentBackgroundImage.complete) {
+        ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+    }
+    drawAbsNormal();
+    requestAnimationFrame(update);
+}
+function drawAbsNormal() {
+    ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+    ctx.beginPath();
+    ctx.arc(absX = 96, absY = 96, 50, 0, Math.PI * 2)
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+    ctx.font - "bold 16px Arial";
+    ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
+    ctx.fillText(`Raw StartPoint: (${Math.round(sceneData[currentScene]?.startPoint[0] || 0)}, ${Math.round(sceneData[currentScene]?.startPoint[1] || 0)})`, 10, 50);
+}
 
 //start animation loop
 // update();

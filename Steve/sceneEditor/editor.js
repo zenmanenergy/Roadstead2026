@@ -1,10 +1,16 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let image = null;
+let canvas, ctx, image, select;
 let walkablePolygons = [];
 let doorPolygons = [];
+let doorDestinations = {};
+let npcList = [];
+let startPoint = null;
 let currentPolygon = [];
 let currentType = 'walkable';
+let selectedDoorIndex = null;
+let selectedNPCIndex = null;
+let sceneList = [];
+let characterList = [];
+
 const backgrounds = [
 	'background_start.png',
 	'CITY-absnormal.png',
@@ -17,51 +23,152 @@ const backgrounds = [
 	'title_screen.png'
 ];
 
-const select = document.getElementById('imageSelect');
-backgrounds.forEach(bg => {
-	const option = document.createElement('option');
-	option.value = bg;
-	option.textContent = bg;
-	select.appendChild(option);
-});
-
-document.querySelectorAll('input[name="polygonType"]').forEach(radio => {
-	radio.addEventListener('change', (e) => {
-		finishPolygon();
-		currentType = e.target.value;
-		draw();
-		generateJSON();
+function init() {
+	canvas = document.getElementById('canvas');
+	ctx = canvas.getContext('2d');
+	select = document.getElementById('imageSelect');
+	
+	// Initialize scene list for door destinations
+	sceneList = backgrounds.map(bg => bg.replace('.png', ''));
+	
+	// Character list
+	characterList = [
+		'abs_down.gif',
+		'abs_idle_down.png',
+		'abs_left.gif',
+		'abs_placeholder.gif',
+		'abs_right.gif',
+		'abs_up.gif',
+		'abs_walk_down.png',
+		'abs_walk_right.png',
+		'abs_walk_up.png',
+		'doctor.png'
+	];
+	
+	backgrounds.forEach(bg => {
+		const option = document.createElement('option');
+		option.value = bg;
+		option.textContent = bg;
+		select.appendChild(option);
 	});
-});
+	
+	document.querySelectorAll('input[name="polygonType"]').forEach(radio => {
+		radio.addEventListener('change', (e) => {
+			finishPolygon();
+			currentType = e.target.value;
+			selectedDoorIndex = null;
+			selectedNPCIndex = null;
+			draw();
+			generateJSON();
+			updateNPCUI();
+		});
+	});
+	
+	select.addEventListener('change', (e) => {
+		if (e.target.value) {
+			clearPolygons();
+			const filename = e.target.value.replace('.png', '.json');
+			document.getElementById('filename').textContent = 'absnormal/data/' + filename;
+			image = new Image();
+			image.src = '../absnormal/assets/backgrounds/' + e.target.value;
+			image.onload = draw;
+		}
+	});
+	
+	canvas.addEventListener('click', (e) => {
+		const rect = canvas.getBoundingClientRect();
+		const scaleX = canvas.width / rect.width;
+		const scaleY = canvas.height / rect.height;
+		const x = (e.clientX - rect.left) * scaleX;
+		const y = (e.clientY - rect.top) * scaleY;
+		
+		// NPC mode - click to place NPCs
+		if (currentType === 'npc') {
+			// Check if clicking on existing NPC to select it
+			for (let i = 0; i < npcList.length; i++) {
+				const npc = npcList[i];
+				const dist = Math.hypot(x - npc.x, y - npc.y);
+				if (dist < 20) {
+					selectedNPCIndex = i;
+					draw();
+					updateNPCUI();
+					return;
+				}
+			}
+			// If a NPC is selected and we clicked outside, deselect
+			if (selectedNPCIndex !== null) {
+				selectedNPCIndex = null;
+				draw();
+				updateNPCUI();
+				return;
+			}
+			// Otherwise, create a new NPC
+			npcList.push({ x: x, y: y, character: characterList[0] });
+			selectedNPCIndex = npcList.length - 1;
+			draw();
+			generateJSON();
+			updateNPCUI();
+			return;
+		}
+		
+		// If currently drawing a door polygon, add points instead of selecting
+		if (currentType === 'door' && currentPolygon.length > 0) {
+			currentPolygon.push([x, y]);
+			draw();
+			generateJSON();
+			return;
+		}
+		
+		// Check if clicking on an existing door to select it
+		if (currentType === 'door') {
+			for (let i = 0; i < doorPolygons.length; i++) {
+				if (isPointInPolygon(x, y, doorPolygons[i])) {
+					selectedDoorIndex = i;
+					draw();
+					return;
+				}
+			}
+			// If we have a selected door and clicked outside it, deselect
+			if (selectedDoorIndex !== null) {
+				selectedDoorIndex = null;
+				draw();
+				return;
+			}
+			// Otherwise, start a new door polygon
+			currentPolygon.push([x, y]);
+			draw();
+			generateJSON();
+			return;
+		}
+		
+		if (currentType === 'start') {
+			startPoint = [x, y];
+			draw();
+			generateJSON();
+		} else {
+			currentPolygon.push([x, y]);
+			draw();
+			generateJSON();
+		}
+	});
+	
+	// Setup door destination UI
+	setupDoorDestinationUI();
+	setupNPCUI();
+}
 
-select.addEventListener('change', (e) => {
-	if (e.target.value) {
-		clearPolygons();
-		const filename = e.target.value.replace('.png', '.json');
-		document.getElementById('filename').textContent = 'absnormal/data/' + filename;
-		image = new Image();
-		image.src = '../absnormal/assets/backgrounds/' + e.target.value;
-		image.onload = draw;
-	}
-});
-
-canvas.addEventListener('click', (e) => {
-	const rect = canvas.getBoundingClientRect();
-	const scaleX = canvas.width / rect.width;
-	const scaleY = canvas.height / rect.height;
-	const x = (e.clientX - rect.left) * scaleX;
-	const y = (e.clientY - rect.top) * scaleY;
-	currentPolygon.push([x, y]);
-	draw();
-	generateJSON();
-});
+document.addEventListener('DOMContentLoaded', init);
 
 function finishPolygon() {
 	if (currentPolygon.length > 2) {
 		if (currentType === 'walkable') {
 			walkablePolygons.push(currentPolygon);
-		} else {
+		} else if (currentType === 'door') {
 			doorPolygons.push(currentPolygon);
+			// Initialize door with no destination
+			doorDestinations[doorPolygons.length - 1] = null;
+			// Auto-select the newly created door
+			selectedDoorIndex = doorPolygons.length - 1;
 		}
 		currentPolygon = [];
 		draw();
@@ -72,7 +179,12 @@ function finishPolygon() {
 function clearPolygons() {
 	walkablePolygons = [];
 	doorPolygons = [];
+	doorDestinations = {};
+	npcList = [];
+	startPoint = null;
 	currentPolygon = [];
+	selectedDoorIndex = null;
+	selectedNPCIndex = null;
 	document.getElementById('output').value = '';
 	draw();
 }
@@ -82,8 +194,34 @@ function draw() {
 	if (image) ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 	
 	walkablePolygons.forEach(poly => drawPolygon(poly, '#00ff00'));
-	doorPolygons.forEach(poly => drawPolygon(poly, '#ff0000'));
+	doorPolygons.forEach((poly, i) => {
+		const isSelected = i === selectedDoorIndex;
+		drawPolygon(poly, isSelected ? '#ffcc00' : '#ff0000');
+	});
 	drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
+	
+	// Draw NPCs
+	npcList.forEach((npc, i) => {
+		const isSelected = i === selectedNPCIndex;
+		const color = isSelected ? '#ffff00' : '#00ff00';
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(npc.x, npc.y, 12, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.strokeStyle = color;
+		ctx.lineWidth = 2;
+		ctx.stroke();
+	});
+	
+	if (startPoint) {
+		ctx.fillStyle = '#00ccff';
+		ctx.beginPath();
+		ctx.arc(startPoint[0], startPoint[1], 8, 0, Math.PI * 2);
+		ctx.fill();
+	}
+	
+	// Update door UI visibility
+	updateDoorUI();
 }
 
 function drawPolygon(points, color) {
@@ -109,8 +247,138 @@ function generateJSON() {
 	const data = {
 		image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
 		walkableAreas: allWalkable.map(poly => ({ points: poly })),
-		doors: allDoors.map(poly => ({ points: poly }))
+		doors: allDoors.map((poly, i) => ({ 
+			points: poly,
+			destination: doorDestinations[i] || null
+		})),
+		npcs: npcList.map(npc => ({
+			x: npc.x,
+			y: npc.y,
+			character: npc.character
+		})),
+		startPoint: startPoint
 	};
 	const json = JSON.stringify(data, null, 2);
 	document.getElementById('output').value = json;
+}
+
+function isPointInPolygon(x, y, polygon) {
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const xi = polygon[i][0], yi = polygon[i][1];
+		const xj = polygon[j][0], yj = polygon[j][1];
+		const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		if (intersect) inside = !inside;
+	}
+	return inside;
+}
+
+function setupDoorDestinationUI() {
+	const controlsDiv = document.getElementById('controls');
+	let destinationUI = document.getElementById('doorDestinationUI');
+	
+	if (!destinationUI) {
+		destinationUI = document.createElement('div');
+		destinationUI.id = 'doorDestinationUI';
+		destinationUI.style.cssText = 'display: none; gap: 10px; align-items: center; padding: 10px; background: #333; border-radius: 4px; margin-top: 10px;';
+		destinationUI.innerHTML = `
+			<span>Selected Door Destination:</span>
+			<select id="doorDestinationSelect">
+				<option value="">None</option>
+			</select>
+		`;
+		controlsDiv.appendChild(destinationUI);
+		
+		// Populate destination options
+		sceneList.forEach(scene => {
+			const option = document.createElement('option');
+			option.value = scene;
+			option.textContent = scene;
+			document.getElementById('doorDestinationSelect').appendChild(option);
+		});
+		
+		document.getElementById('doorDestinationSelect').addEventListener('change', (e) => {
+			if (selectedDoorIndex !== null) {
+				doorDestinations[selectedDoorIndex] = e.target.value || null;
+				generateJSON();
+			}
+		});
+	}
+}
+
+function updateDoorUI() {
+	const ui = document.getElementById('doorDestinationUI');
+	const select = document.getElementById('doorDestinationSelect');
+	const finishBtn = document.getElementById('finishDoorBtn');
+	
+	// Show finish button when drawing a door
+	if (currentType === 'door' && currentPolygon.length > 0) {
+		finishBtn.style.display = 'inline-block';
+	} else {
+		finishBtn.style.display = 'none';
+	}
+	
+	// Show destination UI when a door is selected
+	if (selectedDoorIndex !== null && currentType === 'door') {
+		ui.style.display = 'flex';
+		select.value = doorDestinations[selectedDoorIndex] || '';
+	} else {
+		ui.style.display = 'none';
+	}
+}
+
+function setupNPCUI() {
+	const controlsDiv = document.getElementById('controls');
+	let npcUI = document.getElementById('npcUI');
+	
+	if (!npcUI) {
+		npcUI = document.createElement('div');
+		npcUI.id = 'npcUI';
+		npcUI.style.cssText = 'display: none; gap: 10px; align-items: center; padding: 10px; background: #333; border-radius: 4px; margin-top: 10px;';
+		npcUI.innerHTML = `
+			<span>Selected NPC Character:</span>
+			<select id="npcCharacterSelect">
+			</select>
+			<button onclick="deleteSelectedNPC()" style="background: #f00; color: #fff; padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer;">Delete NPC</button>
+		`;
+		controlsDiv.appendChild(npcUI);
+		
+		// Populate character options
+		const select = document.getElementById('npcCharacterSelect');
+		characterList.forEach(char => {
+			const option = document.createElement('option');
+			option.value = char;
+			option.textContent = char;
+			select.appendChild(option);
+		});
+		
+		document.getElementById('npcCharacterSelect').addEventListener('change', (e) => {
+			if (selectedNPCIndex !== null) {
+				npcList[selectedNPCIndex].character = e.target.value;
+				generateJSON();
+			}
+		});
+	}
+}
+
+function updateNPCUI() {
+	const ui = document.getElementById('npcUI');
+	const select = document.getElementById('npcCharacterSelect');
+	
+	if (selectedNPCIndex !== null && currentType === 'npc') {
+		ui.style.display = 'flex';
+		select.value = npcList[selectedNPCIndex].character;
+	} else {
+		ui.style.display = 'none';
+	}
+}
+
+function deleteSelectedNPC() {
+	if (selectedNPCIndex !== null) {
+		npcList.splice(selectedNPCIndex, 1);
+		selectedNPCIndex = null;
+		draw();
+		generateJSON();
+		updateNPCUI();
+	}
 }
