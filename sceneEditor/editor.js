@@ -71,7 +71,7 @@ function finishPolygon() {
         if (currentType === 'walkable') {
             walkablePolygons.push(currentPolygon);
         } else {
-            doorPolygons.push(current.Polygon);
+            doorPolygons.push(currentPolygon);
         }
         currentPolygon = [];
         draw();
