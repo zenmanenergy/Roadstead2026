@@ -2,11 +2,14 @@ let canvas, ctx, image, select;
 let walkablePolygons = [];
 let doorPolygons = [];
 let doorDestinations = {};
+let npcList = [];
 let startPoint = null;
 let currentPolygon = [];
 let currentType = 'walkable';
 let selectedDoorIndex = null;
+let selectedNPCIndex = null;
 let sceneList = [];
+let characterList = [];
 
 const backgrounds = [
 	'background_start.png',
@@ -28,6 +31,20 @@ function init() {
 	// Initialize scene list for door destinations
 	sceneList = backgrounds.map(bg => bg.replace('.png', ''));
 	
+	// Character list
+	characterList = [
+		'abs_down.gif',
+		'abs_idle_down.png',
+		'abs_left.gif',
+		'abs_placeholder.gif',
+		'abs_right.gif',
+		'abs_up.gif',
+		'abs_walk_down.png',
+		'abs_walk_right.png',
+		'abs_walk_up.png',
+		'doctor.png'
+	];
+	
 	backgrounds.forEach(bg => {
 		const option = document.createElement('option');
 		option.value = bg;
@@ -40,8 +57,10 @@ function init() {
 			finishPolygon();
 			currentType = e.target.value;
 			selectedDoorIndex = null;
+			selectedNPCIndex = null;
 			draw();
 			generateJSON();
+			updateNPCUI();
 		});
 	});
 	
@@ -62,6 +81,35 @@ function init() {
 		const scaleY = canvas.height / rect.height;
 		const x = (e.clientX - rect.left) * scaleX;
 		const y = (e.clientY - rect.top) * scaleY;
+		
+		// NPC mode - click to place NPCs
+		if (currentType === 'npc') {
+			// Check if clicking on existing NPC to select it
+			for (let i = 0; i < npcList.length; i++) {
+				const npc = npcList[i];
+				const dist = Math.hypot(x - npc.x, y - npc.y);
+				if (dist < 20) {
+					selectedNPCIndex = i;
+					draw();
+					updateNPCUI();
+					return;
+				}
+			}
+			// If a NPC is selected and we clicked outside, deselect
+			if (selectedNPCIndex !== null) {
+				selectedNPCIndex = null;
+				draw();
+				updateNPCUI();
+				return;
+			}
+			// Otherwise, create a new NPC
+			npcList.push({ x: x, y: y, character: characterList[0] });
+			selectedNPCIndex = npcList.length - 1;
+			draw();
+			generateJSON();
+			updateNPCUI();
+			return;
+		}
 		
 		// If currently drawing a door polygon, add points instead of selecting
 		if (currentType === 'door' && currentPolygon.length > 0) {
@@ -106,6 +154,7 @@ function init() {
 	
 	// Setup door destination UI
 	setupDoorDestinationUI();
+	setupNPCUI();
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -131,9 +180,11 @@ function clearPolygons() {
 	walkablePolygons = [];
 	doorPolygons = [];
 	doorDestinations = {};
+	npcList = [];
 	startPoint = null;
 	currentPolygon = [];
 	selectedDoorIndex = null;
+	selectedNPCIndex = null;
 	document.getElementById('output').value = '';
 	draw();
 }
@@ -148,6 +199,19 @@ function draw() {
 		drawPolygon(poly, isSelected ? '#ffcc00' : '#ff0000');
 	});
 	drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
+	
+	// Draw NPCs
+	npcList.forEach((npc, i) => {
+		const isSelected = i === selectedNPCIndex;
+		const color = isSelected ? '#ffff00' : '#00ff00';
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(npc.x, npc.y, 12, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.strokeStyle = color;
+		ctx.lineWidth = 2;
+		ctx.stroke();
+	});
 	
 	if (startPoint) {
 		ctx.fillStyle = '#00ccff';
@@ -186,6 +250,11 @@ function generateJSON() {
 		doors: allDoors.map((poly, i) => ({ 
 			points: poly,
 			destination: doorDestinations[i] || null
+		})),
+		npcs: npcList.map(npc => ({
+			x: npc.x,
+			y: npc.y,
+			character: npc.character
 		})),
 		startPoint: startPoint
 	};
@@ -255,5 +324,61 @@ function updateDoorUI() {
 		select.value = doorDestinations[selectedDoorIndex] || '';
 	} else {
 		ui.style.display = 'none';
+	}
+}
+
+function setupNPCUI() {
+	const controlsDiv = document.getElementById('controls');
+	let npcUI = document.getElementById('npcUI');
+	
+	if (!npcUI) {
+		npcUI = document.createElement('div');
+		npcUI.id = 'npcUI';
+		npcUI.style.cssText = 'display: none; gap: 10px; align-items: center; padding: 10px; background: #333; border-radius: 4px; margin-top: 10px;';
+		npcUI.innerHTML = `
+			<span>Selected NPC Character:</span>
+			<select id="npcCharacterSelect">
+			</select>
+			<button onclick="deleteSelectedNPC()" style="background: #f00; color: #fff; padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer;">Delete NPC</button>
+		`;
+		controlsDiv.appendChild(npcUI);
+		
+		// Populate character options
+		const select = document.getElementById('npcCharacterSelect');
+		characterList.forEach(char => {
+			const option = document.createElement('option');
+			option.value = char;
+			option.textContent = char;
+			select.appendChild(option);
+		});
+		
+		document.getElementById('npcCharacterSelect').addEventListener('change', (e) => {
+			if (selectedNPCIndex !== null) {
+				npcList[selectedNPCIndex].character = e.target.value;
+				generateJSON();
+			}
+		});
+	}
+}
+
+function updateNPCUI() {
+	const ui = document.getElementById('npcUI');
+	const select = document.getElementById('npcCharacterSelect');
+	
+	if (selectedNPCIndex !== null && currentType === 'npc') {
+		ui.style.display = 'flex';
+		select.value = npcList[selectedNPCIndex].character;
+	} else {
+		ui.style.display = 'none';
+	}
+}
+
+function deleteSelectedNPC() {
+	if (selectedNPCIndex !== null) {
+		npcList.splice(selectedNPCIndex, 1);
+		selectedNPCIndex = null;
+		draw();
+		generateJSON();
+		updateNPCUI();
 	}
 }
