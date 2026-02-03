@@ -2,6 +2,9 @@ let lastX = 0;
 let lastY = 0;
 let frameDelay = 15;
 let frameCount = 0;
+let frame = 1;
+let moving = false;
+let speed = 3;
 
 const absImages = {
 	down: [new Image(), new Image()],
@@ -34,16 +37,19 @@ function movePlayer() {
 	lastX = absX;
 	lastY = absY;
     moving = false;
-    if (keys["w"] || keys["arrowup"]) { absY -= speed; absDirection = "up"; moving = true; }
-    if (keys["s"] || keys["arrowdown"]) { absY += speed; absDirection = "down"; moving = true; }
-    if (keys["a"] || keys["arrowleft"]) { absX -= speed; absDirection = "left"; moving = true; }
-    if (keys["d"] || keys["arrowright"]) { absX += speed; absDirection = "right"; moving = true; }
+    let newX = absX;
+    let newY = absY;
     
-    // Prevent player from leaving the visible area
-    if (absX < 0) absX = 0;
-    if (absY < 0) absY = 0;
-    if (absX > canvas.width - 192) absX = canvas.width - 192;
-    if (absY > canvas.height - 192) absY = canvas.height - 192;
+    if (keys["w"] || keys["arrowup"]) { newY -= speed; absDirection = "up"; moving = true; }
+    if (keys["s"] || keys["arrowdown"]) { newY += speed; absDirection = "down"; moving = true; }
+    if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
+    if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
+    
+    // Check if new position is walkable
+    if (canMoveTo(newX, newY, 192, 192)) {
+        absX = newX;
+        absY = newY;
+    }
    
 
     if (moving) {

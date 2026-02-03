@@ -13,12 +13,6 @@ console.log('sceneNavigation.js loaded');
 // const canvas = document.getElementById('gameCanvas');
 // const ctx = canvas.getContext('2d');
 let currentScene = "title";
-let absX = 500;
-let absY = 400;
-let absDirection = "down";
-let frame = 1;
-let moving = false;
-const speed = 10;
 
 const backgrounds = {
     title: new Image(),
@@ -60,10 +54,6 @@ const transitions = {
     pharmacy: { x: 700, y: 600, width: 150, height: 80, next: "bedroom"}
 };
 
-const keys = {}; 
-window.addEventListener("keydown", e => (keys[e.key.toLowerCase()] = true));
-window.addEventListener("keyup", e => (keys[e.key.toLowerCase()] = false));
-
 function movePlayer() {
     moving = false;
     if (keys["w"]) { absY -= speed; absDirection = "up"; moving = true; }
@@ -80,9 +70,20 @@ function checkTransitions() {
         absX >= t.x && absX <= t.x + t.width &&
         absY >= t.y && absY <= t.y + t.height
     ) {
+        console.log(`Transition detected from ${currentScene} to ${t.next}`);
         currentScene = t.next;
-        absX = canvas.width / 2 - 96;
-        absY = canvas.height / 2 - 96;
+        console.log(`Current scene data:`, sceneData[currentScene]);
+        
+        // Use startPoint from scene data if available
+        if (sceneData[currentScene] && sceneData[currentScene].startPoint) {
+            absX = sceneData[currentScene].startPoint[0] - 96;
+            absY = sceneData[currentScene].startPoint[1] - 96;
+            console.log(`✓ Set position to startPoint: (${absX}, ${absY})`);
+        } else {
+            absX = canvas.width / 2 - 96;
+            absY = canvas.height / 2 - 96;
+            console.log(`✗ No startPoint, using default: (${absX}, ${absY})`);
+        }
     }
 }
 
