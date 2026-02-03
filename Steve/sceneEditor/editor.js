@@ -1,10 +1,10 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let image = null;
+let canvas, ctx, image, select;
 let walkablePolygons = [];
 let doorPolygons = [];
+let startPoint = null;
 let currentPolygon = [];
 let currentType = 'walkable';
+
 const backgrounds = [
 	'background_start.png',
 	'CITY-absnormal.png',
@@ -17,50 +17,64 @@ const backgrounds = [
 	'title_screen.png'
 ];
 
-const select = document.getElementById('imageSelect');
-backgrounds.forEach(bg => {
-	const option = document.createElement('option');
-	option.value = bg;
-	option.textContent = bg;
-	select.appendChild(option);
-});
-
-document.querySelectorAll('input[name="polygonType"]').forEach(radio => {
-	radio.addEventListener('change', (e) => {
-		finishPolygon();
-		currentType = e.target.value;
-		draw();
-		generateJSON();
+function init() {
+	canvas = document.getElementById('canvas');
+	ctx = canvas.getContext('2d');
+	select = document.getElementById('imageSelect');
+	
+	backgrounds.forEach(bg => {
+		const option = document.createElement('option');
+		option.value = bg;
+		option.textContent = bg;
+		select.appendChild(option);
 	});
-});
+	
+	document.querySelectorAll('input[name="polygonType"]').forEach(radio => {
+		radio.addEventListener('change', (e) => {
+			finishPolygon();
+			currentType = e.target.value;
+			draw();
+			generateJSON();
+		});
+	});
+	
+	select.addEventListener('change', (e) => {
+		if (e.target.value) {
+			clearPolygons();
+			const filename = e.target.value.replace('.png', '.json');
+			document.getElementById('filename').textContent = 'absnormal/data/' + filename;
+			image = new Image();
+			image.src = '../absnormal/assets/backgrounds/' + e.target.value;
+			image.onload = draw;
+		}
+	});
+	
+	canvas.addEventListener('click', (e) => {
+		const rect = canvas.getBoundingClientRect();
+		const scaleX = canvas.width / rect.width;
+		const scaleY = canvas.height / rect.height;
+		const x = (e.clientX - rect.left) * scaleX;
+		const y = (e.clientY - rect.top) * scaleY;
+		
+		if (currentType === 'start') {
+			startPoint = [x, y];
+			draw();
+			generateJSON();
+		} else {
+			currentPolygon.push([x, y]);
+			draw();
+			generateJSON();
+		}
+	});
+}
 
-select.addEventListener('change', (e) => {
-	if (e.target.value) {
-		clearPolygons();
-		const filename = e.target.value.replace('.png', '.json');
-		document.getElementById('filename').textContent = 'absnormal/data/' + filename;
-		image = new Image();
-		image.src = '../absnormal/assets/backgrounds/' + e.target.value;
-		image.onload = draw;
-	}
-});
-
-canvas.addEventListener('click', (e) => {
-	const rect = canvas.getBoundingClientRect();
-	const scaleX = canvas.width / rect.width;
-	const scaleY = canvas.height / rect.height;
-	const x = (e.clientX - rect.left) * scaleX;
-	const y = (e.clientY - rect.top) * scaleY;
-	currentPolygon.push([x, y]);
-	draw();
-	generateJSON();
-});
+document.addEventListener('DOMContentLoaded', init);
 
 function finishPolygon() {
 	if (currentPolygon.length > 2) {
 		if (currentType === 'walkable') {
 			walkablePolygons.push(currentPolygon);
-		} else {
+		} else if (currentType === 'door') {
 			doorPolygons.push(currentPolygon);
 		}
 		currentPolygon = [];
@@ -72,6 +86,7 @@ function finishPolygon() {
 function clearPolygons() {
 	walkablePolygons = [];
 	doorPolygons = [];
+	startPoint = null;
 	currentPolygon = [];
 	document.getElementById('output').value = '';
 	draw();
@@ -84,6 +99,13 @@ function draw() {
 	walkablePolygons.forEach(poly => drawPolygon(poly, '#00ff00'));
 	doorPolygons.forEach(poly => drawPolygon(poly, '#ff0000'));
 	drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
+	
+	if (startPoint) {
+		ctx.fillStyle = '#00ccff';
+		ctx.beginPath();
+		ctx.arc(startPoint[0], startPoint[1], 8, 0, Math.PI * 2);
+		ctx.fill();
+	}
 }
 
 function drawPolygon(points, color) {
@@ -109,7 +131,8 @@ function generateJSON() {
 	const data = {
 		image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
 		walkableAreas: allWalkable.map(poly => ({ points: poly })),
-		doors: allDoors.map(poly => ({ points: poly }))
+		doors: allDoors.map(poly => ({ points: poly })),
+		startPoint: startPoint
 	};
 	const json = JSON.stringify(data, null, 2);
 	document.getElementById('output').value = json;
