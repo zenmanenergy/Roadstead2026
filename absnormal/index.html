@@ -37,7 +37,7 @@
 
         #buttonSensor {
         position: absolute; /* Overlap sensor on top of the image */
-        bottom:140;
+        bottom:140px;
         left: 0;
         width: 200px; /* Match size of image */
         height: 175px; /* Match size of image */
@@ -49,20 +49,11 @@
 
     <p id="status"></p>
 
-    <!-- <script>
-        // Function to execute when the PNG button is clicked
-        function startFunction() {
-            document.getElementById('status')
-            // Additional logic can be added here
-        }
-
-        // Attaching the startFunction to the image's click event
-        document.getElementById('startButton').addEventListener('click', startFunction);
-    </script> -->
 
         <!--game logic-->
 
         <div id="buttonContainer"></div> <!-- Button container placeholder -->
+        <script src="sceneData.js"></script>
         <script src="sceneNavigation.js"></script>
         <script src="game.js"></script>
         <script src="CharacterAnimation.js"></script>
@@ -70,10 +61,6 @@
             // Create PNG button and sensor dynamically
             const buttonContainer = document.getElementById('buttonContainer');
     
-            // const buttonImage = document.createElement('img');
-            // buttonImage.id = 'startButton';
-            // buttonImage.src = 'assets/backgrounds/start_button.png';
-            // buttonImage.alt = 'Start Button';
     
             const buttonSensor = document.createElement('div');
             buttonSensor.id = 'buttonSensor';
@@ -87,19 +74,7 @@
                 if (backgrounds.title.complete) { 
                     drawScene(); }
             
-            // backgrounds.title.onload = funtion() {
-            //      drawScene();
-            // };
-            // if(backgrounds.title.complete){
-            //     drawScene();
-            // }
-    
 
-            // const canvas = document.getElementById('gameCanvas');
-            // const ctx = canvas.getContext('2d');
-            // let gameState = 'title';
-    
-            // Function to start the game
             function startGame() {
             
                 currentScene = "bedroom";
@@ -113,72 +88,17 @@
             }
     
             // Event listener for button sensor
-            buttonSensor.addEventListener('click', startGame);
-    
-            // Function to update the game
-            // function update() {
-            //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-            //     // Game logic or drawing goes here
-            //     if (gameState === 'playing') {
-            //         // Implement game updates
-            //     }
-    
-            //     requestAnimationFrame(update);
-            // }
-    
-            // Event listener for canvas clicks
-            // canvas.addEventListener('click', function(event) {
-            //     if (gameState === 'playing') {
-            //         const rect = canvas.getBoundingClientRect();
-            //         const mouseX = event.clientX - rect.left;
-            //         const mouseY = event.clientY - rect.top;
-            //         // Handle interactions during the gameplay
-            //     }
-            // });
+            buttonSensor.addEventListener('click', (e) => {
+                //fake click event pointing to center of the button
+                const canvasRect = canvas.getBoundingClientRect();
+                const fakeEvent = {
+                    clientX: canvasRect.left + 400,
+                    clientY: canvasRect.top + 300
+                };
+                buttonContainer.style.display = 'none'; //hides button when playing
 
-
-
-            // import React, { useState } from 'react';
-            // import './styles.css'; // Make sure to import your CSS file properly
-
-            // const AnimatedDoor = () => {
-            //     const [isOpen, setIsOpen] = useState(false);
-
-            //     const toggleDoor = () => {
-            //         setIsOpen(!isOpen);
-            //     };
-
-            //     return (
-            //         <div className="scene" id="scene">
-            //             <img 
-            //                 id="door" 
-            //                 src={isOpen ? "assets/backgrounds/door_frames/door_frame_open.png" : "assets/backgrounds/door_frames/door_frame_1.png"} 
-            //                 alt="door animation" 
-            //             />
-            //             <button id="interactButton" onClick={toggleDoor}>
-            //                 {isOpen ? "Close Door" : "Open Door"}
-            //             </button>
-            //         </div>
-            //     );
-            // };
-            // /* styles.css */
-            //     scene {
-            //         position: relative;
-            //         width: 200px; /* Full width of button */
-            //         height: 300px; /* Full height of door */
-            //     }
-
-            //     door {
-            //         width: 100%;  /* Adjust based on your door image size */
-            //         height: auto;  /* Maintain aspect ratio */
-            //     }
-
-            //     button {
-            //         margin-top: 20px;
-            //     }
-
-
-            // export default AnimatedDoor;
+                handleClick(fakeEvent);
+            });
 
         </script>
     
