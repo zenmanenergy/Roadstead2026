@@ -50,8 +50,8 @@ let currentBackgroundImage = null;
 let keys = {};
 
 //animation constants
-const frameWidth = 192;  //width of one frame in sprite sheet
-const frameHeight = 192; //height of one frame
+const frameWidth = 96;  //width of one frame in sprite sheet
+const frameHeight = 96; //height of one frame
 const framePerAnimation = 4; //number of frames in each direction 
 
 //animation counters 
@@ -116,14 +116,14 @@ function handleClick(event) {
             // Use startPoint if available
             if (sceneData[currentScene] && sceneData[currentScene].startPoint) {
                 console.log('StartPoint found:', sceneData[currentScene].startPoint);
-                absX = sceneData[currentScene].startPoint[0] - 96;
+                absX = sceneData[currentScene].startPoint[0] - 48;
                 absY = sceneData[currentScene].startPoint[1] - 96;
                 absDirection = "down";
                 console.log(`✓ Set position to startPoint: absX=${absX}, absY=${absY}`);
                 console.log(`Raw startPoint: [${sceneData[currentScene].startPoint[0]}, ${sceneData[currentScene].startPoint[1]}]`);
             } else {
                 console.log('⚠️ No startPoint found!');
-                absX = canvas.width / 2 - 96;
+                absX = canvas.width / 2 - 48;
                 absY = canvas.height / 2 - 96;
                 absDirection = "down";
                 console.log(`✗ Using default center position: absX=${absX}, absY=${absY}`);
@@ -334,6 +334,9 @@ function update() {
         updateLogged = true;
     }
 
+    // Check for door collisions
+    checkDoorCollision();
+
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -356,18 +359,75 @@ function drawAbsNormal() {
     // For now, draw a simple placeholder circle at the player position
     ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
     ctx.beginPath();
-    ctx.arc(absX + 96, absY + 96, 50, 0, Math.PI * 2);
+    ctx.arc(absX + 48, absY + 48, 30, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw direction indicator
     ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
     ctx.font = "12px Arial";
-    ctx.fillText(absDirection, absX + 96, absY + 110);
+    ctx.fillText(absDirection, absX + 48, absY + 110);
     
     // Draw position text on screen
     ctx.fillStyle = "rgba(255, 255, 255, 1)";
     ctx.font = "bold 16px Arial";
     ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
     ctx.fillText(`Raw StartPoint: (${Math.round(sceneData[currentScene]?.startPoint[0] || 0)}, ${Math.round(sceneData[currentScene]?.startPoint[1] || 0)})`, 10, 50);
+}
+
+function checkDoorCollision() {
+    // Check if player center is inside any door polygon
+    if (!sceneData[currentScene] || !sceneData[currentScene].doors) {
+        return; // No door data for this scene
+    }
+    
+    // Player bottom center position
+    const playerCenterX = absX + 48;
+    const playerCenterY = absY + 96;
+    
+    for (let i = 0; i < sceneData[currentScene].doors.length; i++) {
+        const door = sceneData[currentScene].doors[i];
+        
+        // Check if player center is in this door polygon
+        if (isPointInPolygon([playerCenterX, playerCenterY], door.points)) {
+            // Check if this door has a destination
+            if (door.destination) {
+                console.log(`🚪 Door collision detected! Moving to scene: ${door.destination}`);
+                changeScene(door.destination);
+                return;
+            }
+        }
+    }
+}
+
+function changeScene(sceneName) {
+    // Check if the scene data exists
+    if (!sceneData[sceneName]) {
+        console.warn(`⚠️ Scene data not found for: ${sceneName}`);
+        return;
+    }
+    
+    console.log(`📍 Changing scene from ${currentScene} to ${sceneName}`);
+    
+    currentScene = sceneName;
+    
+    // Set player position to the new scene's start point
+    if (sceneData[currentScene].startPoint) {
+        absX = sceneData[currentScene].startPoint[0] - 48;
+        absY = sceneData[currentScene].startPoint[1] - 96;
+        console.log(`✓ Set position to startPoint: absX=${absX}, absY=${absY}`);
+    } else {
+        absX = canvas.width / 2 - 48;
+        absY = canvas.height / 2 - 96;
+        console.log(`⚠️ No startPoint found, using center position`);
+    }
+    
+    // Load the new background image
+    currentBackgroundImage = new Image();
+    currentBackgroundImage.src = sceneData[currentScene].image;
+    console.log(`Loading background image: ${currentBackgroundImage.src}`);
+    
+    currentBackgroundImage.onerror = () => {
+        console.error(`Failed to load background: ${currentBackgroundImage.src}`);
+    };
 }
 

@@ -2,7 +2,7 @@
 let sceneData = {};
 
 async function loadSceneData() {
-	const scenes = ['bedroom'];
+	const scenes = ['bedroom', 'room_lab', 'room_city', 'room_office', 'room_pharmacy', 'CITY-absnormal'];
 	
 	for (const scene of scenes) {
 		try {
