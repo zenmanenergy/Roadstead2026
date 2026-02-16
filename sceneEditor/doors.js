@@ -47,3 +47,14 @@ function populateDoorsPanel() {
         doorsContainer.style.display = 'none';
     }
 }
+
+function clearDoors() {
+    doors = [];
+}
+
+function getDoorsForOutput() {
+    return doors.map(door => ({
+        points: door.points.map(p => Array.isArray(p) ? [p[0], p[1]] : [p.x, p.y]),
+        nextScene: door.nextScene
+    }));
+}
