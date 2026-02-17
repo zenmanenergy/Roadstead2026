@@ -48,9 +48,65 @@
                     <select id="doorNextScene">
                         <option value="">-- Select Scene --</option>
                         <option value="bedroom">Bedroom</option>
+                        <option value="city">City</option>
                         <option value="doctor">Doctor</option>
                         <option value="pharmacy">Pharmacy</option>
                         <option value="lab">Lab</option>
                     </select>
                 </div>
                 <button onclick="finishPolygon()"class="btn-primary">Finish Door</button>
+                <button onclick="undoLastPoint()" class="btn-secondary">Undo Point</button>
+
+                <div id="doorsListContainer" style="margin-top: 16px; display: none;">
+                    <h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Existing Doors:</h4>
+                    <div id="doorList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px;background:"
+                </div>
+            </div>
+
+            <div class="tab-panel" id="tab-npc">
+                <h3>NPCs</h3>
+                <p class="hint">Add NPC info then click canvas to place.</p>
+                <div class="form-group">
+                    <label>NPC Name:</label>
+                    <input type="text" id="npcName" placeholder="e.g., Doctor, Guard...">
+                </div>
+                <div class="form-group">
+                    <label>NPC Type:</label>
+                    <select id="npcType">
+                        <option value="">-- Select Type--</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="guard">Guard</option>
+                        <option value="npc">Generic NPC</option>
+                    </select>
+                </div>
+                <button onclick="addNPC()" class="btn-primary">Add NPC</button>
+
+                <div id="npcListContainer" style="margin-top: 16px; display: none;">
+                    <h4 style="margin: 0 0 8px 0; color: color: #cccccc; font-size: 13px;">Existing NPCs:</h4>
+                    <div id="npcsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background:"
+                </div>
+            </div>
+
+         <div class="tab-panel" id="tab-start">
+                <h3>Start Point</h3>
+                <p class="hint" >Click on canvas to set player starting position.</p>
+                <button onclick="clearStartPoint()" class="btn-secondary">Clear Start Point</button>
+            </div>
+
+            <div class="tab-panel" id="tab-images">
+                <h3>Background Images</h3>
+                <p class="hint">Select a background image to load on canvas.</p>
+                <div class="form-group">
+                    <label>Available Images:</label>
+                    <select id="backgroundImageSelect" onchange="changeBackgroundImage(this.value)">
+                        <option value="">-- Select Image --</option>
+                    </select>
+                </div>
+            </div>
+        <!--JSON Output-->
+        <div class="json-output">
+            <h3>JSON Output</h3>
+            <textarea id="output" readonly placeholder="JSON will appear here..."></textarea>
+        </div>
+    </div>
+</div>
