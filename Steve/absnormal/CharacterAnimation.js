@@ -74,7 +74,7 @@ function drawScene() {
 }
 
 function drawPlayer(){
-	const img=
+	const img={
 		frame === 1
 		? absImages[absDirection][0]
 		:absImages[absDirection][1];

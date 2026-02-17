@@ -1,21 +1,27 @@
 // startPoint = null;
-        startpoint = { x, y };
- 
-function clearstartpoint(){
-    startpoint = null;
-    updateoutput();
-    redraw();
+
+ let startPoint = null;
+
+function placeStartPoint(x, y) {
+	startPoint = { x, y };
+	updateOutput();
+	redraw();
+}
+function clearStartPoint(){
+	startpoint = null;
+	updateoutput();
+	redraw();
 }
 
-function populatestartpointpanel() {
-    // Start point is shown on the canvas, no list needed
-    // This function is called for consistency with other modules
+function populateStartPointPanel() {
+	// Start point is shown on the canvas, no list needed
+	// This function is called for consistency with other modules
 }
 
-function clearstartpoint() {
-    startpoint = null;
+function clearStartPoints() {
+	startpoint = null;
 }
 
-function getstartpointforoutput() {
-    return startpoint ? [startpoint.x, startpoint.y] : null; 
+function getStartPointForOutput() {
+	return startpoint ? [startpoint.x, startpoint.y] : null; 
 }

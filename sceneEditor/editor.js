@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sceneSelect = document.getElementById('sceneSelect');
     scenes.forEach(scene => {
         const option = document.createElement('option');
-        option.value - scene;
-        option.textContent - scene.charAt(0).toUpperCase() + scene.slice(1);
+        option.value = scene;
+        option.textContent = scene.charAt(0).toUpperCase() + scene.slice(1);
         sceneSelect.appendChild(option);
     });
     initializeImageSelect();
@@ -213,20 +213,20 @@ function loadScene(sceneName) {
             }
             return response.json();
         })
-        .then(data => {LoadSceneData(sceneName, data);
+        .then(data => {loadSceneData(sceneName, data);
         })
-        .catch(error => {
-            if (!error.message.includes('File not found')) {
-                alert('Error loading scene: ' + error.message);
-            }
-        });
+//        .catch(error => {
+//            if (!error.message.includes('File not found')) {
+//                alert('Error loading scene: ' + error.message);
+//            }
+//        });
 }
 
 function initializeEmptyScene(sceneName) {
     clearWalkableAreas();
     clearDoors();
     clearStartPoints();
-    clearBackgroundIMage();
+    clearBackgroundImage();
     points = [];
 
     document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
@@ -245,7 +245,7 @@ function loadSceneData(sceneName, data) {
     clearDoors();
     clearNPCs();
     clearStartPoints();
-    clearBackgroundIMage();
+    clearBackgroundImage();
 
     if (data.walkableAreas && Array.isArray(data.walkableAreas)) {
         data.walkableAreas.forEach(area => {
@@ -274,15 +274,16 @@ function loadSceneData(sceneName, data) {
     }
 
     if (data.startPoint) {
-        if (Array.isArray(data.startPoint)) {
-            startPoint = { x: data.starPoint[0], y: data.startPoint [1] };
-        } else {
-            startPoint = data.starPoint;
+            if (Array.isArray(data.startPoint)) {
+                startPoint = { x: data.startPoint[0], y: data.startPoint[1] };
+            } else {
+                startPoint = data.startPoint;
+            }
+            console.log('Loaded start point:', startPoint);
         }
-    }
 
     if (data.image) { 
-        const imageName = data.image.s;lit('/').pop();
+        const imageName = data.image.split('/').pop();
         currentImagePath = imageName;
 
         constImageSelect = document.getElementById('backgroundImageSelect');

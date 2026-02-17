@@ -7,7 +7,7 @@ function placeStartPoint(x, y) {
 	updateOutput();
 	redraw();
 }
-
+	
 function clearStartPoint() {
 	startPoint = null;
 	updateOutput();
