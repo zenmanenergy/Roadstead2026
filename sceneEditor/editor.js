@@ -78,7 +78,7 @@ function handleCanvasMouseMove(e) {
     }
 }
 
-function clearPolygons() {
+function finishPolygon() {
     let success = false;
     if(currentMode === 'walkable') {
         success = finishWalkablePolygoin(points);
@@ -147,9 +147,9 @@ function redraw() {
         points.forEach((point) => {
             ctx.fillStyle = '# 0099ff';
             ctx.beginPath();
-            ctx.arc(point.x, point.y 5, 0, Math.PI * 2);
+            ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
             ctx.fill();
-        })
+        });
     }
 }
 
@@ -204,16 +204,14 @@ function loadScene(sceneName) {
         clearPolygons();
         return;
     }
-
     const sceneFile = `../absnormal/data/${sceneName}.json`;
-
     fetch(sceneFile)
-        .then(respongse => {
-            if (!Response.ok) {
+        .then(response => {
+            if (!response.ok) {
                 inializeEmptyScene(sceneName);
                 return Promise.reject(new Error('File not found - using empty scene'));
             }
-            return Response.json();
+            return response.json();
         })
         .then(data => {LoadSceneData(sceneName, data);
         })
@@ -224,128 +222,100 @@ function loadScene(sceneName) {
         });
 }
 
+function initializeEmptyScene(sceneName) {
+    clearWalkableAreas();
+    clearDoors();
+    clearStartPoints();
+    clearBackgroundIMage();
+    points = [];
 
-let image = null;
-let walkablePolygons = [];
-let doorPolygons = [];
-let startPoint = null;
-let currentPolygon = [];
-let currentType = 'walkable';
+    document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
+    document.getElementById('npcNAme').value = '';
+    document.getElementById('npcType').value = "";
+    document.getElementById('doorNextScene').value = '';
 
-const backgrounds = [
-    'background_start.png',
-    'CITY-absnormal.png',
-    'room_bedroom.png',
-    'room_city.png',
-    'room_lab.png',
-    'room_office.png',
-    'room_pharmacy.png',
-    'start_button.png',
-    'title_screen.png'
-];
+    updateOutput();
+    populateFormFields();
+    redraw();
+    
+}
 
+function loadSceneData(sceneName, data) {
+    clearWalkableAreas();
+    clearDoors();
+    clearNPCs();
+    clearStartPoints();
+    clearBackgroundIMage();
 
-
-const select = document.getElementById('imageSelect');
-backgrounds.forEach(bg => {
-    const option = document.createElement('option');
-    option.value = bg;
-    option.textContent = bg;
-    select.appendChild(option);
-});
-
-document.querySelectorAll('input[name="polygonType"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        finishPolygon();
-        currentType = e.target.value;
-        draw();
-        generateJSON();
-    });
-});
-
-select.addEventListener('change', (e) => {
-    if (e.target.value) {
-        clearPolygons();
-        const filename = e.target.value.replace('.png', '.json');
-        document.getElementById('filename').getContent = 'absnormal/data/' + filename;
-        image = new Image();
-        image.src = '../absnormal/assets/backgrounds/' + e.target.value;
-        image.onload = draw;
+    if (data.walkableAreas && Array.isArray(data.walkableAreas)) {
+        data.walkableAreas.forEach(area => {
+            const points = area.points || area;
+            walkableAreas.push(points);
+        });
     }
-});
+    if (data.doors && Array.isArray(data.doors)) {
+        data.doors.forEach(door => {
+            const doorPoints = door.points || door;
+            doors.push({
+                points: doorPoints,
+                nextScene: door.nextScene ||''
+            });
+        });
+    }
+    if (data.npcs && Array.isArray(data.npcs)) {
+        data.npcs.forEach(npc => {
+            npcs.push({
+            x: npc.x,
+            y: npc.y,
+            name: npc.name || 'NPC',
+            type: npc.type || 'npc'
+            });
+        });
+    }
 
-canvas.addEventListener('click', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    if (currentType === 'start') {
-        startPoint = [x, y];
-        draw();
-        generateJSON();
-    } else {
-    currentPolygon.push([x, y]);
-    draw();
-    generateJSON();   
-    } 
-});
-
-function finishPolygon() {
-    if (currentPolygon.length > 2) {
-        if (currentType === 'walkable') {
-            walkablePolygons.push(currentPolygon);
+    if (data.startPoint) {
+        if (Array.isArray(data.startPoint)) {
+            startPoint = { x: data.starPoint[0], y: data.startPoint [1] };
         } else {
-            doorPolygons.push(currentPolygon);
+            startPoint = data.starPoint;
         }
-        currentPolygon = [];
-        draw();
-        generateJSON();
     }
-}
 
+    if (data.image) { 
+        const imageName = data.image.s;lit('/').pop();
+        currentImagePath = imageName;
 
+        constImageSelect = document.getElementById('backgroundImageSelect');
+        imageSelect.value = imageName;
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(image) ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    walkablePolygons.forEach(poly => drawPolygon(poly, '#00ff00'));
-    doorPolygons.forEach(poly => drawPolygon(poly, '#ff0000'));
-    drawPolygon(currentPolygon, currentType === 'walkable' ? '#ffff00' : '#ff6600');
-    if (startPoint) {
-        ctx.fillStyle = '#00ccff';
-        ctx.beginPath ();
-        ctx.arc(startPoint [0], startPoint[1], 8, 0, Math.PI*2);
-        ctx.fill();
+        const img = new Image();
+        img.src = `../absnormal/assets/backgrounds/${imageName}`;
+        img.onload = () => {
+            redraw();
+        };
+    } 
+    else {
+        document.getElementById('backgroundImageSelect').value = '';
+        redraw();
     }
+    document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
+    document.getElementById('npcName').value = '';
+    document.getElementById('npcType').value = '';
+    document.getElementById('doorNextScene').value = '';
+
+    updateOutput();
+    populateFormFields();
+    redraw();
 }
 
-function drawPolygon(points, color) {
-    if (points.length === 0) return;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(points[0][0], points[0][1]);
-    points.forEach(p => ctx.lineTo(p[0], p[1]));
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fillStyle = color + 33;
-    ctx.fill();
-    points.forEach(p => {
-        ctx.fillStyle = color;
-        ctx.fillRect(p[0] - 3, p[1] - 3, 6, 6);
-    });
-}
-
-function generateJSON() {
-    const allWalkable = [...walkablePolygons,...(currentType === 'walkable' ? [currentPolygon] : [])].filter(p => p.length > 0);
-    const allDoors = [...doorPolygons,...(currentType === 'door' ? [currentPolygon] : [])].filter(p => p.length >0);
-    const data = {
-        image: 'assets/backgrounds/' + document.getElementById('imageSelect').value,
-        walkableAreas : allWalkable.map(poly => ({ points: poly })),
-        doors: allDoors.map(poly => ({ points: poly })),
-        startPoint : startPoint
-    };
-    const json = JSON.stringify(data, null, 2);
-    document.getElementById('output').value = json;
+function clearPolygons() { 
+    clearWalkableAreas();
+    clearDoors();
+    clearNpcs();
+    clearStartPoints();
+    clearBackgroundImage();
+    points = [];
+    document.getElementById('sceneSelect').value = '';
+    updateOutput();
+    redraw();
 }
