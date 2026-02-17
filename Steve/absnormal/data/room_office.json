@@ -1,0 +1,26 @@
+{
+  "image": "assets/backgrounds/room_office.png",
+  "walkableAreas": [
+    {
+      "points": [
+        [60, 420],
+        [380, 360],
+        [780, 400],
+        [480, 560]
+      ]
+    }
+  ],
+  "doors": [
+    {
+      "points": [
+        [600, 330],
+        [560, 370],
+        [660, 390],
+        [700, 350]
+      ],
+      "nextScene": "bedroom"
+    }
+  ],
+  "npcs": [],
+  "startPoint": [320, 480]
+}

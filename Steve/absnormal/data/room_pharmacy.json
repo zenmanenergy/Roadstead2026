@@ -1,0 +1,26 @@
+{
+  "image": "assets/backgrounds/room_pharmacy.png",
+  "walkableAreas": [
+    {
+      "points": [
+        [70, 410],
+        [420, 340],
+        [820, 390],
+        [520, 580]
+      ]
+    }
+  ],
+  "doors": [
+    {
+      "points": [
+        [620, 310],
+        [580, 350],
+        [680, 370],
+        [720, 330]
+      ],
+      "nextScene": "bedroom"
+    }
+  ],
+  "npcs": [],
+  "startPoint": [330, 490]
+}

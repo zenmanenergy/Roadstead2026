@@ -1,0 +1,26 @@
+{
+  "image": "assets/backgrounds/room_lab.png",
+  "walkableAreas": [
+    {
+      "points": [
+        [50, 400],
+        [400, 350],
+        [800, 400],
+        [500, 550]
+      ]
+    }
+  ],
+  "doors": [
+    {
+      "points": [
+        [650, 320],
+        [600, 360],
+        [700, 380],
+        [750, 340]
+      ],
+      "nextScene": "bedroom"
+    }
+  ],
+  "npcs": [],
+  "startPoint": [300, 450]
+}

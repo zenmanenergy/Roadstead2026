@@ -1,0 +1,26 @@
+{
+  "image": "assets/backgrounds/CITY-absnormal.png",
+  "walkableAreas": [
+    {
+      "points": [
+        [40, 430],
+        [350, 370],
+        [800, 410],
+        [450, 590]
+      ]
+    }
+  ],
+  "doors": [
+    {
+      "points": [
+        [680, 340],
+        [640, 380],
+        [740, 400],
+        [780, 360]
+      ],
+      "nextScene": "bedroom"
+    }
+  ],
+  "npcs": [],
+  "startPoint": [300, 510]
+}

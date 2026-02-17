@@ -13,8 +13,6 @@ const absImages = {
 	right: [new Image(), new Image()],
 };
 
-//character image setup
-
 absImages.down[0].src =
 "assets/characters/abs_normal/absnormal_down_walk_1.png";
 absImages.down[1].src =
@@ -32,7 +30,6 @@ absImages.right[0].src =
 absImages.right[1].src =
 "assets/characters/abs_normal/absnormal_right_walk_2.png";
 
-//drawing functions
 function movePlayer() {
 	lastX = absX;
 	lastY = absY;
@@ -45,7 +42,6 @@ function movePlayer() {
     if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
     if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
     
-    // Check if new position is walkable
     if (canMoveTo(newX, newY, 192, 192)) {
         absX = newX;
         absY = newY;
@@ -63,37 +59,29 @@ function movePlayer() {
 
 function drawScene() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(backgrounds[currentScene], 0, 0, canvas.width, canvas.height);
+	if (currentBackgroundImage) {
+		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+	}
 
 	//Title screen start box
 	if(currentScene === "title"){
-		// ctx.strokeStyle = "red";
-		// ctx.lineWidth = 4;
-		// ctx.strokeRect(startBox.x, startBox.y, startBox.width, startBox.height);
 		ctx.font = "30px Arial";
 		ctx.fillStyle = "white";
 		ctx.fillText("START", startBox.x + 80, startBox.y + 65);
 		return;
 	}
-	if (currentScene === "bedroom") {
-        ctx.drawImage(doorFrames[door.currentFrame], door.x, door.y, door.width, door.height);
-    }
 	drawPlayer();
 }
 
-//draw player according to direction and frame
 function drawPlayer(){
 	const img=
 		frame === 1
 		? absImages[absDirection][0]
 		:absImages[absDirection][1];
 		ctx.drawImage(img, absX, absY, 192, 192);
-		if (absX!=lastX || absY!=lastY){
-			console.log ("x",absX, "y",absY);
-		}
+	}
 }
 
-//game loop
 function update(){
 	if (currentScene !== "title"){
 		movePlayer();
@@ -103,7 +91,4 @@ function update(){
 	drawScene();
 	requestAnimationFrame(update);
 }
-
-//start animation loop
-// update();
 

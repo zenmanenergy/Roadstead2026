@@ -1,24 +1,50 @@
-// Load all scene data from /absnormal/data/*.json
+const scenes = [
+	'bedroom',
+	'room_lab',
+	'room_city',
+	'room_office',
+	'room_pharmacy',
+	'CITY-absnormal'
+];
+
 let sceneData = {};
+let currentScene = "title";
+
 
 async function loadSceneData() {
-	for (const scene of scenes) {
+	
+	for (const sceneName of scenes) {
 		try {
-			const response = await fetch(`data/${scene}.json`);
+			const response = await fetch(`data/${sceneName}.json`);
 			if (response.ok) {
-				sceneData[scene] = await response.json();
-				console.log(`✓ Loaded ${scene}:`, sceneData[scene]);
+				sceneData[sceneName] = await response.json();
+				console.log(`✓ Loaded scene: ${sceneName}`);
 			} else {
-				console.warn(`✗ Failed to load ${scene}: ${response.status}`);
+				console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
 			}
-		} catch (e) {
-			console.warn(`✗ No data file for ${scene}:`, e.message);
+		} catch (error) {
+			console.warn(`✗ Error loading ${sceneName}: ${error.message}`);
 		}
 	}
-	console.log('All scene data loaded:', sceneData);
 }
 
-// Point-in-polygon using ray casting algorithm
+function isSceneValid(sceneName) {
+	return sceneData[sceneName] !== undefined;
+}
+
+function getScene(sceneName) {
+	return sceneData[sceneName] || null;
+}
+
+function getSceneStartPoint(sceneName) {
+	const scene = sceneData[sceneName];
+	if (scene && scene.startPoint) {
+		return scene.startPoint;
+	}
+	return null;
+}
+
+
 function isPointInPolygon(point, polygon) {
 	let inside = false;
 	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -32,13 +58,11 @@ function isPointInPolygon(point, polygon) {
 	return inside;
 }
 
-// Check if player bounding box can move to new position
 function canMoveTo(newX, newY, width, height) {
 	if (!sceneData[currentScene] || !sceneData[currentScene].walkableAreas) {
-		return true; // No data, allow movement
+		return true;
 	}
 	
-	// Check if center of player is in a walkable area
 	const centerX = newX + width / 2;
 	const centerY = newY + height / 2;
 	
@@ -50,5 +74,4 @@ function canMoveTo(newX, newY, width, height) {
 	return false;
 }
 
-// Load scene data on startup
-loadSceneData();
+
