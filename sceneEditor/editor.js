@@ -206,6 +206,8 @@ function loadScene(sceneName) {
         return;
     }
     const sceneFile = `../absnormal/data/${sceneName}.json`;
+    console.log('Loading scene from:', sceneFile);
+
     fetch(sceneFile)
         .then(response => {
             if (!response.ok) {
@@ -216,11 +218,11 @@ function loadScene(sceneName) {
         })
         .then(data => {loadSceneData(sceneName, data);
         })
-//        .catch(error => {
-//            if (!error.message.includes('File not found')) {
-//                alert('Error loading scene: ' + error.message);
-//            }
-//        });
+    //    .catch(error => {
+    //        if (!error.message.includes('File not found')) {
+    //            alert('Error loading scene: ' + error.message);
+    //        }
+    //    });
 }
 
 function initializeEmptyScene(sceneName) {
