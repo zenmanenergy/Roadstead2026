@@ -17,6 +17,7 @@ const backgroundImages = [
 
 function initializeImageSelect() {
 	const imageSelect = document.getElementById('backgroundImageSelect');
+	
 	backgroundImages.forEach(img => {
 		const option = document.createElement('option');
 		option.value = img;
@@ -26,7 +27,9 @@ function initializeImageSelect() {
 }
 
 function changeBackgroundImage(imagePath) {
-	if (imagePath) {
+	console.log (imagePath)
+	if (imagePath) { 
+		
 		const img = new Image();
 		img.src = `../absnormal/assets/backgrounds/${imagePath}`;
 		img.onload = () => {

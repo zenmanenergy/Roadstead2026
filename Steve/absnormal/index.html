@@ -1,77 +1,94 @@
+<!--created by cyprus-->
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>The Adventures of Abs Normal</title>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		<h1>The Adventures of Abs Normal</h1>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Adventures of Abs Normal</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>The Adventures of Abs Normal</h1>
 
-		<canvas id="gameCanvas" width="800" height="600"></canvas>
+        <!--drawing area-->
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-	   <style>#buttonContainer {
-		position: absolute;
-		bottom: 140px;;
-		width: 200px;
-		height: 175px;
+       <style>#buttonContainer {
+        position: absolute; /* Enable positioning for child elements */
+        bottom: 140px;;
+        width: 200px; /* Set width of button */
+        height: 175px; /* Set height of button */
   
-		background-image: url(assets/backgrounds/start_button.png);
-		background-repeat: no repeat;
-		background-position: center;
-		background-size:144%;
-	   }
+        background-image: url(assets/backgrounds/start_button.png);
+        background-repeat: no repeat;
+        background-position: center;
+        background-size:144%;
+       }
 
-		#startButton {
-		position: absolute;
-		bottom:140px;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		cursor: pointer;
-		opacity: 1;
-		}
+        #startButton {
+        position: absolute; /* Overlay the image */
+        bottom:140px;
+        left: 0;
+        width: 100%; /* Make image fit the container */
+        height: 100%; /* Make image fit the container */
+        cursor: pointer; /* Change cursor to pointer */
+        opacity: 1; /* Optional: make the image translucent */
+        }
 
-		#buttonSensor {
-		position: absolute;
-		bottom:140;
-		left: 0;
-		width: 200px;
-		height: 175px;
-		cursor: pointer;
-	}
+        #buttonSensor {
+        position: absolute; /* Overlap sensor on top of the image */
+        bottom:140;
+        left: 0;
+        width: 200px; /* Match size of image */
+        height: 175px; /* Match size of image */
+        cursor: pointer; /* Change cursor to pointer */
+    }
 
-	
-	</style>
+    
+    </style>
 
-	<p id="status"></p>
+    <p id="status"></p>
 
+    <!-- <script>
+        // Function to execute when the PNG button is clicked
+        function startFunction() {
+            document.getElementById('status')
+            // Additional logic can be added here
+        }
 
-		<div id="buttonContainer"></div>
-		<script src="scenes.js"></script>
-		<script src="startPoint.js"></script>
-		<script src="title.js"></script>
-		<script src="game.js"></script>
-		<script src="navigation.js"></script>
-		<script src="CharacterAnimation.js"></script>
-		<script>
-			const buttonContainer = document.getElementById('buttonContainer');
-			const buttonSensor = document.createElement('div');
-			buttonSensor.id = 'buttonSensor';
-			buttonContainer.appendChild(buttonSensor);
-			
-			buttonSensor.addEventListener('click', (e) => {
-				const canvasRect = canvas.getBoundingClientRect();
-				const fakeEvent = {
-					clientX: canvasRect.left + 400,
-					clientY: canvasRect.top + 300
-				};
-				handleClick(fakeEvent);
-			});
-		</script>
-	   
-	</body>
-	
+        // Attaching the startFunction to the image's click event
+        document.getElementById('startButton').addEventListener('click', startFunction);
+    </script> -->
+
+        <!--game logic-->
+
+        <div id="buttonContainer"></div> <!-- Button container placeholder -->
+        <script src="scenes.js"></script>
+        <script src="startPoint.js"></script>
+        <script src="title.js"></script>
+        <script src="game.js"></script>
+        <script src="navigation.js"></script>
+        <script src="CharacterAnimation.js"></script>
+        <script>
+            // Create button sensor for title screen
+            const buttonContainer = document.getElementById('buttonContainer');
+            const buttonSensor = document.createElement('div');
+            buttonSensor.id = 'buttonSensor';
+            buttonContainer.appendChild(buttonSensor);
+            
+            // Event listener for button sensor - delegates to handleClick
+            buttonSensor.addEventListener('click', (e) => {
+                // Create a click event pointing to center of start button area
+                const canvasRect = canvas.getBoundingClientRect();
+                const fakeEvent = {
+                    clientX: canvasRect.left + 400,
+                    clientY: canvasRect.top + 300
+                };
+                handleClick(fakeEvent);
+            });
+        </script>
+       
+    </body>
+    
 </html>
-		
+        

@@ -14,7 +14,7 @@ const scenes = [
 document.addEventListener('DOMContentLoaded', () => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
-    canvas.addEventListener('clikc', handleCanvasClick);
+    canvas.addEventListener('click', handleCanvasClick);
     canvas.addEventListener('mousemove', handleCanvasMouseMove);
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
@@ -113,10 +113,10 @@ function redraw() {
     }
     walkableAreas.forEach((area, index) => {
         drawPolygon(area, '#00ff00', 0.3);
-        const bounds = getBounds(doorPolygons.points);
+        const bounds = getBounds(area);
         ctx.fillSyle - '#00ff00';
         ctx.font - '12px Arial';
-        ctx.filllText(`WA${index}`, bounds.minX + 5, bounds.minY + 15, bounds.minY +15);
+        ctx.fillText(`WA${index}`, bounds.minX + 5, bounds.minY + 15, bounds.minY +15);
     });
 
     doors.forEach((door, index) => {
@@ -139,7 +139,7 @@ function redraw() {
         ctx.fillStyle - '#00ffff';
         ctx.fillRect(startPoint.x - 8, startPoint.y -8, 16, 16);
         ctx.font = 'bold 10px Arial';
-        ctx.fillText('START', npc.x + 10, npc.y);
+        ctx.fillText('START', startPoint.x + 10, startPoint.y);
     }
 
     if (points.length > 0) {
@@ -157,15 +157,16 @@ function drawPolygon(points, color, alpha) {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
     ctx.globalAlpha = alpha;
-    CDATASectionx.lineWidth = 2;
+    ctx.lineWidth = 2;
 
     ctx.beginPath();
     const firstPoint = points[0];
     const x0 = Array.isArray(firstPoint) ? firstPoint [0] : firstPoint.x;
     const y0 = Array.isArray(firstPoint) ? firstPoint [1] : firstPoint.y;
     ctx.moveTo(x0, y0);
-    for (let i = 1; 1 < points.length; i++) {
+    for (let i = 1; i  < points.length; i++) {
         const p = points [i];
+        
         const x = Array.isArray(p) ? p[0] : p.x;
         const y =Array.isArray(p) ? p [1]: p.y;
         ctx.lineTo(x, y);
@@ -182,7 +183,7 @@ function getBounds(points) {
     return {
         minX: Math.min(...xs),
         minY : Math.min(...ys),
-        MaxX: Math.max(...x),
+        maxX: Math.max(...xs),
         maxY: Math.max(...ys)
     };
 }
@@ -191,7 +192,7 @@ function updateOutput() {
     const output = {
         image: getImageForOutput(),
         walkableAreas: getWalkableAreasForOutput(),
-        doors: getDoorsForOUtput(),
+        doors: getDoorsForOutput(),
         npcs: getNPCsForOutput(),
         startPoint: getStartPointForOutput()
     };
@@ -286,7 +287,7 @@ function loadSceneData(sceneName, data) {
         const imageName = data.image.split('/').pop();
         currentImagePath = imageName;
 
-        constImageSelect = document.getElementById('backgroundImageSelect');
+        const imageSelect = document.getElementById('backgroundImageSelect');
         imageSelect.value = imageName;
 
         const img = new Image();
