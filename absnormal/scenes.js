@@ -69,3 +69,28 @@ function canMoveTo(newX, newY, width, height) {
     }
     return false;
 }
+
+function setPlayerStartPoint(sceneName) {
+
+    if (!sceneData[sceneName]) {
+        const rawStartPoint = sceneData[sceneName].startPoint;
+
+        absX = rawStartPoint[0] - 48;
+        absY = rawStartPoint [1] - 96;
+        absDirection = "down";
+
+        return true;
+    } else {
+        absX = CanvasCaptureMediaStreamTrack.width / 2 - 48;
+        absY = CanvasCaptureMediaStreamTrack.height / 2 - 96;
+        absDirection = "down";
+        return false;
+    }
+}
+
+function getStartPoint(scenName) {
+    if (sceneDayta[sceneName] && sceneData[sceneName].startPoint) {
+        returnsceneData[sceneName].startPoint;
+    }
+    return null;
+}
