@@ -1,6 +1,6 @@
 let canvas;
 let ctx;
-let curentMode = 'walkable';
+let currentMode = 'walkable';
 let points = [];
 
 const scenes = [
@@ -44,14 +44,14 @@ function handleCanvasClick(e) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * xcaleX;
+    const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
     if (currentMode === 'start') {
         placeStartPoint(x,y);
     }
     else if (currentMode === 'npc') {
-        placeNPC(scaleX, y);
+        placeNPC(x, y);
     }
     else {
         points.push({ x, y });
@@ -69,7 +69,7 @@ function handleCanvasMouseMove(e) {
         const y = (e.clientY - rect.top) * scaleY;
 
         ctx.strokeStyle - '#ffff00';
-        ctx.setLineDath([5, 5]);
+        ctx.setLineDash([5, 5]);
         ctx.beginPath();
         ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y);
         ctx.lineTo(x, y);
@@ -81,7 +81,7 @@ function handleCanvasMouseMove(e) {
 function finishPolygon() {
     let success = false;
     if(currentMode === 'walkable') {
-        success = finishWalkablePolygoin(points);
+        success = finishWalkablePolygon(points);
     }
     else if (currentMode === 'door') {
         success = finishDoorPolygon(points);
@@ -108,8 +108,9 @@ function populateFormFields() {
 
 function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log(currentBackgroundImage);
     if (currentBackgroundImage) {
-        ctx.drawImgae(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
     }
     walkableAreas.forEach((area, index) => {
         drawPolygon(area, '#00ff00', 0.3);
@@ -161,12 +162,12 @@ function drawPolygon(points, color, alpha) {
 
     ctx.beginPath();
     const firstPoint = points[0];
+    console.log(points);
     const x0 = Array.isArray(firstPoint) ? firstPoint [0] : firstPoint.x;
     const y0 = Array.isArray(firstPoint) ? firstPoint [1] : firstPoint.y;
     ctx.moveTo(x0, y0);
     for (let i = 1; i  < points.length; i++) {
         const p = points [i];
-        
         const x = Array.isArray(p) ? p[0] : p.x;
         const y =Array.isArray(p) ? p [1]: p.y;
         ctx.lineTo(x, y);
@@ -211,18 +212,20 @@ function loadScene(sceneName) {
     fetch(sceneFile)
         .then(response => {
             if (!response.ok) {
-                inializeEmptyScene(sceneName);
+                initializeEmptyScene(sceneName);
                 return Promise.reject(new Error('File not found - using empty scene'));
             }
+            console.log("Lily is !!okay");
             return response.json();
         })
         .then(data => {loadSceneData(sceneName, data);
+            console.log("Lily is !!!!okay", data);
         })
-    //    .catch(error => {
-    //        if (!error.message.includes('File not found')) {
-    //            alert('Error loading scene: ' + error.message);
-    //        }
-    //    });
+        .catch(error => {
+            if (!error.message.includes('File not found')) {
+                alert('Error loading scene: ' + error.message);
+            }
+        });
 }
 
 function initializeEmptyScene(sceneName) {
@@ -233,7 +236,7 @@ function initializeEmptyScene(sceneName) {
     points = [];
 
     document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
-    document.getElementById('npcNAme').value = '';
+    document.getElementById('npcName').value = '';
     document.getElementById('npcType').value = "";
     document.getElementById('doorNextScene').value = '';
 
@@ -294,7 +297,10 @@ function loadSceneData(sceneName, data) {
 
         const img = new Image();
         img.src = `../absnormal/assets/backgrounds/${imageName}`;
+        console.log(img.src);
         img.onload = () => {
+            console.log("Charly is a fat chud");
+            currentBackgroundImage = img;
             redraw();
         };
     } 
@@ -315,7 +321,7 @@ function loadSceneData(sceneName, data) {
 function clearPolygons() { 
     clearWalkableAreas();
     clearDoors();
-    clearNpcs();
+    clearNPCs();
     clearStartPoints();
     clearBackgroundImage();
     points = [];
