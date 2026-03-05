@@ -1,30 +1,35 @@
 // Walkable areas tab module 
 
-let walkableAreas = [];
+let walkableareas = [];
 
-function finishWalkablePolygon(points) {
+function finishwalkablepolygon(points) {
 	if (points.length < 3) {
 		alert('need at least 3 points for a polygon') ;
 		return false; 
 	}
-	walkableAreas.push([...points]);
+	walkableareas.push([...points]);
 	return true;
 }
 
-function deleteWalkableArea(index) {
-	walkableAreas.splice(index, 1); 
-	updateOutput();
-	populateFormFields();
+function deletewalkablearea(index) {
+	walkableareas.splice(index, 1); 
+	updateoutput();
+	populateformfields();
 	redraw();
 }
 
+function populatewalkableareaspanel() {
+	const walkablecontainer = document.getElementById('walkableareascontainer');
+	const walkablelist = document.getelementbyID('walkablelist');
+}
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
-	const walkableList = document.getelementbyID('walkablelist');
-
-	if (walkableAreas.length > 0) {
+	const walkableList = document.getElementById('walkableList');
+	if (walkableareas.length > 0) { 
+		//const walkablecontainer = document.getElementById('walkableareascontainer');
 		walkableContainer.style.display = 'block';
-		walkableList.innerHTML = walkableAreas.map((area, index) => `
+		const walkablelist = document.getElementById('walkablelist');
+		walkablelist.innerHTML = walkableareas.map((area, index) => `
 		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
 				<div>
 					<div><strong>Walkable Area ${index + 1}</strong></div>
