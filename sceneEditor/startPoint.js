@@ -9,7 +9,7 @@ function placeStartPoint(x, y) {
 }
 function clearStartPoint(){
 	startpoint = null;
-	updateoutput();
+	updateOutput();
 	redraw();
 }
 
@@ -23,5 +23,5 @@ function clearStartPoints() {
 }
 
 function getStartPointForOutput() {
-	return startpoint ? [startpoint.x, startpoint.y] : null; 
+	return startPoint ? [startPoint.x, startPoint.y] : null; 
 }
