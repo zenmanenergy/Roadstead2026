@@ -20,7 +20,7 @@ function deleteWalkableArea(index) {
 
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
-	const walkableList = document.getelementbyID('walkablelist');
+	const walkableList = document.getElementbyId('walkablelist');
 
 	if (walkableAreas.length > 0) {
 		walkableContainer.style.display = 'block';
