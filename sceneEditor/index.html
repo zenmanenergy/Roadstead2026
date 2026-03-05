@@ -27,18 +27,18 @@
 				</div>
 
 			<!-- Tab Content-->
-				<div class="tab-panel-container">
-					<div class="tab-panel active" id="tab-walkable">
-						<h3>Walkable Areas</h3>
-						<p class="hint">Click on canvas to place points. Finish polygon when done.</p>
-						<button onclick="finishPolygon()" class="btn-primary">Finish Polygon</button>
-						<button onclick="undoLastPoint()" class="btn-secondary">Undo Point</button>
-
-						<div id="walkableListContainer" style="margin-top: 16px; display: none;">
-							<h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;" >Existing Walkable Areas:</h4>
-							<div id="walkableList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
-						</div>
-					</div>
+                <div class="tab-panel-container">
+                    <div class="tab-panel active" id="tab-walkable">
+                        <h3>Walkable Areas</h3>
+                        <p class="hint">Click on canvas to place points. Finish polygon when done.</p>
+                        <button onclick="finishPolygon()" class="btn-primary">Finish Polygon</button>
+                        <button onclick="undoLastPoint()" class="btn-secondary">Undo Point</button>
+                        
+                        <div id="walkableListContainer" style="margin-top: 16px; display: none;">
+                            <h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Existing Walkable Areas:</h4>
+                            <div id="walkableList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+                        </div>
+                    </div>
 
 					<div class="tab-panel" id="tab-door">
 						<h3>Doors</h3>
@@ -82,7 +82,7 @@
 						<button onclick="addNPC()" class="btn-primary">Add NPC</button>
 
 						<div id="npcsListContainer" style="margin-top: 16px; display: none;">
-							<h4 style="margin: 0 0 8px 0; color: color: #cccccc; font-size: 13px;">Existing NPCs:</h4>
+							<h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Existing NPCs:</h4>
 							<div id="npcsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
 						</div>
 					</div>
