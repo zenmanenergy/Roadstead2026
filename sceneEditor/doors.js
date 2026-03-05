@@ -3,7 +3,7 @@
 let doors = [];
 
 function finishDoorPolygon(points){
-    if(points.length<3){
+    if(points.length < 3){
         alert('Need at least 3 points for polygon');
         return false;
     }
