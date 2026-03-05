@@ -18,10 +18,7 @@ function deleteWalkableArea(index) {
 	redraw();
 }
 
-function populateWalkableAreasPanel() {
-	const walkableContainer = document.getElementById('walkableListContainer');
-	const walkableList = document.getelementbyID('walkableList');
-}
+
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
 	const walkableList = document.getElementById('walkableList');
