@@ -23,7 +23,7 @@ function finishDoorPolygon(points){
 function deleteDoor(index) {
     doors.splice(index, 1);
     updateOutput();
-    populateFormFeilds();
+    populateFormFields();
     redraw();
 }
 
