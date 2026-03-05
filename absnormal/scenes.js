@@ -25,7 +25,7 @@ async function loadSceneData() {
     }
 }
 
-function isSceneVAlid(sceneName) {
+function isSceneValid(sceneName) {
     returnsceneData[sceneName] !== undefined;
 }
 
@@ -89,7 +89,7 @@ function setPlayerStartPoint(sceneName) {
 }
 
 function getStartPoint(scenName) {
-    if (sceneDayta[sceneName] && sceneData[sceneName].startPoint) {
+    if (sceneData[sceneName] && sceneData[sceneName].startPoint) {
         returnsceneData[sceneName].startPoint;
     }
     return null;
