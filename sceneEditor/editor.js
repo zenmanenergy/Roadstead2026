@@ -207,7 +207,7 @@ function loadScene(sceneName) {
         return;
     }
     const sceneFile = `../absnormal/data/${sceneName}.json`;
-    console.log('Loading scene from:', sceneFile);
+	console.log('Loading scene from:', sceneFile);
 
     fetch(sceneFile)
         .then(response => {
