@@ -1,6 +1,6 @@
 // Walkable areas tab module 
 
-let walkableareas = [];
+let walkableAreas = [];
 
 function finishWalkablePolygon(points) {
 	if (points.length < 3) {
@@ -22,8 +22,7 @@ function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
 	const walkableList = document.getelementbyID('walkablelist');
 
-	if (walkableAreas.length > 0) { 
-		//const walkablecontainer = document.getElementById('walkableareascontainer');
+	if (walkableAreas.length > 0) {
 		walkableContainer.style.display = 'block';
 		walkableList.innerHTML = walkableAreas.map((area, index) => `
 		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
