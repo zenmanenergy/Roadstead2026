@@ -8,8 +8,8 @@ function placeStartPoint(x, y) {
 	redraw();
 }
 function clearStartPoint(){
-	startpoint = null;
-	updateoutput();
+	startPoint = null;
+	updateOutput();
 	redraw();
 }
 
@@ -19,9 +19,9 @@ function populateStartPointPanel() {
 }
 
 function clearStartPoints() {
-	startpoint = null;
+	startPoint = null;
 }
 
 function getStartPointForOutput() {
-	return startpoint ? [startpoint.x, startpoint.y] : null; 
+	return startPoint ? [startPoint.x, startPoint.y] : null; 
 }
