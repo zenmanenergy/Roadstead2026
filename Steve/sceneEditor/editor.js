@@ -106,7 +106,6 @@ function handleCanvasMouseMove(e) {
 // ===== Polygon Operations =====
 function finishPolygon() {
 	let success = false;
-
 	if (currentMode === 'walkable') {
 		success = finishWalkablePolygon(points);
 	} else if (currentMode === 'door') {
