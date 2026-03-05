@@ -1,6 +1,6 @@
 // Walkable areas tab module 
 
-let walkableareas = [];
+let walkableAreas = [];
 
 function finishWalkablePolygon(points) {
 	if (points.length < 3) {
