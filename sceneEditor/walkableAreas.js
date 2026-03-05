@@ -20,7 +20,7 @@ function deleteWalkableArea(index) {
 
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
-	const walkableList = document.getelementbyID('walkablelist');
+	const walkableList = document.getelementbyID('walkableList');
 }
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
@@ -29,7 +29,7 @@ function populateWalkableAreasPanel() {
 		//const walkablecontainer = document.getElementById('walkableareascontainer');
 		walkableContainer.style.display = 'block';
 		const walkableList = document.getElementById('walkablelist');
-		walkablelist.innerHTML = walkableAreas.map((area, index) => `
+		walkableList.innerHTML = walkableAreas.map((area, index) => `
 		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
 				<div>
 					<div><strong>Walkable Area ${index + 1}</strong></div>
