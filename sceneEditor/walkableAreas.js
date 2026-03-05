@@ -24,9 +24,9 @@ function populatewalkableareaspanel() {
 }
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
-	const walkableList = document.getElementById('walkableList');
-	if (walkableareas.length > 0) { 
-		//const walkablecontainer = document.getElementById('walkableareascontainer');
+	const walkableList = document.getElementbyId('walkablelist');
+
+	if (walkableAreas.length > 0) {
 		walkableContainer.style.display = 'block';
 		const walkablelist = document.getElementById('walkablelist');
 		walkablelist.innerHTML = walkableareas.map((area, index) => `
