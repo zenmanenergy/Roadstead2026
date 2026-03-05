@@ -7,7 +7,6 @@ function finishWalkablePolygon(points) {
 		alert('Need at least 3 points for a polygon');
 		return false;
 	}
-
 	walkableAreas.push([...points]);
 	return true;
 }
