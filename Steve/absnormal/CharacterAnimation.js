@@ -33,28 +33,27 @@ absImages.right[1].src =
 function movePlayer() {
 	lastX = absX;
 	lastY = absY;
-    moving = false;
-    let newX = absX;
-    let newY = absY;
+	moving = false;
+	let newX = absX;
+	let newY = absY;
     
     if (keys["w"] || keys["arrowup"]) { newY -= speed; absDirection = "up"; moving = true; }
     if (keys["s"] || keys["arrowdown"]) { newY += speed; absDirection = "down"; moving = true; }
     if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
     if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
-    
-    if (canMoveTo(newX, newY, 192, 192)) {
-        absX = newX;
-        absY = newY;
-    }
-   
-
-    if (moving) {
-        frameCount++;
-        if (frameCount >= frameDelay) {
-            frameCount = 0;
-            frame = frame === 1 ? 2 : 1;
-        }
-    }
+	
+	if (canMoveTo(newX, newY, 192, 192)) {
+		absX = newX;
+		absY = newY;
+	}
+	
+	if (moving) {
+		frameCount++;
+		if (frameCount >= frameDelay) {
+			frameCount = 0;
+			frame = frame === 1 ? 2 : 1;
+		}
+	}
 }
 
 function drawScene() {
@@ -62,24 +61,14 @@ function drawScene() {
 	if (currentBackgroundImage) {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
-
-	//Title screen start box
-	if(currentScene === "title"){
-		ctx.font = "30px Arial";
-		ctx.fillStyle = "white";
-		ctx.fillText("START", startBox.x + 80, startBox.y + 65);
-		return;
-	}
 	drawPlayer();
 }
 
 function drawPlayer(){
-	const img={
-		frame === 1
+	const img = frame === 1
 		? absImages[absDirection][0]
-		:absImages[absDirection][1];
-		ctx.drawImage(img, absX, absY, 192, 192);
-	}
+		: absImages[absDirection][1];
+	ctx.drawImage(img, absX, absY, 192, 192);
 }
 
 function update(){

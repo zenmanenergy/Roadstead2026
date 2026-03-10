@@ -2,27 +2,13 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let gameState = "title";
-let currentRoom = 'lab';
-
-const absWalk = {
-	up: new Image(),
-	down: new Image(),
-	left: new Image(),
-	right: new Image()
-};
 
 let absDirection = "down";
 let absX = 368;
 let absY = 268;
 let currentBackgroundImage = null;
 
-let keys = {};
-
-const frameWidth = 96;
-const frameHeight = 96;
-const framePerAnimation = 4;
-
-let frameIndex = 0; 
+let keys = {}; 
 
 window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
@@ -49,26 +35,6 @@ window.addEventListener('load', () => {
 		}
 	});
 });
-
-function handleClick(event) {
-	if (gameState === "title") {
-		handleTitleClick(event);
-	} else if (gameState === "playing") {
-	}
-}
-
-
-function changeRooms() {
-	if (currentRoom === 'lab' && absX > canvas.width - frameWidth) {
-		currentRoom = 'city';
-		absX = 0;
-	}
-
-	if (currentRoom === 'city' && absX < 0) {
-		currentRoom = 'lab';
-		absX = canvas.width - frameWidth;
-	}
-}
 
 function update() {
 	if (gameState !== "playing") {
@@ -102,27 +68,6 @@ function drawAbsNormal() {
 	ctx.fillStyle = "rgba(255, 255, 255, 1)";
 	ctx.font = "bold 16px Arial";
 	ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
-	drawStartPointDebug();
-}
-
-function checkDoorCollision() {
-	if (!sceneData[currentScene] || !sceneData[currentScene].doors) {
-		return;
-	}
-	
-	const playerCenterX = absX + 48;
-	const playerCenterY = absY + 96;
-	
-	for (let i = 0; i < sceneData[currentScene].doors.length; i++) {
-		const door = sceneData[currentScene].doors[i];
-		
-		if (isPointInPolygon([playerCenterX, playerCenterY], door.points)) {
-			if (door.destination) {
-				changeScene(door.destination);
-				return;
-			}
-		}
-	}
 }
 
 function changeScene(sceneName) {
@@ -141,28 +86,4 @@ function changeScene(sceneName) {
 	};
 }
 
-async function ensureSceneLoaded(sceneName) {
-	if (sceneData[sceneName]) {
-		return true;
-	}
-	
-	try {
-		const response = await fetch(`data/${sceneName}.json`);
-		if (response.ok) {
-			sceneData[sceneName] = await response.json();
-			return true;
-		} else {
-			return false;
-		}
-	} catch (error) {
-		return false;
-	}
-}
 
-function debugSceneData(sceneName) {
-	if (!sceneData[sceneName]) {
-		return;
-	}
-	
-	const scene = sceneData[sceneName];
-}

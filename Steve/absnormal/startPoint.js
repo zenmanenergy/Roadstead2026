@@ -19,10 +19,3 @@ function setPlayerStartPoint(sceneName) {
 		return false;
 	}
 }
-
-function getStartPoint(sceneName) {
-	if (sceneData[sceneName] && sceneData[sceneName].startPoint) {
-		return sceneData[sceneName].startPoint;
-	}
-	return null;
-}

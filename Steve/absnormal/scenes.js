@@ -1,10 +1,10 @@
 const scenes = [
 	'bedroom',
 	'room_lab',
-	'room_city',
+	'room_city_0',
+	'room_city_1',
 	'room_office',
-	'room_pharmacy',
-	'CITY-absnormal'
+	'room_pharmacy'
 ];
 
 let sceneData = {};
@@ -26,22 +26,6 @@ async function loadSceneData() {
 			console.warn(`✗ Error loading ${sceneName}: ${error.message}`);
 		}
 	}
-}
-
-function isSceneValid(sceneName) {
-	return sceneData[sceneName] !== undefined;
-}
-
-function getScene(sceneName) {
-	return sceneData[sceneName] || null;
-}
-
-function getSceneStartPoint(sceneName) {
-	const scene = sceneData[sceneName];
-	if (scene && scene.startPoint) {
-		return scene.startPoint;
-	}
-	return null;
 }
 
 
