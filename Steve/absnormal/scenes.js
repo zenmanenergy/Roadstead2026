@@ -1,10 +1,10 @@
 const scenes = [
 	'bedroom',
-	'room_lab',
-	'room_city_0',
-	'room_city_1',
-	'room_office',
-	'room_pharmacy'
+	'lab',
+	'city_0',
+	'city_1',
+	'doctor',
+	'pharmacy'
 ];
 
 let sceneData = {};
@@ -12,18 +12,23 @@ let currentScene = "title";
 
 
 async function loadSceneData() {
+	const fileMap = {
+		'bedroom': 'bedroom',
+		'lab': 'room_lab',
+		'city_0': 'room_city_0',
+		'city_1': 'room_city_1',
+		'doctor': 'room_doctor',
+		'pharmacy': 'room_pharmacy'
+	};
 	
 	for (const sceneName of scenes) {
-		try {
-			const response = await fetch(`data/${sceneName}.json`);
-			if (response.ok) {
-				sceneData[sceneName] = await response.json();
-				console.log(`✓ Loaded scene: ${sceneName}`);
-			} else {
-				console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
-			}
-		} catch (error) {
-			console.warn(`✗ Error loading ${sceneName}: ${error.message}`);
+		const fileName = fileMap[sceneName];
+		const response = await fetch(`/Steve/absnormal/data/${fileName}.json`);
+		if (response.ok) {
+			sceneData[sceneName] = await response.json();
+			console.log(`✓ Loaded scene: ${sceneName}`);
+		} else {
+			console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
 		}
 	}
 }
@@ -47,11 +52,12 @@ function canMoveTo(newX, newY, width, height) {
 		return true;
 	}
 	
-	const centerX = newX + width / 2;
-	const centerY = newY + height / 2;
+	const feet = HITBOX.getFeet(newX, newY);
 	
+	// Shift the walkable area polygons from center-based to feet-based coordinates
 	for (const area of sceneData[currentScene].walkableAreas) {
-		if (isPointInPolygon([centerX, centerY], area.points)) {
+		const shiftedPolygon = HITBOX.shiftPolygonToFeet(area.points);
+		if (isPointInPolygon([feet.x, feet.y], shiftedPolygon)) {
 			return true;
 		}
 	}

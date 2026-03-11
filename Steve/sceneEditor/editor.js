@@ -11,7 +11,7 @@ const scenes = [
 	'room_lab',
 	'room_city_0',
 	'room_city_1',
-	'room_office',
+	'room_doctor',
 	'room_pharmacy'
 ];
 

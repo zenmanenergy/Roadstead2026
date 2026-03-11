@@ -13,13 +13,14 @@ function checkDoorCollision() {
 		return;
 	}
 
-	const playerCenterX = absX + 48;
-	const playerCenterY = absY + 96;
+	const feet = HITBOX.getFeet(absX, absY);
 	
 	for (let i = 0; i < sceneData[currentScene].doors.length; i++) {
 		const door = sceneData[currentScene].doors[i];
 		
-	if (isPointInPolygon([playerCenterX, playerCenterY], door.points)) {
+		// Shift door polygons from center-based to feet-based coordinates
+		const shiftedDoorPoints = HITBOX.shiftPolygonToFeet(door.points);
+	if (isPointInPolygon([feet.x, feet.y], shiftedDoorPoints)) {
 			if (door.nextScene) {
 				console.log(`\n🚪 Door collision! Transitioning to: ${door.nextScene}`);
 				changeScene(door.nextScene);

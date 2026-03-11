@@ -42,7 +42,7 @@ function movePlayer() {
     if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
     if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
 	
-	if (canMoveTo(newX, newY, 192, 192)) {
+	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)) {
 		absX = newX;
 		absY = newY;
 	}
@@ -62,13 +62,26 @@ function drawScene() {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
 	drawPlayer();
+	
+	// Debug: Draw feet hitbox only
+	const feet = HITBOX.getFeet(absX, absY);
+	
+	ctx.fillStyle = "rgba(0, 255, 255, 0.7)";
+	ctx.beginPath();
+	ctx.arc(feet.x, feet.y, 15, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// Debug text
+	ctx.fillStyle = "rgba(255, 255, 255, 1)";
+	ctx.font = "bold 12px Arial";
+	ctx.fillText(`Feet Y: ${Math.round(feet.y)}`, 10, 30);
 }
 
 function drawPlayer(){
 	const img = frame === 1
 		? absImages[absDirection][0]
 		: absImages[absDirection][1];
-	ctx.drawImage(img, absX, absY, 192, 192);
+	ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
 }
 
 function update(){

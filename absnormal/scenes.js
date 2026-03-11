@@ -2,7 +2,7 @@ const scenes = [
     'bedroom',
     'room_lab',
     'room_city',
-    'room_office',
+    'room_doctor',
     'room_pharmacy',
     'CITY-absnormal'
 ];

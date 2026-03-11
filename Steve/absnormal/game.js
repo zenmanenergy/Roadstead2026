@@ -27,12 +27,6 @@ window.addEventListener('load', () => {
 		} else {
 			titleScreen.onload = drawTitle;
 		}
-	}).catch(error => {
-		if (titleScreen.complete) {
-			drawTitle();
-		} else {
-			titleScreen.onload = drawTitle;
-		}
 	});
 });
 
@@ -56,18 +50,29 @@ function update() {
 }
 
 function drawAbsNormal() {
+	const center = HITBOX.getCenter(absX, absY);
+	const feet = HITBOX.getFeet(absX, absY);
+	
+	// Draw center hitbox (red)
 	ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
 	ctx.beginPath();
-	ctx.arc(absX + 48, absY + 48, 30, 0, Math.PI * 2);
+	ctx.arc(center.x, center.y, 30, 0, Math.PI * 2);
 	ctx.fill();
 	
+	// Draw feet hitbox (blue)
 	ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+	ctx.beginPath();
+	ctx.arc(feet.x, feet.y, 30, 0, Math.PI * 2);
+	ctx.fill();
+	
+	ctx.fillStyle = "rgba(0, 255, 255, 1)";
 	ctx.font = "12px Arial";
-	ctx.fillText(absDirection, absX + 48, absY + 110);
+	ctx.fillText(absDirection, center.x, center.y + 14);
 	
 	ctx.fillStyle = "rgba(255, 255, 255, 1)";
 	ctx.font = "bold 16px Arial";
 	ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
+	ctx.fillText(`Feet: (${Math.round(feet.x)}, ${Math.round(feet.y)})`, 10, 50);
 }
 
 function changeScene(sceneName) {
