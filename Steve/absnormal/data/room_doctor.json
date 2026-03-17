@@ -1,5 +1,5 @@
 {
-  "image": "assets/backgrounds/room_pharmacy.png",
+  "image": "assets/backgrounds/room_doctor.png",
   "walkableAreas": [
     {
       "points": [
@@ -50,7 +50,29 @@
       ]
     }
   ],
-  "doors": [],
+  "doors": [
+    {
+      "points": [
+        [
+          682.6545259611745,
+          594.8588458249409
+        ],
+        [
+          681.1408795621475,
+          529.8386875350081
+        ],
+        [
+          537.344471654583,
+          528.326590830591
+        ],
+        [
+          517.6670684672321,
+          599.3951359381921
+        ]
+      ],
+      "nextScene": "city_0"
+    }
+  ],
   "npcs": [
     {
       "x": 325.4339757908038,

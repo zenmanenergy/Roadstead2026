@@ -1,36 +1,31 @@
-// Walkable areas tab module 
+// Walkable Areas Tab Module
 
-let walkableareas = [];
+let walkableAreas = [];
 
-function finishwalkablepolygon(points) {
+function finishWalkablePolygon(points) {
 	if (points.length < 3) {
-		alert('need at least 3 points for a polygon') ;
-		return false; 
+		alert('Need at least 3 points for a polygon');
+		return false;
 	}
-	walkableareas.push([...points]);
+	walkableAreas.push([...points]);
 	return true;
 }
 
-function deletewalkablearea(index) {
-	walkableareas.splice(index, 1); 
-	updateoutput();
-	populateformfields();
+function deleteWalkableArea(index) {
+	walkableAreas.splice(index, 1);
+	updateOutput();
+	populateFormFields();
 	redraw();
 }
 
-function populatewalkableareaspanel() {
-	const walkablecontainer = document.getElementById('walkableareascontainer');
-	const walkablelist = document.getelementbyID('walkablelist');
-}
 function populateWalkableAreasPanel() {
 	const walkableContainer = document.getElementById('walkableListContainer');
 	const walkableList = document.getElementById('walkableList');
-	if (walkableareas.length > 0) { 
-		//const walkablecontainer = document.getElementById('walkableareascontainer');
+	
+	if (walkableAreas.length > 0) {
 		walkableContainer.style.display = 'block';
-		const walkablelist = document.getElementById('walkablelist');
-		walkablelist.innerHTML = walkableareas.map((area, index) => `
-		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+		walkableList.innerHTML = walkableAreas.map((area, index) => `
+			<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
 				<div>
 					<div><strong>Walkable Area ${index + 1}</strong></div>
 					<div>Points: ${area.length}</div>
@@ -40,7 +35,7 @@ function populateWalkableAreasPanel() {
 		`).join('');
 	} else {
 		walkableContainer.style.display = 'none';
-	} 
+	}
 }
 
 function clearWalkableAreas() {

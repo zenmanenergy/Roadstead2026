@@ -3,15 +3,17 @@
 let doors = [];
 
 function finishDoorPolygon(points){
-    if(points.length<3){
+    if(points.length < 3){
         alert('Need at least 3 points for polygon');
         return false;
     }
+
     const nextScene = document.getElementById('doorNextScene').value;
     if(!nextScene) {
         alert('Please select next scene');
         return false;
     }
+    
     doors.push({
         points: [...points],
         nextScene: nextScene
@@ -23,7 +25,7 @@ function finishDoorPolygon(points){
 function deleteDoor(index) {
     doors.splice(index, 1);
     updateOutput();
-    populateFormFeilds();
+    populateFormFields();
     redraw();
 }
 

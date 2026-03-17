@@ -9,10 +9,10 @@ let points = [];
 const scenes = [
 	'bedroom',
 	'room_lab',
-	'room_city',
-	'room_office',
-	'room_pharmacy',
-	'CITY-absnormal'
+	'room_city_0',
+	'room_city_1',
+	'room_doctor',
+	'room_pharmacy'
 ];
 
 // ===== Initialization =====
@@ -106,7 +106,6 @@ function handleCanvasMouseMove(e) {
 // ===== Polygon Operations =====
 function finishPolygon() {
 	let success = false;
-
 	if (currentMode === 'walkable') {
 		success = finishWalkablePolygon(points);
 	} else if (currentMode === 'door') {
