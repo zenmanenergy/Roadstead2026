@@ -10,15 +10,7 @@ const ctx = canvas.getContext("2d");
 
 //Game State
 let gameState = "title";  //"title" or "playing"
-let currentRoom = 'lab';
 
-//Load Character Sprites
-const absWalk = {
-    up: new Image(),
-    down: new Image(),
-    left: new Image(),
-    right: new Image()
-};
 
 let absDirection = "down";
 let absX = 368;
@@ -27,14 +19,23 @@ let currentBackgroundImage = null;
 
 let keys = {};
 
-const frameWidth = 96;
-const frameHeight = 96;
-const framePerAnimation = 4;
+canvas.addEventListener('click', (event) => {
+    if (gameState !== "playing") return;
 
-let frameIndex = 0;
+    const canvasRect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - canvasRect.width;
+    const clickY = event.clientY - canvasRect.height;
 
-window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
-window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+    const scaleX = canvas.width / canvasRect.width;
+    const scaleY = canvas.height / canvasRect.height;
+
+    const canvasClickX = clickX * scaleX;
+    const canvasClickY = clickY * scaleY;
+
+    targetX = canvasClickX - HITBOX.CENTER_OFFSET_X
+    targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+
+});
 
 titleScreen.onload = () => drawTitle();
 
@@ -45,125 +46,64 @@ function drawTitle() {
 
 window.addEventListener('load', () => {
     loadSceneData().then(() => {
-        if (titleScreen.complete){
-            drawTitle();
-        }else{
-            titleScreen.onload = drawTitle;
-        }
-    }).catch(error => {
         if (titleScreen.complete) {
             drawTitle();
-        }else{
+        } else {
             titleScreen.onload = drawTitle;
         }
     });
 });
 
-function handleClick(event){
-    if (gameState === "title"){
-        handleTitleClick(event);
-    } else if (gameState === "playing"){
-    }
-}
-
-function changeRooms() {
-    if(currentRoom === 'lab' && absX <0){
-        currentRoom = 'city';
-        absX = 0;
-    }
-
-    if(currentRoom === 'city' && absX <0) {
-        currentRoom = 'lab';
-        absX = canvas.width - frameWidth;
-    }
-}
-
 function update() {
-    if(gameState !== "playing") {
+    if (gameState !== "playing") {
         requestAnimationFrame(update);
         return;
     }
+
     checkDoorCollision();
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    if(currentBackgroundImage && currentBackgroundImage.complete) {
+
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+
+    if (currentBackgroundImage && currentBackgroundImage.complete) {
         ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
     }
-
     drawAbsNormal();
 
     requestAnimationFrame(update);
-
 }
 
 function drawAbsNormal() {
-    ctx.fillStyle="rgba(225,0,0,0.5)";
-    ctx.beginPath();
-    ctx.arc(absX + 48, absY + 48, 30, 0, Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle = "rgba(0, 0, 225, 0.5)";
-    ctx.font = "12px Arial";
-    ctx.fillText(absDirection, absX + 48, absY + 110);
+    const center = HITBOX.getCenter(absX, absY);
+    const feet = HITBOX.getFeet(absX, absY);
 
-    ctx.fillStyle = "rgba(225, 225, 225, 1)";
+    ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+    ctx.beginPath();
+    ctx.arc(feet.x, feet.y, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
     ctx.font = "bold 16px Arial";
     ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
-    drawStartPointDebug();
-}
-
-function checkDoorCollision(){
-    if(!sceneData[currentScene] || !sceneData[currentScene].doors){
-        return;
-    }
-    const playerCenterX = absX + 48;
-    const playerCenterY = absY  +  96;
-    
-    for  (let i = 0; i < sceneData[currentScene].doors.length; i++) {
-        const door = sceneData[currentScene].doors[i];
-
-        if (isPointInPolygon([playerCenterX, playerCenterY], door.points)){
-            if (door.destination){
-                changeScene(door.destination);
-                return;
-            }
-        }
-    }
+    ctx.fillText(`Feet: (${Math.round(feet.x)}, ${Math.round(feet.y)})`, 10, 50);
 }
 
 function changeScene(sceneName) {
-    if(!sceneData[sceneName]){
+    if (!sceneData[sceneName]) {
         return;
     }
 
     currentScene = sceneName;
 
     setPlayerStartPoint(currentScene);
+
     currentBackgroundImage = new Image();
-    currentBackgroundImage  = sceneData[currentScene].image;
+    currentBackgroundImage.src = sceneData[currentScene].image;
 
     currentBackgroundImage.onerror = () => {
     };
-}
-
-async function ensureSceneLoaded(sceneName) {
-    if (sceneData[sceneName]) {
-        return true;
-    }
-    try {
-        constresponse = await fetch(`data/${sceneName}.json`);
-        if(Response.ok)  {
-            sceneData[sceneName] = await Response.json();
-            return true;
-        } else {
-            return false;
-        }
-    } catch (error) {
-        return false;
-    }
-}
-
-function debugSceneData(sceneName){
-    if (!sceneData[sceneName]) {
-        return;
-    }
-    const scene = sceneData[sceneName];
 }
