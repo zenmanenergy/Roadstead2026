@@ -27,7 +27,7 @@ const backgrounds = {
 backgrounds.title.src = "assets/backgrounds/title_screen.png"
 backgrounds.bedroom.src = "assets/backgrounds/room_bedroom.png";
 backgrounds.city.src = "assets/backgrounds/room_city.png";
-backgrounds.doctor.src = "assets/backgrounds/room_office.png";
+backgrounds.doctor.src = "assets/backgrounds/room_doctor.png";
 backgrounds.pharmacy.src = "assets/backgrounds/room_pharmacy.png"
 backgrounds.lab.src = "assets/backgrounds/room_lab.png"
 
@@ -103,7 +103,7 @@ function checkTransitions() {
 //     { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
 // ];
 
-// scenes.office.objects = [
+// scenes.doctor.objects = [
 //     { x: 100, y: 480, width: 96, height: 160, type: "door", action: "to_city", img: new Image() }
 // ];
 // //load all door images so they can be drawn later

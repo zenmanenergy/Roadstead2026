@@ -7,9 +7,10 @@ const backgroundImages = [
 	'background_start.png',
 	'CITY-absnormal.png',
 	'room_bedroom.png',
-	'room_city.png',
+	'room_city_0.png',
+	'room_city_1.png',
 	'room_lab.png',
-	'room_office.png',
+	'room_doctor.png',
 	'room_pharmacy.png',
 	'start_button.png',
 	'title_screen.png'

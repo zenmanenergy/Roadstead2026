@@ -4,7 +4,7 @@ function drawTitle() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.drawImage(titleScreen, 0, 0, canvas.width, canvas.height);
 }
-function handleTitleClick(event) {
+function handleClick(event) {
 	const rect = canvas.getBoundingClientRect();
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
