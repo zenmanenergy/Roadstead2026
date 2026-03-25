@@ -8,8 +8,11 @@ body{
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow: hidden;
     background-color: #222;
     margin: 0;
+    padding: 0;
+    gap: 3px;
 }
 
 /*center the canvas and make it clickable*/
@@ -17,6 +20,12 @@ canvas{
     border: 2px solid white;
     cursor: pointer;
     box-shadow: 0 0 20px rgba(255, 255, 0.2);
+    width: auto;
+    height: auto;
+    max-width: min(95vw, calc(65vh * 800 / 600));
+    max-height: 65vh;
+    aspect-ratio: 800 / 600;
+    display: block;
 }
 
 /*style the title*/
@@ -24,5 +33,146 @@ h1{
     color: white;
     text-align: center;
     margin-bottom: 20px;
+    padding: 3px 0;
+    font-size: clamp(16px, 3vw, 28px);
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#status{
+    display: none;
+}
+
+#gameMenu {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    max-width: min(95vw, calc(65vh * 800 / 600));
+    margin: 0 auto;
+    padding: 0;
+    background-color: #1a1a1a;
+    border-top: 2px solid #444;
+    gap: 4px;
+}
+
+#leftPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+
+#verbStrip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    background-color: #333;
+    padding: 2px;
+    border-radius: 5px;
+    border: 2px solid #555;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.verb-btn {
+    width: clamp(45px, 6vw, 60px);
+    height: clamp(30px, 4vw, 40px);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #444;
+    border: 2px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    font-size: 0;
+}
+
+.verb-btn:hover {
+    border-color: #ffaa00;
+    box-shadow: 0 0 8px rgba(255, 170 , 0, 0.4);
+}
+
+.verb-btn.active {
+    border-color: #ffaa00;
+    box-shadow: 0 0 12px rgba(255, 170, 0, 0.6);
+}
+
+#rightPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+#inventoryPanel {
+    display: flex;
+    flex-direction: fow;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+#arrowButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.inv-arrow {
+    padding: 2px 4px;
+    background-color:#444;
+    color: #fff;
+    border: 1px solid #666;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: clamp(11px, 1.8vw, 14px);
+    font-weight: bold;
+    transition: all 0.2s ease;
+    min-width: clmap(35px, 4vw, 45px);
+}
+
+.inv-arrow:hover {
+    background-color: #555;
+    border-color: #888;
+}
+
+#inventorySlots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2,1fr);
+    gap: 2px;
+    background-color: #333;
+    padding: 2px;
+    border-radius: 5px;
+    border: 2px solid #555;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.inv-slot {
+    width: clamp(35px, 8vw, 60px);
+    height: clamp(35px, 8vw, 60px);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #222;
+    border: 2px solid #666;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    color: #999;
+}
+
+.inv-slot:hover {
+    background-color: #2a2a2a;
+    border-color: #888;
+}
+
+inv-slot.filled {
+    border-color: #ffaa00;
+    background-color:#2a2a2a;
+    color: #fff;
 }
