@@ -5,6 +5,8 @@ let frameCount = 0;
 let frame = 1;
 let moving = false;
 let speed = 3;
+let targetX = null;
+let targetY = null;
 
 const absImages = {
 	down: [new Image(), new Image()],
@@ -36,18 +38,46 @@ function movePlayer() {
 	moving = false;
 	let newX = absX;
 	let newY = absY;
-    
-    if (keys["w"] || keys["arrowup"]) { newY -= speed; absDirection = "up"; moving = true; }
-    if (keys["s"] || keys["arrowdown"]) { newY += speed; absDirection = "down"; moving = true; }
-    if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
-    if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
+	
+	// Click-based movement
+	if (targetX !== null && targetY !== null) {
+		const deltaX = targetX - absX;
+		const deltaY = targetY - absY;
+		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		
+		// If at target, stop moving
+		if (distance < speed) {
+			targetX = null;
+			targetY = null;
+		} else {
+			// Move towards target
+			const moveX = (deltaX / distance) * speed;
+			const moveY = (deltaY / distance) * speed;
+			
+			newX = absX + moveX;
+			newY = absY + moveY;
+			
+			// Determine direction based on movement
+			if (Math.abs(deltaX) > Math.abs(deltaY)) {
+				absDirection = deltaX > 0 ? "right" : "left";
+			} else {
+				absDirection = deltaY > 0 ? "down" : "up";
+			}
+			
+			moving = true;
+		}
+	}
 	
 	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)) {
 		absX = newX;
 		absY = newY;
+	} else {
+		// Blocked by wall, stop animating
+		moving = false;
 	}
 	
-	if (moving) {
+	// Only animate if character actually moved
+	if (moving && (absX !== lastX || absY !== lastY)) {
 		frameCount++;
 		if (frameCount >= frameDelay) {
 			frameCount = 0;
@@ -62,19 +92,6 @@ function drawScene() {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
 	drawPlayer();
-	
-	// Debug: Draw feet hitbox only
-	const feet = HITBOX.getFeet(absX, absY);
-	
-	ctx.fillStyle = "rgba(0, 255, 255, 0.7)";
-	ctx.beginPath();
-	ctx.arc(feet.x, feet.y, 15, 0, Math.PI * 2);
-	ctx.fill();
-	
-	// Debug text
-	ctx.fillStyle = "rgba(255, 255, 255, 1)";
-	ctx.font = "bold 12px Arial";
-	ctx.fillText(`Feet Y: ${Math.round(feet.y)}`, 10, 30);
 }
 
 function drawPlayer(){

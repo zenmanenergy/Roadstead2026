@@ -13,6 +13,26 @@ let keys = {};
 window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
+// Click-based movement handler
+canvas.addEventListener('click', (event) => {
+	if (gameState !== "playing") return;
+	
+	const canvasRect = canvas.getBoundingClientRect();
+	const clickX = event.clientX - canvasRect.left;
+	const clickY = event.clientY - canvasRect.top;
+	
+	// Scale click position to actual canvas resolution (800x600)
+	const scaleX = canvas.width / canvasRect.width;
+	const scaleY = canvas.height / canvasRect.height;
+	
+	const canvasClickX = clickX * scaleX;
+	const canvasClickY = clickY * scaleY;
+	
+	// Convert click position to character absX, absY so feet go to clicked position
+	targetX = canvasClickX - HITBOX.CENTER_OFFSET_X;
+	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+});
+
 titleScreen.onload = () => drawTitle();
 
 function drawTitle() {
