@@ -4,6 +4,11 @@ let canvas;
 let ctx;
 let currentMode = 'walkable';
 let points = [];
+let currentMouseX = null;
+let currentMouseY = null;
+let currentItemIngameImage = null;
+let currentItemInventoryImage = null;
+let currentNPCImage = null;
 
 // Scene list
 const scenes = [
@@ -42,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			currentMode = tabName;
 			points = [];
+			currentItemIngameImage = null;
+			currentNPCImage = null;
+			currentMouseX = null;
+			currentMouseY = null;
 			redraw();
 		});
 	});
@@ -61,6 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize images module
 	initializeImageSelect();
 	console.log('Images module initialized');
+
+	// Initialize items module
+	initializeItemSelect();
+	console.log('Items module initialized');
+
+	// Initialize NPCs module
+	initializeNPCSelect();
+	console.log('NPCs module initialized');
 });
 
 // ===== Canvas Events =====
@@ -76,6 +93,8 @@ function handleCanvasClick(e) {
 		placeStartPoint(x, y);
 	} else if (currentMode === 'npc') {
 		placeNPC(x, y);
+	} else if (currentMode === 'item') {
+		placeItem(x, y);
 	} else {
 		// Walkable areas and doors use polygon points
 		points.push({ x, y });
@@ -84,13 +103,24 @@ function handleCanvasClick(e) {
 }
 
 function handleCanvasMouseMove(e) {
-	if (points.length > 0) {
+	const rect = canvas.getBoundingClientRect();
+	const scaleX = canvas.width / rect.width;
+	const scaleY = canvas.height / rect.height;
+	const x = (e.clientX - rect.left) * scaleX;
+	const y = (e.clientY - rect.top) * scaleY;
+
+	if (currentMode === 'item') {
+		// Track mouse position for item preview
+		currentMouseX = x;
+		currentMouseY = y;
 		redraw();
-		const rect = canvas.getBoundingClientRect();
-		const scaleX = canvas.width / rect.width;
-		const scaleY = canvas.height / rect.height;
-		const x = (e.clientX - rect.left) * scaleX;
-		const y = (e.clientY - rect.top) * scaleY;
+	} else if (currentMode === 'npc') {
+		// Track mouse position for NPC preview
+		currentMouseX = x;
+		currentMouseY = y;
+		redraw();
+	} else if (points.length > 0) {
+		redraw();
 
 		// Draw preview line to current mouse position
 		ctx.strokeStyle = '#ffff00';
@@ -130,6 +160,7 @@ function populateFormFields() {
 	populateWalkableAreasPanel();
 	populateDoorsPanel();
 	populateNPCsPanel();
+	populateItemsPanel();
 	populateStartPointPanel();
 }
 
@@ -162,11 +193,39 @@ function redraw() {
 
 	// Draw all NPCs
 	npcs.forEach((npc) => {
-		ctx.fillStyle = '#ffff00';
-		ctx.fillRect(npc.x - 5, npc.y - 5, 10, 10);
+		if (npc.imageObj) {
+			// Draw the actual NPC image
+			ctx.drawImage(npc.imageObj, npc.x - 48, npc.y - 48, 96, 96);
+		} else {
+			// Fallback: draw a yellow square if image hasn't loaded yet
+			ctx.fillStyle = '#ffff00';
+			ctx.fillRect(npc.x - 5, npc.y - 5, 10, 10);
+		}
+		// Draw NPC name label
 		ctx.font = '10px Arial';
 		ctx.fillStyle = '#ffff00';
-		ctx.fillText(npc.name, npc.x + 8, npc.y);
+		ctx.fillText(npc.name, npc.x + 35, npc.y);
+	});
+
+	// Draw all items
+	items.forEach((item) => {
+		if (item.imageObj) {
+			// Draw the actual ingame image
+			ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
+		} else {
+			// Fallback: draw a cyan circle if image hasn't loaded yet
+			ctx.fillStyle = '#00ccff';
+			ctx.beginPath();
+			ctx.arc(item.x, item.y, 6, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.strokeStyle = '#00ccff';
+			ctx.lineWidth = 2;
+			ctx.stroke();
+		}
+		// Draw item label
+		ctx.font = '10px Arial';
+		ctx.fillStyle = '#00ffff';
+		ctx.fillText(item.name, item.x + 25, item.y);
 	});
 
 	// Draw start point
@@ -175,6 +234,18 @@ function redraw() {
 		ctx.fillRect(startPoint.x - 8, startPoint.y - 8, 16, 16);
 		ctx.font = 'bold 10px Arial';
 		ctx.fillText('START', startPoint.x + 10, startPoint.y);
+	}
+
+	// Draw item preview at mouse cursor when in item mode
+	if (currentMode === 'item' && currentMouseX !== null && currentMouseY !== null && currentItemIngameImage) {
+		ctx.globalAlpha = 0.7;
+		ctx.drawImage(currentItemIngameImage, currentMouseX - 20, currentMouseY - 20, 40, 40);
+		ctx.globalAlpha = 1;
+	}
+
+	// Draw NPC preview at mouse cursor when in NPC mode
+	if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null && currentNPCImage) {
+		ctx.drawImage(currentNPCImage, currentMouseX - 48, currentMouseY - 48, 96, 96);
 	}
 
 	// Draw current points being drawn
@@ -233,6 +304,7 @@ function updateOutput() {
 		walkableAreas: getWalkableAreasForOutput(),
 		doors: getDoorsForOutput(),
 		npcs: getNPCsForOutput(),
+		items: getItemsForOutput(),
 		startPoint: getStartPointForOutput()
 	};
 
@@ -277,14 +349,28 @@ function initializeEmptyScene(sceneName) {
 	clearWalkableAreas();
 	clearDoors();
 	clearNPCs();
+	clearItems();
 	clearStartPoints();
 	clearBackgroundImage();
 	points = [];
 
 	document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
-	document.getElementById('npcName').value = '';
-	document.getElementById('npcType').value = '';
-	document.getElementById('doorNextScene').value = '';
+	
+	// Reset form fields - check if they exist first
+	const npcImageSelect = document.getElementById('npcImageSelect');
+	if (npcImageSelect) npcImageSelect.value = '';
+	
+	const npcName = document.getElementById('npcName');
+	if (npcName) npcName.value = '';
+	
+	const doorNextScene = document.getElementById('doorNextScene');
+	if (doorNextScene) doorNextScene.value = '';
+	
+	const itemIngameSelect = document.getElementById('itemIngameSelect');
+	if (itemIngameSelect) itemIngameSelect.value = '';
+	
+	const itemInventorySelect = document.getElementById('itemInventorySelect');
+	if (itemInventorySelect) itemInventorySelect.value = '';
 	
 	updateOutput();
 	populateFormFields();
@@ -298,6 +384,7 @@ function loadSceneData(sceneName, data) {
 	clearWalkableAreas();
 	clearDoors();
 	clearNPCs();
+	clearItems();
 	clearStartPoints();
 	clearBackgroundImage();
 
@@ -325,14 +412,52 @@ function loadSceneData(sceneName, data) {
 	// Load NPCs
 	if (data.npcs && Array.isArray(data.npcs)) {
 		data.npcs.forEach(npc => {
-			npcs.push({
+			const npcObj = {
 				x: npc.x,
 				y: npc.y,
 				name: npc.name || 'NPC',
-				type: npc.type || 'npc'
-			});
+				npcImage: npc.npcImage || ''
+			};
+			
+			// Load the NPC image
+			if (npc.npcImage) {
+				const img = new Image();
+				img.src = `../absnormal/assets/characters/${npc.npcImage}`;
+				img.onload = () => {
+					npcObj.imageObj = img;
+					redraw();
+				};
+			}
+			
+			npcs.push(npcObj);
 		});
 		console.log('Loaded NPCs:', npcs);
+	}
+
+	// Load items
+	if (data.items && Array.isArray(data.items)) {
+		data.items.forEach(item => {
+			const itemObj = {
+				x: item.x,
+				y: item.y,
+				name: item.name || 'Item',
+				ingameImage: item.ingameImage || '',
+				inventoryImage: item.inventoryImage || ''
+			};
+			
+			// Load the ingame image
+			if (item.ingameImage) {
+				const img = new Image();
+				img.src = `../absnormal/assets/items/ingame/${item.ingameImage}`;
+				img.onload = () => {
+					itemObj.imageObj = img;
+					redraw();
+				};
+			}
+			
+			items.push(itemObj);
+		});
+		console.log('Loaded items:', items);
 	}
 
 	// Load start point
@@ -369,15 +494,9 @@ function loadSceneData(sceneName, data) {
 		};
 	} else {
 		console.log('No image in data');
-		document.getElementById('backgroundImageSelect').value = '';
 		redraw();
 	}
 
-	document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
-	document.getElementById('npcName').value = '';
-	document.getElementById('npcType').value = '';
-	document.getElementById('doorNextScene').value = '';
-	
 	updateOutput();
 	populateFormFields();
 	redraw();
@@ -389,6 +508,7 @@ function clearPolygons() {
 	clearWalkableAreas();
 	clearDoors();
 	clearNPCs();
+	clearItems();
 	clearStartPoints();
 	clearBackgroundImage();
 	points = [];
