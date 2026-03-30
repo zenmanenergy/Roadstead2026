@@ -5,6 +5,8 @@ let frameCount = 0;
 let frame = 1;
 let moving = false;
 let speed = 3;
+let targetX = null;
+let targetY = null;
 
 const absImages = {
 	down: [new Image(), new Image()],
@@ -33,28 +35,55 @@ absImages.right[1].src =
 function movePlayer() {
 	lastX = absX;
 	lastY = absY;
-    moving = false;
-    let newX = absX;
-    let newY = absY;
-    
-    if (keys["w"] || keys["arrowup"]) { newY -= speed; absDirection = "up"; moving = true; }
-    if (keys["s"] || keys["arrowdown"]) { newY += speed; absDirection = "down"; moving = true; }
-    if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
-    if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
-    
-    if (canMoveTo(newX, newY, 192, 192)) {
-        absX = newX;
-        absY = newY;
-    }
-   
-
-    if (moving) {
-        frameCount++;
-        if (frameCount >= frameDelay) {
-            frameCount = 0;
-            frame = frame === 1 ? 2 : 1;
-        }
-    }
+	moving = false;
+	let newX = absX;
+	let newY = absY;
+	
+	// Click-based movement
+	if (targetX !== null && targetY !== null) {
+		const deltaX = targetX - absX;
+		const deltaY = targetY - absY;
+		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		
+		// If at target, stop moving
+		if (distance < speed) {
+			targetX = null;
+			targetY = null;
+		} else {
+			// Move towards target
+			const moveX = (deltaX / distance) * speed;
+			const moveY = (deltaY / distance) * speed;
+			
+			newX = absX + moveX;
+			newY = absY + moveY;
+			
+			// Determine direction based on movement
+			if (Math.abs(deltaX) > Math.abs(deltaY)) {
+				absDirection = deltaX > 0 ? "right" : "left";
+			} else {
+				absDirection = deltaY > 0 ? "down" : "up";
+			}
+			
+			moving = true;
+		}
+	}
+	
+	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)) {
+		absX = newX;
+		absY = newY;
+	} else {
+		// Blocked by wall, stop animating
+		moving = false;
+	}
+	
+	// Only animate if character actually moved
+	if (moving && (absX !== lastX || absY !== lastY)) {
+		frameCount++;
+		if (frameCount >= frameDelay) {
+			frameCount = 0;
+			frame = frame === 1 ? 2 : 1;
+		}
+	}
 }
 
 function drawScene() {
@@ -62,24 +91,14 @@ function drawScene() {
 	if (currentBackgroundImage) {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
-
-	//Title screen start box
-	if(currentScene === "title"){
-		ctx.font = "30px Arial";
-		ctx.fillStyle = "white";
-		ctx.fillText("START", startBox.x + 80, startBox.y + 65);
-		return;
-	}
 	drawPlayer();
 }
 
 function drawPlayer(){
-	const img={
-		frame === 1
+	const img = frame === 1
 		? absImages[absDirection][0]
-		:absImages[absDirection][1];
-		ctx.drawImage(img, absX, absY, 192, 192);
-	}
+		: absImages[absDirection][1];
+	ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
 }
 
 function update(){

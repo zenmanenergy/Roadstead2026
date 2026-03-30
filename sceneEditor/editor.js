@@ -6,10 +6,10 @@ let points = [];
 const scenes = [
     'bedroom',
     'room_lab',
-    'room_city',
-    'room_office',
-    'room_pharmacy',
-    'CITY-absnormal'
+    'room_city_0',
+    'room_city_1',
+    'room_doctor',
+    'room_pharmacy'
 ];
 document.addEventListener('DOMContentLoaded', () => {
     canvas = document.getElementById('canvas');
@@ -207,7 +207,7 @@ function loadScene(sceneName) {
         return;
     }
     const sceneFile = `../absnormal/data/${sceneName}.json`;
-    console.log('Loading scene from:', sceneFile);
+	console.log('Loading scene from:', sceneFile);
 
     fetch(sceneFile)
         .then(response => {

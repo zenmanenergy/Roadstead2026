@@ -2,30 +2,36 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let gameState = "title";
-let currentRoom = 'lab';
-
-const absWalk = {
-	up: new Image(),
-	down: new Image(),
-	left: new Image(),
-	right: new Image()
-};
 
 let absDirection = "down";
 let absX = 368;
 let absY = 268;
 let currentBackgroundImage = null;
 
-let keys = {};
-
-const frameWidth = 96;
-const frameHeight = 96;
-const framePerAnimation = 4;
-
-let frameIndex = 0; 
+let keys = {}; 
 
 window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+
+// Click-based movement handler
+canvas.addEventListener('click', (event) => {
+	if (gameState !== "playing") return;
+	
+	const canvasRect = canvas.getBoundingClientRect();
+	const clickX = event.clientX - canvasRect.left;
+	const clickY = event.clientY - canvasRect.top;
+	
+	// Scale click position to actual canvas resolution (800x600)
+	const scaleX = canvas.width / canvasRect.width;
+	const scaleY = canvas.height / canvasRect.height;
+	
+	const canvasClickX = clickX * scaleX;
+	const canvasClickY = clickY * scaleY;
+	
+	// Convert click position to character absX, absY so feet go to clicked position
+	targetX = canvasClickX - HITBOX.CENTER_OFFSET_X;
+	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+});
 
 titleScreen.onload = () => drawTitle();
 
@@ -41,34 +47,8 @@ window.addEventListener('load', () => {
 		} else {
 			titleScreen.onload = drawTitle;
 		}
-	}).catch(error => {
-		if (titleScreen.complete) {
-			drawTitle();
-		} else {
-			titleScreen.onload = drawTitle;
-		}
 	});
 });
-
-function handleClick(event) {
-	if (gameState === "title") {
-		handleTitleClick(event);
-	} else if (gameState === "playing") {
-	}
-}
-
-
-function changeRooms() {
-	if (currentRoom === 'lab' && absX > canvas.width - frameWidth) {
-		currentRoom = 'city';
-		absX = 0;
-	}
-
-	if (currentRoom === 'city' && absX < 0) {
-		currentRoom = 'lab';
-		absX = canvas.width - frameWidth;
-	}
-}
 
 function update() {
 	if (gameState !== "playing") {
@@ -90,39 +70,29 @@ function update() {
 }
 
 function drawAbsNormal() {
+	const center = HITBOX.getCenter(absX, absY);
+	const feet = HITBOX.getFeet(absX, absY);
+	
+	// Draw center hitbox (red)
 	ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
 	ctx.beginPath();
-	ctx.arc(absX + 48, absY + 48, 30, 0, Math.PI * 2);
+	ctx.arc(center.x, center.y, 30, 0, Math.PI * 2);
 	ctx.fill();
 	
+	// Draw feet hitbox (blue)
 	ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+	ctx.beginPath();
+	ctx.arc(feet.x, feet.y, 30, 0, Math.PI * 2);
+	ctx.fill();
+	
+	ctx.fillStyle = "rgba(0, 255, 255, 1)";
 	ctx.font = "12px Arial";
-	ctx.fillText(absDirection, absX + 48, absY + 110);
+	ctx.fillText(absDirection, center.x, center.y + 14);
 	
 	ctx.fillStyle = "rgba(255, 255, 255, 1)";
 	ctx.font = "bold 16px Arial";
 	ctx.fillText(`Pos: (${Math.round(absX)}, ${Math.round(absY)})`, 10, 30);
-	drawStartPointDebug();
-}
-
-function checkDoorCollision() {
-	if (!sceneData[currentScene] || !sceneData[currentScene].doors) {
-		return;
-	}
-	
-	const playerCenterX = absX + 48;
-	const playerCenterY = absY + 96;
-	
-	for (let i = 0; i < sceneData[currentScene].doors.length; i++) {
-		const door = sceneData[currentScene].doors[i];
-		
-		if (isPointInPolygon([playerCenterX, playerCenterY], door.points)) {
-			if (door.destination) {
-				changeScene(door.destination);
-				return;
-			}
-		}
-	}
+	ctx.fillText(`Feet: (${Math.round(feet.x)}, ${Math.round(feet.y)})`, 10, 50);
 }
 
 function changeScene(sceneName) {
@@ -141,28 +111,4 @@ function changeScene(sceneName) {
 	};
 }
 
-async function ensureSceneLoaded(sceneName) {
-	if (sceneData[sceneName]) {
-		return true;
-	}
-	
-	try {
-		const response = await fetch(`data/${sceneName}.json`);
-		if (response.ok) {
-			sceneData[sceneName] = await response.json();
-			return true;
-		} else {
-			return false;
-		}
-	} catch (error) {
-		return false;
-	}
-}
 
-function debugSceneData(sceneName) {
-	if (!sceneData[sceneName]) {
-		return;
-	}
-	
-	const scene = sceneData[sceneName];
-}

@@ -22,6 +22,7 @@
                     <button class="tab-button active" data-tab="walkable">Walkable Areas</button>
                     <button class="tab-button" data-tab="door">Doors</button>
                     <button class="tab-button" data-tab="npc">NPCs</button>
+                    <button class="tab-button" data-tab="item">Items</button>
                     <button class="tab-button" data-tab="start">Start Point</button>
                     <button class="tab-button" data-tab="images">Images</button>
                 </div>
@@ -65,25 +66,45 @@
 
                     <div class="tab-panel" id="tab-npc">
                         <h3>NPCs</h3>
-                        <p class="hint">Add NPC info then click canvas to place.</p>
+                        <p class="hint">Select NPC image, enter name, then click canvas to place.</p>
+                        <div class="form-group">
+                            <label>NPC Image:</label>
+                            <select id="npcImageSelect">
+                                <option value="">-- Loading NPCs --</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>NPC Name:</label>
                             <input type="text" id="npcName" placeholder="e.g., Doctor, Guard...">
-                        </div>
-                        <div class="form-group">
-                            <label>NPC Type:</label>
-                            <select id="npcType">
-                                <option value="">-- Select Type --</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="guard">Guard</option>
-                                <option value="npc">Generic NPC</option>
-                            </select>
                         </div>
                         <button onclick="addNPC()" class="btn-primary">Add NPC</button>
                         
                         <div id="npcsListContainer" style="margin-top: 16px; display: none;">
                             <h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Existing NPCs:</h4>
                             <div id="npcsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="tab-item">
+                        <h3>Items</h3>
+                        <p class="hint">Select in-game and inventory images, then click on canvas to place.</p>
+                        <div class="form-group">
+                            <label>In-Game Image:</label>
+                            <select id="itemIngameSelect">
+                                <option value="">-- Loading items --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Inventory Image (60x60px):</label>
+                            <select id="itemInventorySelect">
+                                <option value="">-- Loading items --</option>
+                            </select>
+                        </div>
+                        <button onclick="addItem()" class="btn-primary">Add Item</button>
+                        
+                        <div id="itemsListContainer" style="margin-top: 16px; display: none;">
+                            <h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Items in Scene:</h4>
+                            <div id="itemsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
                         </div>
                     </div>
 
@@ -116,6 +137,7 @@
     <script src="walkableAreas.js"></script>
     <script src="doors.js"></script>
     <script src="npcs.js"></script>
+    <script src="items.js"></script>
     <script src="startPoint.js"></script>
     <script src="images.js"></script>
     <script src="editor.js"></script>
