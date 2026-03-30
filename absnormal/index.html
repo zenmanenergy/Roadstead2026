@@ -64,7 +64,7 @@
 
        <div id="buttonContainer"></div> <!-- Button container placeholder -->
         <script src="scenes.js"></script>
-        <script src="startPoint.js"></script>
+        <script src="../sceneEditor/startPoint.js"></script>
         <script src="title.js"></script>
         <script src="game.js"></script>
         <script src="navigation.js"></script>
@@ -80,7 +80,9 @@
     
             const buttonSensor = document.createElement('div');
             buttonSensor.id = 'buttonSensor';
-    
+
+
+            let backgrounds = null;
             // Append elements to the button container
             // buttonContainer.appendChild(buttonImage);
             buttonContainer.appendChild(buttonSensor);
