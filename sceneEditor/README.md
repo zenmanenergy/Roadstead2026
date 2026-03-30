@@ -53,7 +53,8 @@ Save the JSON output to: `absnormal/data/[scenename].json`
 
 Examples:
 - `absnormal/data/room_bedroom.json`
-- `absnormal/data/room_city.json`
+- `absnormal/data/room_city_0.json`
+- `absnormal/data/room_city_1.json`
 - `absnormal/data/room_lab.json`
 
 ## Code Structure

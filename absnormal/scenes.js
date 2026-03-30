@@ -1,7 +1,8 @@
 const scenes = [
     'bedroom',
     'room_lab',
-    'room_city',
+    'room_city_0',
+    'room_city_1',
     'room_doctor',
     'room_pharmacy',
     'CITY-absnormal'
