@@ -7,25 +7,24 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<h1>The Adventures of Abs Normal</h1>
 
 		<canvas id="gameCanvas" width="800" height="600"></canvas>
 
 	<style>#buttonContainer {
-		position: absolute;
-		bottom: 140px;;
-		width: 200px;
-		height: 175px;
+		position: fixed;
+		width: 120px;
+		height: 100px;
 		background-image: url(assets/backgrounds/start_button.png);
-		background-repeat: no repeat;
+		background-repeat: no-repeat;
 		background-position: center;
-		background-size:144%;
+		background-size: contain;
+		z-index: 10;
 	}
 
 		#startButton {
 		position: absolute;
-		bottom:140px;
 		left: 0;
+		top: 0;
 		width: 100%;
 		height: 100%;
 		cursor: pointer;
@@ -34,10 +33,10 @@
 
 		#buttonSensor {
 		position: absolute;
-		bottom:140;
 		left: 0;
-		width: 200px;
-		height: 175px;
+		top: 0;
+		width: 120px;
+		height: 100px;
 		cursor: pointer;
 	}
 
@@ -46,7 +45,42 @@
 	<p id="status"></p>
 
 	<div id="buttonContainer"></div>
+	
+	<div id="gameMenu">
+		<div id="leftPanel">
+			<div id="verbStrip">
+				<button class="verb-btn" data-verb="give" style="background-image: url('assets/verbs/give.png');"></button>
+				<button class="verb-btn" data-verb="open" style="background-image: url('assets/verbs/open.png');"></button>
+				<button class="verb-btn" data-verb="close" style="background-image: url('assets/verbs/close.png');"></button>
+				<button class="verb-btn" data-verb="take" style="background-image: url('assets/verbs/take.png');"></button>
+				<button class="verb-btn" data-verb="look" style="background-image: url('assets/verbs/look.png');"></button>
+				<button class="verb-btn" data-verb="talk" style="background-image: url('assets/verbs/talk.png');"></button>
+				<button class="verb-btn" data-verb="use" style="background-image: url('assets/verbs/use.png');"></button>
+				<button class="verb-btn" data-verb="push" style="background-image: url('assets/verbs/push.png');"></button>
+				<button class="verb-btn" data-verb="pull" style="background-image: url('assets/verbs/pull.png');"></button>
+			</div>
+		</div>
+		
+		<div id="rightPanel">
+			<div id="inventoryPanel">
+				<div id="inventorySlots">
+					<div class="inv-slot" data-slot="0" style="background-image: url('');"></div>
+					<div class="inv-slot" data-slot="1" style="background-image: url('');"></div>
+					<div class="inv-slot" data-slot="2" style="background-image: url('');"></div>
+					<div class="inv-slot" data-slot="3" style="background-image: url('');"></div>
+					<div class="inv-slot" data-slot="4" style="background-image: url('');"></div>
+					<div class="inv-slot" data-slot="5" style="background-image: url('');"></div>
+				</div>
+				<div id="arrowButtons">
+					<button id="invUp" class="inv-arrow">▲</button>
+					<button id="invDown" class="inv-arrow">▼</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<script src="./hitbox.js"></script>
+	<script src="./menu.js"></script>
 	<script src="./scenes.js"></script>
 	<script src="./startPoint.js"></script>
 	<script src="./title.js"></script>
@@ -67,6 +101,21 @@
 			};
 			handleClick(fakeEvent);
 		});
+		
+		// Position button at center-bottom of canvas
+		function positionStartButton() {
+			const canvasRect = canvas.getBoundingClientRect();
+			const buttonWidth = 120;
+			const buttonHeight = 100;
+			const buttonX = canvasRect.left + (canvasRect.width - buttonWidth) / 2;
+			const buttonY = canvasRect.bottom - buttonHeight - 20;
+			
+			buttonContainer.style.left = buttonX + 'px';
+			buttonContainer.style.top = buttonY + 'px';
+		}
+		
+		positionStartButton();
+		window.addEventListener('resize', positionStartButton);
 	</script>
 	
 	</body>

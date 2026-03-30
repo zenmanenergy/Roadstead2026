@@ -5,6 +5,8 @@ let frameCount = 0;
 let frame = 1;
 let moving = false;
 let speed = 3;
+let targetX = null;
+let targetY = null;
 
 const absImages = {
 	down: [new Image(), new Image()],
@@ -40,70 +42,68 @@ function movePlayer() {
     let newX = absX;
     let newY = absY;
     
-    if (keys["w"] || keys["arrowup"]) { newY -= speed; absDirection = "up"; moving = true; }
-    if (keys["s"] || keys["arrowdown"]) { newY += speed; absDirection = "down"; moving = true; }
-    if (keys["a"] || keys["arrowleft"]) { newX -= speed; absDirection = "left"; moving = true; }
-    if (keys["d"] || keys["arrowright"]) { newX += speed; absDirection = "right"; moving = true; }
-    
-    // Check if new position is walkable
-    if (canMoveTo(newX, newY, 192, 192)) {
-        absX = newX;
-        absY = newY;
-    }
-   
+    if (targetX !== null && targetY !== null){
+		const deltax = targetX - absX;
+		const deltaY = targetY - absY;
+		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    if (moving) {
-        frameCount++;
-        if (frameCount >= frameDelay) {
-            frameCount = 0;
-            frame = frame === 1 ? 2 : 1;
-        }
-    }
-}
+		// If at target, stop moving
+		if (distance < speed) {
+				targetX = null;
+				targetY = null;
+		} else {
+				// Move toward target
+				const moveX = (deltaX / distance) * speed;
+				const moveY = (deltaY / distance) * speed;
 
-function drawScene() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(backgrounds[currentScene], 0, 0, canvas.width, canvas.height);
+				newX = absX + moveX;
+				newY = absY + moveY;
 
-	//Title screen start box
-	if(currentScene === "title"){
-		// ctx.strokeStyle = "red";
-		// ctx.lineWidth = 4;
-		// ctx.strokeRect(startBox.x, startBox.y, startBox.width, startBox.height);
-		ctx.font = "30px Arial";
-		ctx.fillStyle = "white";
-		ctx.fillText("START", startBox.x + 80, startBox.y + 65);
-		return;
-	}
-	if (currentScene === "bedroom") {
-        ctx.drawImage(doorFrames[door.currentFrame], door.x, door.y, door.width, door.height);
-    }
-	drawPlayer();
-}
-
-//draw player according to direction and frame
-function drawPlayer(){
-	const img=
-		frame === 1
-		? absImages[absDirection][0]
-		:absImages[absDirection][1];
-		ctx.drawImage(img, absX, absY, 192, 192);
-		if (absX!=lastX || absY!=lastY){
-			console.log ("x",absX, "y",absY);
+				// Determine direction based on movement
+				if (Math.abs(deltaX) > Math.abs(deltaY)) {
+						absDirection = deltaX > 0 ? "right" : "left";
+				} else {
+						absDirection = deltaY > 0 ? "down" : "up";
+				}
+				moving = true;
 		}
-}
-
-//game loop
-function update(){
-	if (currentScene !== "title"){
-		movePlayer();
-		checkTransitions();
-		checkDoor();
 	}
-	drawScene();
-	requestAnimationFrame(update);
+	if (canMoveTo(newX, newY, Hitbox.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)){
+			absX = newX;
+			absY = newY;
+	} else {
+			// Blocked by wall, stop animating
+			moving = false;
+	}
+	// only animate if character actually moved
+	if (moving && (absX !== last || absY !== lastY)) {
+			frameCount++;
+			if (frameCount >= frameDelay) {
+					frameCount = 0;
+					frame = frame === 1 ? 2 : 1;
+			}
+		}
+
 }
-
-//start animation loop
-// update();
-
+function drawScene() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (currentBackgroundImage) {
+				ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+		}
+		drawPlayer();
+}
+function drawPlayer(){
+		const img = frame === 1
+			? absImage[absDirection][0]
+			: absImages[absDirection][1];
+		ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+}
+function update(){
+		if (currentScene !== "title"){
+				movePlayer();
+				checkTransitions();
+				checkDoor();
+		}
+		drawScene();
+		requestAnimationFrame(update);
+	}
