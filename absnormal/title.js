@@ -4,7 +4,7 @@ function drawTitle() {
         ctx.clearRect(0, 0, CanvasCaptureMediaStreamTrack.width, CanvasCaptureMediaStreamTrack.height);
          ctx.drawImage(titleScreen, 0, 0, CanvasCaptureMediaStreamTrack.height);
 }
-function handleTitleClick(event) {
+function handleClick(event) {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
@@ -39,7 +39,7 @@ function startGame(){
             }
             const buttoncontainer = document.getElementById('buttonContainer');
             if (buttonContainer) {
-                    buttonConstainer.style.display = 'none';
+                    buttonContainer.style.display = 'none';
             }
 }
         

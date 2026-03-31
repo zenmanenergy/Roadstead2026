@@ -15,7 +15,7 @@ function checkDoorCollision(){
     const playerCenterY = absY + 96;
 
     for (let i = 0; i < sceneData[currentScene].doors.length; i++){
-            const door = sceneData[currentScene].dooors[i];
+            const door = sceneData[currentScene].doors[i];
 
             if (isPointInPolygon([playerCenterX,playerCenterY], door.points)) {
                     if(door.nextScene) {

@@ -43,7 +43,7 @@ function movePlayer() {
     let newY = absY;
     
     if (targetX !== null && targetY !== null){
-		const deltax = targetX - absX;
+		const deltaX = targetX - absX;
 		const deltaY = targetY - absY;
 		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
@@ -68,7 +68,7 @@ function movePlayer() {
 				moving = true;
 		}
 	}
-	if (canMoveTo(newX, newY, Hitbox.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)){
+	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)){
 			absX = newX;
 			absY = newY;
 	} else {
@@ -76,7 +76,7 @@ function movePlayer() {
 			moving = false;
 	}
 	// only animate if character actually moved
-	if (moving && (absX !== last || absY !== lastY)) {
+	if (moving && (absX !== lastX || absY !== lastY)) {
 			frameCount++;
 			if (frameCount >= frameDelay) {
 					frameCount = 0;
@@ -94,7 +94,7 @@ function drawScene() {
 }
 function drawPlayer(){
 		const img = frame === 1
-			? absImage[absDirection][0]
+			? absImages[absDirection][0]
 			: absImages[absDirection][1];
 		ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
 }
