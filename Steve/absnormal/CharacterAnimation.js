@@ -91,6 +91,16 @@ function drawScene() {
 	if (currentBackgroundImage) {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
+
+	// Draw items for current scene
+	if (sceneData[currentScene] && sceneData[currentScene].items) {
+		sceneData[currentScene].items.forEach(item => {
+			if (item.imageObj && item.imageObj.complete && item.imageObj.naturalWidth > 0) {
+				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
+			}
+		});
+	}
+
 	drawPlayer();
 }
 
