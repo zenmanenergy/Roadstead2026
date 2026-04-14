@@ -110,10 +110,10 @@
   "items": [
     {
       "name": "potion",
-      "ingameImage": "potion.jpg",
+      "ingameImage": "potion.png",
       "inventoryImage": "potion.jpg",
-      "x": 552.4861956079836,
-      "y": 505.5828234900726
+      "x": 101.28913586146368,
+      "y": 529.5092038581707
     }
   ],
   "startPoint": [

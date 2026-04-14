@@ -49,6 +49,10 @@ function movePlayer() {
 		if (distance < speed) {
 			targetX = null;
 			targetY = null;
+			if (pendingPickup) {
+				collectItem(pendingPickup);
+				pendingPickup = null;
+			}
 		} else {
 			// Move towards target
 			const moveX = (deltaX / distance) * speed;
@@ -92,9 +96,10 @@ function drawScene() {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
 
-	// Draw items for current scene
+	// Draw items for current scene (skip already collected ones)
 	if (sceneData[currentScene] && sceneData[currentScene].items) {
 		sceneData[currentScene].items.forEach(item => {
+			if (collectedItems.has(`${currentScene}:${item.name}`)) return;
 			if (item.imageObj && item.imageObj.complete && item.imageObj.naturalWidth > 0) {
 				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
 			}

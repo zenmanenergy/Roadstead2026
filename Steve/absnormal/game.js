@@ -3,6 +3,9 @@ const ctx = canvas.getContext("2d");
 
 let gameState = "title";
 
+let collectedItems = new Set(); // "sceneName:itemName"
+let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
+
 let absDirection = "down";
 let absX = 368;
 let absY = 268;
@@ -16,21 +19,67 @@ window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 // Click-based movement handler
 canvas.addEventListener('click', (event) => {
 	if (gameState !== "playing") return;
-	
+
 	const canvasRect = canvas.getBoundingClientRect();
 	const clickX = event.clientX - canvasRect.left;
 	const clickY = event.clientY - canvasRect.top;
-	
+
 	// Scale click position to actual canvas resolution (800x600)
 	const scaleX = canvas.width / canvasRect.width;
 	const scaleY = canvas.height / canvasRect.height;
-	
+
 	const canvasClickX = clickX * scaleX;
 	const canvasClickY = clickY * scaleY;
-	
-	// Convert click position to character absX, absY so feet go to clicked position
+
+	// If Take verb is active, check if clicking on an item
+	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
+		const clickedItem = sceneData[currentScene].items.find(item =>
+			!collectedItems.has(`${currentScene}:${item.name}`) &&
+			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
+			canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
+		);
+		if (clickedItem) {
+			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
+			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+			pendingPickup = { sceneName: currentScene, item: clickedItem };
+			return;
+		}
+	}
+
+	// Default: move to clicked position
 	targetX = canvasClickX - HITBOX.CENTER_OFFSET_X;
 	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+});
+
+function collectItem(pickup) {
+	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
+	addToInventory({
+		name: pickup.item.name,
+		imagePath: `assets/items/inventory/${pickup.item.inventoryImage}`
+	});
+	statusBar.textContent = '';
+}
+
+const statusBar = document.getElementById('statusBar');
+
+canvas.addEventListener('mousemove', (event) => {
+	if (gameState !== "playing") return;
+
+	const canvasRect = canvas.getBoundingClientRect();
+	const scaleX = canvas.width / canvasRect.width;
+	const scaleY = canvas.height / canvasRect.height;
+	const canvasX = (event.clientX - canvasRect.left) * scaleX;
+	const canvasY = (event.clientY - canvasRect.top) * scaleY;
+
+	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
+		const hoveredItem = sceneData[currentScene].items.find(item =>
+			canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
+			canvasY >= item.y - 20 && canvasY <= item.y + 20
+		);
+		statusBar.textContent = hoveredItem ? hoveredItem.name : '';
+	} else {
+		statusBar.textContent = '';
+	}
 });
 
 titleScreen.onload = () => drawTitle();
