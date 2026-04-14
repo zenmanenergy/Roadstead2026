@@ -2,7 +2,13 @@ let canvas;
 let ctx;
 let currentMode = 'walkable';
 let points = [];
+let currentMouseX= null;
+let currentMouseY = null;
+let currentItemIngameImage = null;
+let currentItemInventoryImage = null;
+let currentNPCImage = null;
 
+// Scene list
 const scenes = [
     'bedroom',
     'room_lab',
@@ -11,35 +17,68 @@ const scenes = [
     'room_doctor',
     'room_pharmacy'
 ];
+
+// ===== Initialization =====
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded event fired');
+
+    // Initialize canvas after DOM is loaded
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+    console.log('Canvas initialized:', canvas, ctx);
+
+    //Set up canvas events
     canvas.addEventListener('click', handleCanvasClick);
     canvas.addEventListener('mousemove', handleCanvasMouseMove);
+    console.log('Canvas events attached');
+
+    //Set up tab switching
+    console.log('Setting up tab switching, found tabs:', document.querySelectorAll('.tab-button').length)
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            
             button.classList.add('active');
             const tabName = button.dataset.tab;
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
             currentMode = tabName;
             points = [];
+            currentItemIngameImage = null;
+            currentNPCImage = null;
+            currentMouseX = null;
+            currentMouseY = null;
             redraw();
         });
     });
+    console.log('Tab switching setup complete');
 
+    //Populate scenes
     const sceneSelect = document.getElementById('sceneSelect');
+    console.log('Scene select element:' sceneSelect);
     scenes.forEach(scene => {
         const option = document.createElement('option');
         option.value = scene;
         option.textContent = scene.charAt(0).toUpperCase() + scene.slice(1);
         sceneSelect.appendChild(option);
     });
+    console.log('Scenes populated:', scenes.length);
+
+    //Initialize images module
     initializeImageSelect();
+    console.log('Images module initialized');
+
+    //Initialize items module
+    initializeItemSelect();
+    console.log('Items module initialized');
+
+    //Initialized NPCs module
+    initializeNPCsSelect();
+    console.log('NPCs module initialized');
 });
 
+// ===== Canvas Events ====
 function handleCanvasClick(e) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -49,41 +88,52 @@ function handleCanvasClick(e) {
 
     if (currentMode === 'start') {
         placeStartPoint(x,y);
-    }
-    else if (currentMode === 'npc') {
+    } else if (currentMode === 'npc') {
         placeNPC(x, y);
-    }
-    else {
+    } else if (currentMode === 'item') {
+        placeItem(x, y);
+    } else {
+        // Walkable areas and doors use polygona points
         points.push({ x, y });
         redraw();
     }
 }
 
 function handleCanvasMouseMove(e) {
-    if (points.length > 0) {
-        redraw();
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
 
-        ctx.strokeStyle - '#ffff00';
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        if (currentMode === 'item') {
+            // Track mouse positions for item preiview 
+            currentMouseX = x;
+            currentMouseY = y;
+            redraw();
+        } else if (currentMode === 'npc') {
+            // Track mouse position for NPC preview
+            currentMouseX = x;
+            currentMouseY = y;
+            redraw();
+
+            // Draw preview line to current mouse position
+            ctx.strokeStyle - '#ffff00';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(points[points.length - 1].x, points[points.length - 1].y);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
     }
 }
 
+// ===== Polygon Operations =====
 function finishPolygon() {
     let success = false;
     if(currentMode === 'walkable') {
         success = finishWalkablePolygon(points);
-    }
-    else if (currentMode === 'door') {
+    }else if (currentMode === 'door') {
         success = finishDoorPolygon(points);
     }
     if (success) {
@@ -99,6 +149,7 @@ function undoLastPoint() {
     redraw();
 }
 
+// ===== Form Field Population =====
 function populateFormFields() {
     populateWalkableAreasPanel();
     populateDoorsPanel();
@@ -108,18 +159,22 @@ function populateFormFields() {
 
 function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(currentBackgroundImage);
+
+    // Draw background image
     if (currentBackgroundImage) {
         ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
     }
+    //Draw all walkable areas
     walkableAreas.forEach((area, index) => {
         drawPolygon(area, '#00ff00', 0.3);
+        //Draw label
         const bounds = getBounds(area);
         ctx.fillSyle - '#00ff00';
         ctx.font - '12px Arial';
         ctx.fillText(`WA${index}`, bounds.minX + 5, bounds.minY + 15, bounds.minY +15);
     });
 
+    // Draw all doors
     doors.forEach((door, index) => {
         drawPolygon(door.points, '#ff00ff', 0.3);
         const bounds = getBounds(door.points);
@@ -128,9 +183,17 @@ function redraw() {
         ctx.fillText(`D${index}`, bounds.minX + 5, bounds.minY +15);
     });
 
+    //Draw all NPC's
     npcs.forEach((npc) => {
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(npc.x - 5, npc.y -5, 10, 10);
+        if (npc.imageObj) {
+                // Draw the actual NPC image
+                ctx.drawImage(npc.imageObj, npc.x - npc.y - 48, 96, 96);
+        } else {
+                // Fallback: draw a yellow square if image hasnt loaded yet
+                  ctx.fillStyle = '#ffff00';
+                  ctx.fillRect(npc.x - 5, npc.y -5, 10, 10);
+        }
+        // Draw NPC name label
         ctx.font = '10px Arial';
         ctx.fillStyle = '#ffff00';
         ctx.fillText(npc.name, npc.x - 8, npc.y);
