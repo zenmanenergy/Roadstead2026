@@ -86,7 +86,7 @@
 						</div>
 					</div>
 
-					<div class=""tab-panel" id=""tab-item">
+					<div class="tab-panel" id="tab-item">
 						<h3>Items</h3>
 						<p class=""hint'>Select in-game and inventory images, then click on canvas to place.</p>
 						<div class="form-group">
@@ -95,19 +95,18 @@
 								<option value="">-- Loading items --</option>
 							</select>
 						</div>
-					</div>
+						<div class="form-group">
+							<label>Inventory Image (60x60px):</label>
+							<select id=""itemInventorySelect">
+								<option value=""">-- Loading items --</option>"
+							</select>
+						</div>
+						<button onclick="addItem()" class=""btn-primary">Add Item</button>
 
-					<div class="form-group">
-						<label>Inventory Image (60x60px):</label>
-						<select id=""itemInventorySelect">
-							<option value=""">-- Loading items --</option>"
-						</select>
-					</div>
-					<button onclick="addItem()" class=""btn-primary">Add Item</button>
-
-					<div id="itemsListContainer" style="margin-top: 16px; display: none;">
-						<h4 style"margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Items in Scene:</h4>"
-						<div id="itemsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e342; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+						<div id="itemsListContainer" style="margin-top: 16px; display: none;">
+							<h4 style"margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Items in Scene:</h4>
+							<div id="itemsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+						</div>
 					</div>
 
 					<div class="tab-panel" id="tab-start">
@@ -139,6 +138,7 @@
 	<script src="walkableAreas.js"></script>
 	<script src="doors.js"></script>
 	<script src="npcs.js"></script>
+	<script src="items.js"></script>
 	<script src="startPoint.js"></script>
 	<script src="images.js"></script>
 	<script src="editor.js"></script>
