@@ -41,6 +41,14 @@ function extractFilenames(html) {
     const matches = [];
     let match;
     while ((match = fileRegex.exec(html)) !== null) {
-        
+        matches.push(match[1]);
     }
+    return matches;
 }
+
+function addItem() {
+    const ingameImage = document.getElementById('itemIngameSelect').value;
+    const inventoryImage = document.getElementById('itemInventorySelect').value;
+
+    if (!ingameImage)
+} 
