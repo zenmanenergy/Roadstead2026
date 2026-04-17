@@ -17,6 +17,7 @@ body{
 
 /* Container keeps canvas + statusBar + menu all the same width */
 #gameContainer {
+	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
 	width: min(95vw, calc(65vh * 800 / 600));
@@ -81,6 +82,7 @@ h1{
 	flex-direction: column;
 	gap: 2px;
 	align-items: flex-start;
+	flex-shrink: 0;
 }
 
 
@@ -98,8 +100,8 @@ h1{
 }
 
 .verb-btn {
-	width: clamp(45px, 6vw, 60px);
-	height: clamp(30px, 4vw, 40px);
+	width: 14cqi;
+	height: 9cqi;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -149,6 +151,7 @@ h1{
 
 /* Right Panel - Inventory */
 #rightPanel {
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
@@ -158,27 +161,29 @@ h1{
 #inventoryPanel {
 	display: flex;
 	flex-direction: row;
-	align-items: flex-start;
+	align-items: center;
 	gap: 4px;
 }
 
 #arrowButtons {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	gap: 1px;
+	padding: 0 4px;
 }
 
 .inv-arrow {
-	padding: 2px 4px;
+	padding: 0.4cqi 0.6cqi;
 	background-color: #444;
 	color: #fff;
 	border: 1px solid #666;
 	border-radius: 3px;
 	cursor: pointer;
-	font-size: clamp(11px, 1.8vw, 14px);
+	font-size: 1.5cqi;
 	font-weight: bold;
 	transition: all 0.2s ease;
-	min-width: clamp(35px, 4vw, 45px);
+	min-width: 4cqi;
 }
 
 .inv-arrow:hover {
@@ -199,8 +204,8 @@ h1{
 }
 
 .inv-slot {
-	width: clamp(35px, 8vw, 60px);
-	height: clamp(35px, 8vw, 60px);
+	width: 13cqi;
+	height: 13cqi;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
