@@ -19,7 +19,7 @@ async function loadSceneData() {
         'city_1': 'room_city_1',
         'doctor': 'room_doctor',
         'pharmaacy': 'room_pharmacy',
-    }
+    };
     for (const sceneName of scenes) { 
         const fileName = fileMap[sceneName];
         const response= await fetch('/Steve/absnormal/data/${filename}.json');
@@ -33,9 +33,10 @@ async function loadSceneData() {
                     img.src = 'assets/items/ingame/${item.ingameImage}';
                     item.imageObj = img;
                 }
-              })  
+              }); 
             }
-        }  
+            console.log(`✓ Loaded scene: ${sceneName}`);
+        }else{console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);}
 
     }
    
@@ -60,6 +61,7 @@ function canMoveTo(newX, newY, width, height) {
     if (!sceneData[currentScene] || !sceneData[currentScene].walkableAreas0) {
         return true;
     }
+    
    
     }
 
