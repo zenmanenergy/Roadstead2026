@@ -12,35 +12,35 @@ let sceneData = {};
 let currentScene = "title";
 
 async function loadSceneData() {
-    for (const sceneName of scenes) {
-        try {
-            const response = await fetch(`data/${sceneName}.json`);
-            if (response.ok) {
-                sceneData[sceneName] = await response.json();
-            } else {
-                console.warn(`Failed to load ${sceneName}: HTTP ${response.status}`);
-            }
-        } catch (error) {
-                console.warn(`Error loading ${sceneName}: $error.message}`);
-            }
+    const fileMap = {
+        'bedroom' : 'bedroom',
+        'lab': 'room_lab',
+        'city_0': 'room_city_0',
+        'city_1': 'room_city_1',
+        'doctor': 'room_doctor',
+        'pharmaacy': 'room_pharmacy',
     }
-}
+    for (const sceneName of scenes) { 
+        const fileName = fileMap[sceneName];
+        const response= await fetch('/Steve/absnormal/data/${filename}.json');
 
-function isSceneValid(sceneName) {
-    returnsceneData[sceneName] !== undefined;
-}
+        if (response.ok) {
+            sceneData[sceneName] = await response.json();
+            if (sceneData[sceneName].items){
+              sceneData[sceneName].items.forEach(item => {
+                if (item.ingameImage) {
+                    const img= new Image();
+                    img.src = 'assets/items/ingame/${item.ingameImage}';
+                    item.imageObj = img;
+                }
+              })  
+            }
+        }  
 
-function getScene(sceneName) {
-    return sceneData[sceneName] || null;
-}
-
-function getSceneStartPoint(sceneName) {
-    const scene = sceneData[sceneName];
-    if (scene && scene.startPoint) {
-        return scene.startPoint;
     }
-    return null;
-}
+   
+
+
 
 function isPointInPolygon(point, polygon) {
     let inside = false;
@@ -56,8 +56,11 @@ function isPointInPolygon(point, polygon) {
 }
 
 function canMoveTo(newX, newY, width, height) {
-    if (!sceneData[currentScene] || !sceneData[currentScene].walkableAreas) {
+    const feet= HITBOX.getfeet(newX, newY); 
+    if (!sceneData[currentScene] || !sceneData[currentScene].walkableAreas0) {
         return true;
+    }
+   
     }
 
     const centerX = newX + width / 2;
@@ -71,27 +74,3 @@ function canMoveTo(newX, newY, width, height) {
     return false;
 }
 
-function setPlayerStartPoint(sceneName) {
-
-    if (!sceneData[sceneName]) {
-        const rawStartPoint = sceneData[sceneName].startPoint;
-
-        absX = rawStartPoint[0] - 48;
-        absY = rawStartPoint [1] - 96;
-        absDirection = "down";
-
-        return true;
-    } else {
-        absX = CanvasCaptureMediaStreamTrack.width / 2 - 48;
-        absY = CanvasCaptureMediaStreamTrack.height / 2 - 96;
-        absDirection = "down";
-        return false;
-    }
-}
-
-function getStartPoint(scenName) {
-    if (sceneData[sceneName] && sceneData[sceneName].startPoint) {
-        returnsceneData[sceneName].startPoint;
-    }
-    return null;
-}
