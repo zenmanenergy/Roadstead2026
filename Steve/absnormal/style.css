@@ -15,15 +15,21 @@ body{
 	gap: 3px;
 }
 
+/* Container keeps canvas + statusBar + menu all the same width */
+#gameContainer {
+	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
+	width: min(95vw, calc(65vh * 800 / 600));
+}
+
 /*center the canvas and make it clickable*/
 canvas{
 	border: 2px solid white;
 	cursor: pointer;
 	box-shadow: 0 0 20px rgba(255, 255, 0.2);
-	width: auto;
+	width: 100%;
 	height: auto;
-	max-width: min(95vw, calc(65vh * 800 / 600));
-	max-height: 65vh;
 	aspect-ratio: 800 / 600;
 	display: block;
 }
@@ -42,14 +48,29 @@ h1{
 	display: none;
 }
 
+/* Status bar between scene and menu */
+#statusBar {
+	width: 100%;
+	height: 20px;
+	background-color: #111;
+	border-left: 2px solid white;
+	border-right: 2px solid white;
+	color: #ffaa00;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	padding: 2px 8px;
+	box-sizing: border-box;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* DOTT-style game menu */
 #gameMenu {
 	display: flex;
 	justify-content: flex-start;
 	align-items: flex-start;
 	width: 100%;
-	max-width: min(95vw, calc(65vh * 800 / 600));
-	margin: 0 auto;
 	padding: 0;
 	background-color: #1a1a1a;
 	border-top: 2px solid #444;
@@ -61,6 +82,7 @@ h1{
 	flex-direction: column;
 	gap: 2px;
 	align-items: flex-start;
+	flex-shrink: 0;
 }
 
 
@@ -78,8 +100,8 @@ h1{
 }
 
 .verb-btn {
-	width: clamp(45px, 6vw, 60px);
-	height: clamp(30px, 4vw, 40px);
+	width: 14cqi;
+	height: 9cqi;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -90,11 +112,36 @@ h1{
 	transition: all 0.2s ease;
 	padding: 0;
 	font-size: 0;
+	position: relative;
+}
+
+.verb-btn::after {
+	content: attr(data-verb);
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: #222;
+	color: #ffaa00;
+	font-size: 11px;
+	font-family: Arial, sans-serif;
+	text-transform: capitalize;
+	padding: 3px 7px;
+	border-radius: 3px;
+	border: 1px solid #555;
+	white-space: nowrap;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease;
 }
 
 .verb-btn:hover {
 	border-color: #ffaa00;
 	box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+}
+
+.verb-btn:hover::after {
+	opacity: 1;
 }
 
 .verb-btn.active {
@@ -104,6 +151,7 @@ h1{
 
 /* Right Panel - Inventory */
 #rightPanel {
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
@@ -113,27 +161,29 @@ h1{
 #inventoryPanel {
 	display: flex;
 	flex-direction: row;
-	align-items: flex-start;
+	align-items: center;
 	gap: 4px;
 }
 
 #arrowButtons {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	gap: 1px;
+	padding: 0 4px;
 }
 
 .inv-arrow {
-	padding: 2px 4px;
+	padding: 0.4cqi 0.6cqi;
 	background-color: #444;
 	color: #fff;
 	border: 1px solid #666;
 	border-radius: 3px;
 	cursor: pointer;
-	font-size: clamp(11px, 1.8vw, 14px);
+	font-size: 1.5cqi;
 	font-weight: bold;
 	transition: all 0.2s ease;
-	min-width: clamp(35px, 4vw, 45px);
+	min-width: 4cqi;
 }
 
 .inv-arrow:hover {
@@ -154,8 +204,8 @@ h1{
 }
 
 .inv-slot {
-	width: clamp(35px, 8vw, 60px);
-	height: clamp(35px, 8vw, 60px);
+	width: 13cqi;
+	height: 13cqi;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;

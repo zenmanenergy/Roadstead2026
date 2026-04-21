@@ -26,6 +26,16 @@ async function loadSceneData() {
 		const response = await fetch(`/Steve/absnormal/data/${fileName}.json`);
 		if (response.ok) {
 			sceneData[sceneName] = await response.json();
+			// Pre-load item images
+			if (sceneData[sceneName].items) {
+				sceneData[sceneName].items.forEach(item => {
+					if (item.ingameImage) {
+						const img = new Image();
+						img.src = `assets/items/ingame/${item.ingameImage}`;
+						item.imageObj = img;
+					}
+				});
+			}
 			console.log(`✓ Loaded scene: ${sceneName}`);
 		} else {
 			console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);

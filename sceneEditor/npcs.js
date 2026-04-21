@@ -1,27 +1,87 @@
 // NPCs Tab Module
 
 let npcs = [];
+let npcFiles = [];
+
+function initializeNpcSelect() {
+	fetch('../absnormal/assets/characters/')
+	.then(r => r.text())
+	.catch(() => '')
+	.then((html) => {
+		npcFiles = extractFilenames(html);
+		const npcSelect = document.getElementById('npcImageSelect');
+		if (npcSelect) {
+			npcSelect.innerHTML = '<option value="">-- Select NPC Image --</option>';
+			npcFiles.forEach(file => {
+				const option = document.createElement('option');
+				option.value = file;
+				option.textContent = file;
+				npcSelect.appendChild(option)
+			});
+		}
+	});
+}
+
+function extractFilenames(html) {
+	const fileRegex = /href="([^"]+\.(png|jpg|jpeg))"/gi;
+	const matches = []
+	let match;
+	while ((match = fileRegex.exec(html)) !== null) {
+	matches.push(match[1]);
+	}
+	return matches;
+}
 
 function addNPC() {
+	const npcImage = document.getElementById('npcImageSelect').value;
 	const name = document.getElementById('npcName').value;
-	const type = document.getElementById('npcType').value;
 
 	if (!name || !type) {
 		alert('Please fill in NPC name and type');
 		return false;
 	}
 
-	// Instructions message - user clicks canvas to place
-	alert('Click on canvas to place the NPC');
+	const img = new Image();
+	img.src = `../absnormal/assets/characters/${npcImage}`;
+	img.onload = () => {
+		currentNPCImage = img;
+		if (currentMouseX !== null) {
+			redraw()
+		}
+	};
+	img.onerror = () => {
+		alert('Could not load image: ' + npcImage);
+		currentNPCImage = null;
+	};
+
 	return true;
 }
 
 function placeNPC(x, y) {
+	const npcImage = document.getElementById('npcImageSelect').value;
 	const name = document.getElementById('npcName').value || 'NPC';
-	const type = document.getElementById('npcType').value || 'npc';
-	npcs.push({ x, y, name, type });
-	updateOutput();
-	redraw();
+
+	const img = new Image();
+	img.src = `../absnormal/assets/character/${npcImage}`;
+	img.onload = () => {
+		npcs.push({
+			x,
+			y,
+			name,
+			npcImage,
+			imageObj: img
+		});
+
+		document.getElementById('npcImageSelect').value = '';
+		document.getElementById('npcName').value = '';
+
+		currentNPCImage = null;
+		currentMouseX = null;
+		currentMouseY = null;
+
+		updateOutput();
+		redraw();
+	};
 }
 
 function deleteNPC(index) {

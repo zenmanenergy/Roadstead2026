@@ -107,6 +107,15 @@
     }
   ],
   "npcs": [],
+  "items": [
+    {
+      "name": "potion",
+      "ingameImage": "potion.png",
+      "inventoryImage": "potion.jpg",
+      "x": 101.28913586146368,
+      "y": 529.5092038581707
+    }
+  ],
   "startPoint": [
     300.66063126988007,
     564.4346871569704
