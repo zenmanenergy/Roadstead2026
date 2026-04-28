@@ -9,6 +9,7 @@ function initializeNpcSelect() {
 	.catch(() => '')
 	.then((html) => {
 		npcFiles = extractFilenames(html);
+		npcFiles.sort();
 		const npcSelect = document.getElementById('npcImageSelect');
 		if (npcSelect) {
 			npcSelect.innerHTML = '<option value="">-- Select NPC Image --</option>';
@@ -27,7 +28,7 @@ function extractFilenames(html) {
 	const matches = []
 	let match;
 	while ((match = fileRegex.exec(html)) !== null) {
-	matches.push(match[1]);
+		matches.push(match[1]);
 	}
 	return matches;
 }
@@ -36,10 +37,13 @@ function addNPC() {
 	const npcImage = document.getElementById('npcImageSelect').value;
 	const name = document.getElementById('npcName').value;
 
-	if (!name || !type) {
+	if (!name || !name) {
 		alert('Please fill in NPC name and type');
 		return false;
 	}
+
+	currentMode = 'npc';
+	points = [];
 
 	const img = new Image();
 	img.src = `../absnormal/assets/characters/${npcImage}`;

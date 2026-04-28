@@ -49,23 +49,27 @@ function movePlayer() {
 
 		// If at target, stop moving
 		if (distance < speed) {
-				targetX = null;
-				targetY = null;
+			targetX = null;
+			targetY = null;
+			if (pendingPickup) {
+				collectItem(pendingPickup);
+				pendingPickup = null
+			}
 		} else {
 				// Move toward target
-				const moveX = (deltaX / distance) * speed;
-				const moveY = (deltaY / distance) * speed;
+			const moveX = (deltaX / distance) * speed;
+			const moveY = (deltaY / distance) * speed;
 
-				newX = absX + moveX;
-				newY = absY + moveY;
+			newX = absX + moveX;
+			newY = absY + moveY;
 
-				// Determine direction based on movement
-				if (Math.abs(deltaX) > Math.abs(deltaY)) {
-						absDirection = deltaX > 0 ? "right" : "left";
-				} else {
-						absDirection = deltaY > 0 ? "down" : "up";
-				}
-				moving = true;
+			// Determine direction based on movement
+			if (Math.abs(deltaX) > Math.abs(deltaY)) {
+					absDirection = deltaX > 0 ? "right" : "left";
+			} else {
+					absDirection = deltaY > 0 ? "down" : "up";
+			}
+			moving = true;
 		}
 	}
 	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)){
@@ -88,9 +92,18 @@ function movePlayer() {
 function drawScene() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		if (currentBackgroundImage) {
-				ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+			ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 		}
-		drawPlayer();
+
+		if (sceneData[currentScene] && sceneData[currentScene].items) {
+			sceneData[currentScene].items.forEach(item => {
+				if(collectedItems.has(`${currentScene}:${item.name}`)) return;
+				if (item.imageOBj && item.imageObj.complete && item.imageObj.naturalWidth > 0) {
+					ctx.drawImage (image.imageObj, item.x - 20, item.y - 20, 40, 40);
+				}
+			});
+		}
+ 		drawPlayer();
 }
 function drawPlayer(){
 		const img = frame === 1
@@ -99,11 +112,11 @@ function drawPlayer(){
 		ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
 }
 function update(){
-		if (currentScene !== "title"){
-				movePlayer();
-				checkTransitions();
-				checkDoor();
+	if (currentScene !== "title"){
+			movePlayer();
+			checkTransitions();
+			checkDoor();
 		}
-		drawScene();
-		requestAnimationFrame(update);
-	}
+	drawScene();
+	requestAnimationFrame(update);
+}
