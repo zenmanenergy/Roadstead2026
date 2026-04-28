@@ -3,7 +3,7 @@
 let npcs = [];
 let npcFiles = [];
 
-function initializeNpcSelect() {
+function initializeNPCSelect() {
 	fetch('../absnormal/assets/characters/')
 	.then(r => r.text())
 	.catch(() => '')

@@ -22,7 +22,7 @@ async function loadSceneData() {
     };
     for (const sceneName of scenes) { 
         const fileName = fileMap[sceneName];
-        const response= await fetch('/Steve/absnormal/data/${filename}.json');
+        const response= await fetch(`data/${fileName}.json`);
 
         if (response.ok) {
             sceneData[sceneName] = await response.json();
@@ -30,7 +30,7 @@ async function loadSceneData() {
               sceneData[sceneName].items.forEach(item => {
                 if (item.ingameImage) {
                     const img= new Image();
-                    img.src = 'assets/items/ingame/${item.ingameImage}';
+                    img.src = `assets/items/ingame/${item.ingameImage}`;
                     item.imageObj = img;
                 }
               }); 
@@ -39,7 +39,7 @@ async function loadSceneData() {
         }else{console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);}
 
     }
-   
+}
 
 
 
@@ -57,22 +57,18 @@ function isPointInPolygon(point, polygon) {
 }
 
 function canMoveTo(newX, newY, width, height) {
-    const feet= HITBOX.getfeet(newX, newY); 
     if (!sceneData[currentScene] || !sceneData[currentScene].walkableAreas0) {
         return true;
     }
-    
-   
-    }
 
-    const centerX = newX + width / 2;
-    const centerY = newY + height / 2;
-
-    for (const area of sceneData[currentScene].walkableAreas) {
-        if (isPointInPolygon([centerX, centerY], area.points)) {
-            return true;
-        }
-    }
+    const feet= HITBOX.getfeet(newX, newY); 
+	
+	// Shift the walkable area polygons from center-based to feet-based coordinates
+	for (const area of sceneData[currentScene].walkableAreas) {
+		const shiftedPolygon = HITBOX.shiftPolygonToFeet(area.points);
+		if (isPointInPolygon([feet.x, feet.y], shiftedPolygon)) {
+			return true;
+		}
+	}
     return false;
 }
-
