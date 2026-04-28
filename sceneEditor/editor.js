@@ -197,8 +197,30 @@ function redraw() {
         ctx.font = '10px Arial';
         ctx.fillStyle = '#ffff00';
         ctx.fillText(npc.name, npc.x - 8, npc.y);
-    })
+    });
 
+    // Draw all items
+    items.forEach(item) => {
+        if (item.imgageObj) {
+                //Draw the actual ingame image
+                ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
+        } else {
+            //Fallback: draw a cyan circle if image hasn't loaded yet
+            ctx.fillStyle = '#00ccff';
+            ctx.beginPath();
+            ctx.arc(item.x, item.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#00ccff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        // Draw item label
+        ctx.font = '10px Arial';
+        ctx.fillStyle = '#00ffff';
+        ctx.fillText(item.name, item.x + 25, item.y);
+    });
+
+    //Draw start point
     if (startPoint) {
         ctx.fillStyle - '#00ffff';
         ctx.fillRect(startPoint.x - 8, startPoint.y -8, 16, 16);
@@ -206,6 +228,19 @@ function redraw() {
         ctx.fillText('START', startPoint.x + 10, startPoint.y);
     }
 
+    //Draw item preview at mouse curson when in item mode 
+    if (currentMode === 'item && currentMouseX !== null && currentMouseY !== null && currentImageIngameImage') {
+            ctx.globalAlpha = 0.7;
+            ctx.drawImage(currentItemIngameImage, currentMouseX - 20, currentMouseY - 20, 40, 40);
+            ctx.globalAlpha = 1;
+    }
+
+    //Draw NPC preview at mouse cursor when in NPC mode
+    if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null&& currentNPCImage) {
+            ctx.drawImage(currentNPCImage, currentMouseX - 48, currentMouseY - 48, 96, 96);
+    }
+
+    //Draw current points being drawn 
     if (points.length > 0) {
         drawPolygon(points, '#0099ff', 0.5);
         points.forEach((point) => {
@@ -252,6 +287,7 @@ function getBounds(points) {
     };
 }
 
+// ==== JSON Output ====
 function updateOutput() {
     const output = {
         image: getImageForOutput(),
@@ -264,6 +300,7 @@ function updateOutput() {
     document.getElementById('output').value = JSON.stringify(output, null, 2);
 }
 
+// ==== Scene Loading ====
 function loadScene(sceneName) {
     if (!sceneName) {
         clearPolygons();
@@ -274,17 +311,20 @@ function loadScene(sceneName) {
 
     fetch(sceneFile)
         .then(response => {
+            console.log('Fetch responce status:' , response.status);
             if (!response.ok) {
+                console.log('Scene file not found, creating empty scene');
                 initializeEmptyScene(sceneName);
                 return Promise.reject(new Error('File not found - using empty scene'));
             }
-            console.log("Lily is !!okay");
             return response.json();
         })
-        .then(data => {loadSceneData(sceneName, data);
-            console.log("Lily is !!!!okay", data);
+        .then(data => {
+            console.log("Scene data loaded", data);
+            loadSceneData(sceneName, data);
         })
         .catch(error => {
+            console.warn('Error loading scene:', error.message);
             if (!error.message.includes('File not found')) {
                 alert('Error loading scene: ' + error.message);
             }
@@ -310,18 +350,58 @@ function initializeEmptyScene(sceneName) {
 }
 
 function loadSceneData(sceneName, data) {
+    console.log('Initializing empty scene:', sceneName);
+
     clearWalkableAreas();
     clearDoors();
     clearNPCs();
     clearStartPoints();
     clearBackgroundImage();
+    points = [];
 
+    document.getElementById('filename').textContent = absnormal/data/${sceneName}.json ;
+
+    //Reset from fields - check if they exist first 
+    const npcImagesSelect = document.getElementById('npcImagesSelect');
+    if (npcImageSelect) npcImageSelect.value = '';
+
+    const npcName = document.getElementById('npcName');
+    if (npcName) npcName.value = '';
+
+    const doorNextScene = document.getElementById('doorNextScene');
+    if (doorNextScene) doorNextScene.value = '';
+
+    const itemIngameSelect = document.getElementById('itemIngameSelect');
+    if (itemIngameSelect) itemIngameSelect.value = '';
+
+    const currentItemInventorySelect = document.getElementById('itemInventorySelect');
+    if (itemInventorySelect) itemInventorySelect.value = '';
+
+    updateOutput();
+    populateFormFields();
+    redraw();
+    console.log('Empty sceneinitialized');
+}
+
+function loadSceneData(sceneName, data) {
+        console.log('loadSceneData called with sceneName:', sceneName, 'data', data);
+    clearWalkableAreas();
+    clearDoors();
+    clearNPCs();
+    clearItems();
+    clearStartPoints();
+    clearBackgroundImage();
+
+    // load walkable areas 
     if (data.walkableAreas && Array.isArray(data.walkableAreas)) {
         data.walkableAreas.forEach(area => {
             const points = area.points || area;
             walkableAreas.push(points);
         });
+        console.log('Loaded walkable areas:', walkableAreas);
     }
+
+    // Load doors
     if (data.doors && Array.isArray(data.doors)) {
         data.doors.forEach(door => {
             const doorPoints = door.points || door;
@@ -330,19 +410,60 @@ function loadSceneData(sceneName, data) {
                 nextScene: door.nextScene ||''
             });
         });
-    }
-    if (data.npcs && Array.isArray(data.npcs)) {
-        data.npcs.forEach(npc => {
-            npcs.push({
-            x: npc.x,
-            y: npc.y,
-            name: npc.name || 'NPC',
-            type: npc.type || 'npc'
-            });
-        });
+        console.log('Loaded doors:', doors);
     }
 
-    if (data.startPoint) {
+    //Load NPCs
+    if (data.npcs && Array.isArray(data.npcs)) {
+        data.npcs.forEach(npc => {
+            const npcObj = {
+                     x: npc.x,
+                    y: npc.y,
+                    name: npc.name || 'NPC',
+                    npcImage: npc.npcImage || ''
+            };
+
+            // Load the NPC image
+            if (npc.npcImage) {
+                    const img = new Image();
+                    img.src = '../absnormal/assets/characters/${npc.npcImage}';
+                    img.onload = () => {
+                            npcObj.imageObj = img;
+                            redraw();
+                     });
+            }
+            npcs.push(npcObj);
+        });
+        console.log('Loaded NPCs:', npcs);
+    }
+
+    // load items
+    if(data.items && Array.isArray(data.items)) {
+            data.items.forEach(item => {
+                    const itemObj = {
+                            x: item.x,
+                            y:item.y,
+                            name: item.name || 'Item',
+                            ingameImage: item.ingameImage || '',
+                            inventoryImage: item.inventoryImage || ''
+                    };
+
+                        // Load the ingame image
+                        if (item.ingameImage) {
+                                const img = new Image();
+                                img.src = `../absnormal/assets/items/ingame/${item.ingameImage}`;
+                                img.onload = () => {
+                                        itemObj.imageObj = img;
+                                        redraw();
+                                };
+                        }
+
+                        items.push(itemObj);
+                });
+                console.log('loaded items:', items);
+        }
+      //Load start point                  
+     if (data.startPoint) {
             if (Array.isArray(data.startPoint)) {
                 startPoint = { x: data.startPoint[0], y: data.startPoint[1] };
             } else {
@@ -351,12 +472,15 @@ function loadSceneData(sceneName, data) {
             console.log('Loaded start point:', startPoint);
         }
 
+    //load bakcground image if specified     
     if (data.image) { 
         const imageName = data.image.split('/').pop();
         currentImagePath = imageName;
+        console.log('Setting currentImagePath to:', currentImagePath);
 
         const imageSelect = document.getElementById('backgroundImageSelect');
         imageSelect.value = imageName;
+        console.log('Selected image in dropdown:', imageName);
 
         const img = new Image();
         img.src = `../absnormal/assets/backgrounds/${imageName}`;
@@ -366,29 +490,33 @@ function loadSceneData(sceneName, data) {
             currentBackgroundImage = img;
             redraw();
         };
-    } 
-    else {
-        document.getElementById('backgroundImageSelect').value = '';
-        redraw();
+        img.onerror = () => {
+                console.warn('Could not load background image:', imageName);
+                redraw();
+        };
+    
+    } else {
+            console.log('No image in data');
+            redraw();
     }
-    document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
-    document.getElementById('npcName').value = '';
-    document.getElementById('npcType').value = '';
-    document.getElementById('doorNextScene').value = '';
 
     updateOutput();
-    populateFormFields();
+    populateFormFeilds();
     redraw();
+    console.log('Scene loaded and redrawn');
 }
-
-function clearPolygons() { 
-    clearWalkableAreas();
-    clearDoors();
-    clearNPCs();
-    clearStartPoints();
-    clearBackgroundImage();
-    points = [];
-    document.getElementById('sceneSelect').value = '';
-    updateOutput();
-    redraw();
+// ==== clear all ====
+function clearPolygons(){
+        clearWalkableAreas();
+        clearDoors();
+        clearNPCs();
+        clearItems();
+        clearStartPoints();
+        clearBackgroundImage();
+        points = [];
+        document.getElementById('sceneSelect').value = '';
+        updateOutput();
+        redraw();
 }
+//==== canvas randering ====
+            
