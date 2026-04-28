@@ -496,29 +496,27 @@ function loadSceneData(sceneName, data) {
         };
     
     } else {
-            console.warn('Could not load background image:', imageName);
-            
-        document.getElementById('backgroundImageSelect').value = '';
-        redraw();
+            console.log('No image in data');
+            redraw();
     }
-    document.getElementById('filename').textContent = `absnormal/data/${sceneName}.json`;
-    document.getElementById('npcName').value = '';
-    document.getElementById('npcType').value = '';
-    document.getElementById('doorNextScene').value = '';
 
     updateOutput();
-    populateFormFields();
+    populateFormFeilds();
     redraw();
+    console.log('Scene loaded and redrawn');
 }
-
-function clearPolygons() { 
-    clearWalkableAreas();
-    clearDoors();
-    clearNPCs();
-    clearStartPoints();
-    clearBackgroundImage();
-    points = [];
-    document.getElementById('sceneSelect').value = '';
-    updateOutput();
-    redraw();
+// ==== clear all ====
+function clearPolygons(){
+        clearWalkableAreas();
+        clearDoors();
+        clearNPCs();
+        clearItems();
+        clearStartPoints();
+        clearBackgroundImage();
+        points = [];
+        document.getElementById('sceneSelect').value = '';
+        updateOutput();
+        redraw();
 }
+//==== canvas randering ====
+            
