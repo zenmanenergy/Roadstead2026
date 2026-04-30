@@ -22,7 +22,7 @@ async function loadSceneData() {
     };
     for (const sceneName of scenes) { 
         const fileName = fileMap[sceneName];
-        const response= await fetch('/Steve/absnormal/data/${filename}.json');
+        const response= await fetch(`/absnormal/data/${fileName}.json`);
 
         if (response.ok) {
             sceneData[sceneName] = await response.json();
