@@ -1,29 +1,30 @@
+//VERY originaly made by Gort
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+let gameState = "title";
 
-let gameState = "title"; 
-
-let collectedItems = new Set(); //"sceneName:itemName"
-let pendingPickup= null; 
+let collectedItems = new Set(); // "sceneName:itemName"
+let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
 
 let absDirection = "down";
 let absX = 368;
 let absY = 268;
 let currentBackgroundImage = null;
 
-let keys = {};
+let keys = {}; 
 
 window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 canvas.addEventListener('click', (event) => {
     if (gameState !== "playing") return;
 
-    const canvasRect = canvas.getBoundingClientRect();
-    const clickX = event.clientX - canvasRect.left;
-    const clickY = event.clientY - canvasRect.top;
+	const canvasRect = canvas.getBoundingClientRect();
+	const clickX = event.clientX - canvasRect.left;
+	const clickY = event.clientY - canvasRect.top;
 
-    const scaleX = canvas.width / canvasRect.width;
-    const scaleY = canvas.height / canvasRect.height;
+	// Scale click position to actual canvas resolution (800x600)
+	const scaleX = canvas.width / canvasRect.width;
+	const scaleY = canvas.height / canvasRect.height;
 
     const canvasClickX = clickX * scaleX;
     const canvasClickY = clickY * scaleY;
