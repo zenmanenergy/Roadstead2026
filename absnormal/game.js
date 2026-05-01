@@ -66,7 +66,7 @@ canvas.addEventListener('mousemove', (event) => {
     const canvasX = (event. clientX - canvasRect.left) * scaleX;
     const canvasY = (event.clientY - canvasRect.top) * scaleY;
 
-    if (getCurrentverb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) { 
+    if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) { 
         const hoveredItem = sceneData[currentScene].items.find (item =>
             canvasX >= item.x - 20 && canvasX <= item.x + 20 && 
             canvasY >= item.y - 20 && canvasY <= item.y + 20 
@@ -86,7 +86,7 @@ function drawTitle(){
 
 window.addEventListener('load', () => {
     loadSceneData().then(() => {
-        if (titledScreen.complete) {
+        if (titleScreen.complete) {
             drawTitle();
         } else { 
             titledScreen.onload = drawTitle;
