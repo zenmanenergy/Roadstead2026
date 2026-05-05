@@ -112,8 +112,9 @@
       "name": "potion",
       "ingameImage": "potion.png",
       "inventoryImage": "potion.jpg",
-      "x": 101.28913586146368,
-      "y": 529.5092038581707
+      "x": 679.5580205978199,
+      "y": 520.3067498704407,
+      "lookMessage": "a mysterious potion"
     }
   ],
   "startPoint": [

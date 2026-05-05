@@ -8,15 +8,15 @@ function initializeItemSelect() {
     //fetch list of items from both folders
     Promise.all ([
         fetch ('../absnormal/assets/items/ingame/')
-            .then (r=r.text())
+            .then (r => r.text())
             .catch (() => ''),
-        fetch ('.../absnormal/assets/items/inventory/')
+        fetch ('../absnormal/assets/items/inventory/')
             .then (r => r.text ())
             .catch(() => '')
     ]) .then(([ingameHtml, inventoryHTML]) => {
         //extract filenames from directory listing
         ingameFiles = extractFilenames(ingameHtml);
-        inventoryFiles = extractFilenames(inventoryHtml);
+        inventoryFiles = extractFilenames(inventoryHTML);
 
         //sort for easier browsing
         ingameFiles.sort();
@@ -24,15 +24,26 @@ function initializeItemSelect() {
 
         //populate in-game image dropdown
         const ingameSelect = document.getElementById('itemIngameSelect');
-        if (imageSelect) {
+        if (ingameSelect) {
             ingameSelect.innerHTML = '<option value=">-- Select In-Game Image -- </option>';
             ingameFiles.forEach(file => {
                 const option = document.createElement('option');
                 option.value = file;
                 option.textContent = file;
-                inventorySelect.appendChild(option);
+                ingameSelect.appendChild(option);
             });
         }
+		// Populate inventory image dropdown
+		const inventorySelect = document.getElementById('itemInventorySelect');
+		if (inventorySelect) {
+			inventorySelect.innerHTML = '<option value="">-- Select Inventory Image --</option>';
+			inventoryFiles.forEach(file => {
+				const option = document.createElement('option');
+				option.value = file;
+				option.textContent = file;
+				inventorySelect.appendChild(option);
+			});
+		}
     });
 }
 

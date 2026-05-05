@@ -7,6 +7,7 @@ const maxInventorySlots = 6;
 //Initialize menu
 document.addEventListener('DOMContentLoaded', () => {
     const verbButtons = document.querySelectorAll('.verb-btn');
+
     verbButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             setVerb(e.target.dataset.verb);
@@ -59,6 +60,10 @@ function removeFromInventory(index) {
         return true;
     }
     return false;
+}
+
+function getInventoryItem(index) {
+    return inventory[index] || null;
 }
 
 function scrollInventoryUp() {
