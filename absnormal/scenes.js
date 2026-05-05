@@ -1,10 +1,10 @@
 const scenes = [
     'bedroom',
-    'room_lab',
-    'room_city_0',
-    'room_city_1',
-    'room_doctor',
-    'room_pharmacy'
+    'lab',
+    'city_0',
+    'city_1',
+    'doctor',
+    'pharmacy'
 ];
 
 let sceneData = {};
@@ -23,7 +23,7 @@ async function loadSceneData() {
         const fileName = fileMap[sceneName];
         const response= await fetch(`/absnormal/data/${fileName}.json`);
         console.log (response);
-        // if (response.ok) {
+        if (response.ok) {
             sceneData[sceneName] = await response.json();
             if (sceneData[sceneName].items){
               sceneData[sceneName].items.forEach(item => {
@@ -35,9 +35,9 @@ async function loadSceneData() {
               }); 
             }
             console.log(`✓ Loaded scene: ${sceneName}`);
-        // }else{
-        // 	console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
-		// }
+        }else{
+        	console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
+		}
 	}
 }
 
