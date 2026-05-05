@@ -5,6 +5,7 @@ let gameState = "title";
 
 let collectedItems = new Set(); // "sceneName:itemName"
 let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
+let pendingLook = null;
 
 let absDirection = "down";
 let absX = 368;
@@ -28,9 +29,23 @@ canvas.addEventListener('click', (event) => {
 
     const canvasClickX = clickX * scaleX;
     const canvasClickY = clickY * scaleY;
+
+    if (getCurrentVerb() === 'look' && sceneData[currentScene] && sceneData[currentScene].itmes) {
+        const clickedItem = sceneData[currentScene].items.find(item =>
+            !collectedItems.has(`${currentScene}:${item.name}`) &&
+            canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
+            canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
+        );
+        if (clickedItem) {
+            targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
+            targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+            pendingLook = { sceneName: currentScene, item: clickedItem };
+            return;
+        }
+    }
     
     if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
-        const clikedItem = sceneData[currentScene].items.find(item=>
+        const clickedItem = sceneData[currentScene].items.find(item=>
             !collectedItems.has(`${currentScene}:${item.name}`) && 
             canvasClickX >= item.x - 20 && canvasCLickX <= item.x + 20 &&
             canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20 
@@ -45,6 +60,13 @@ canvas.addEventListener('click', (event) => {
     targetX = canvasClickX - HITBOX.CENTER_OFFSET_X
     targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET; 
 });
+
+function lookAtItem(look) {
+    statusBar.textContent = look.item.lookMessage || `you see the ${look.item.name}.`;
+    statusBarLocked = true;
+    if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
+    statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
+}
  
 function collectedItem(pickup) {
     collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
@@ -56,9 +78,11 @@ function collectedItem(pickup) {
 }
 
 const statusBar = document.getElementById('statusBar');
+let statusBarLocked = false;
+let statusBarLockTimer = null;
 
 canvas.addEventListener('mousemove', (event) => {
-    if (gameState !=="playing") return;
+    if (gameState !=="playing" || statusbarLocked) return;
 
     const canvasRect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / canvasRect.width;
@@ -66,8 +90,9 @@ canvas.addEventListener('mousemove', (event) => {
     const canvasX = (event. clientX - canvasRect.left) * scaleX;
     const canvasY = (event.clientY - canvasRect.top) * scaleY;
 
-    if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) { 
+    if ((getCurrentVerb() === 'take' || getCurrentVerb() === 'look') && sceneData[currentScene] && sceneData[currentScene].items) { 
         const hoveredItem = sceneData[currentScene].items.find (item =>
+            !collectedItems.has(`${currentScene}:${items.find}`) &&
             canvasX >= item.x - 20 && canvasX <= item.x + 20 && 
             canvasY >= item.y - 20 && canvasY <= item.y + 20 
         );
