@@ -21,23 +21,23 @@ async function loadSceneData() {
     };
     for (const sceneName of scenes) { 
         const fileName = fileMap[sceneName];
-        const response= await fetch(`/data/${fileName}.json`);
-
-        if (response.ok) {
+        const response= await fetch(`/absnormal/data/${fileName}.json`);
+        console.log (response);
+        // if (response.ok) {
             sceneData[sceneName] = await response.json();
             if (sceneData[sceneName].items){
               sceneData[sceneName].items.forEach(item => {
                 if (item.ingameImage) {
                     const img= new Image();
-                    img.src = `assets/items/ingame/${item.ingameImage}`;
+                    img.src = `/absnormal/assets/items/ingame/${item.ingameImage}`;
                     item.imageObj = img;
                 }
               }); 
             }
             console.log(`✓ Loaded scene: ${sceneName}`);
-        }else{
-        	console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
-		}
+        // }else{
+        // 	console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
+		// }
 	}
 }
 
