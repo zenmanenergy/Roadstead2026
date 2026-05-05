@@ -113,7 +113,8 @@
       "ingameImage": "potion.png",
       "inventoryImage": "potion.jpg",
       "x": 101.28913586146368,
-      "y": 529.5092038581707
+      "y": 529.5092038581707,
+      "lookMessage": "It's a mysterious potion. The liquid inside seems to glow faintly."
     }
   ],
   "startPoint": [
