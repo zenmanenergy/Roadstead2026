@@ -82,7 +82,7 @@ let statusBarLocked = false;
 let statusBarLockTimer = null;
 
 canvas.addEventListener('mousemove', (event) => {
-    if (gameState !=="playing" || statusbarLocked) return;
+    if (gameState !=="playing" || statusBarLocked) return;
 
     const canvasRect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / canvasRect.width;
