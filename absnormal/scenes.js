@@ -23,7 +23,7 @@ async function loadSceneData() {
 	
 	for (const sceneName of scenes) {
 		const fileName = fileMap[sceneName];
-		const response = await fetch(`../absnormal/data/${fileName}.json`);
+		const response = await fetch(`/absnormal/data/${fileName}.json`);
 		if (response.ok) {
 			sceneData[sceneName] = await response.json();
 			// Pre-load item images
@@ -31,7 +31,7 @@ async function loadSceneData() {
 				sceneData[sceneName].items.forEach(item => {
 					if (item.ingameImage) {
 						const img = new Image();
-						img.src = `assets/items/ingame/${item.ingameImage}`;
+						img.src = `/absnormal/assets/items/ingame/${item.ingameImage}`;
 						item.imageObj = img;
 					}
 				});
