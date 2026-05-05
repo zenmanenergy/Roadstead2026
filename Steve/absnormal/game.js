@@ -5,6 +5,7 @@ let gameState = "title";
 
 let collectedItems = new Set(); // "sceneName:itemName"
 let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
+let pendingLook = null;         // { sceneName, item } — set when walking to look at
 
 let absDirection = "down";
 let absX = 368;
@@ -31,6 +32,21 @@ canvas.addEventListener('click', (event) => {
 	const canvasClickX = clickX * scaleX;
 	const canvasClickY = clickY * scaleY;
 
+	// If Look verb is active, check if clicking on an item
+	if (getCurrentVerb() === 'look' && sceneData[currentScene] && sceneData[currentScene].items) {
+		const clickedItem = sceneData[currentScene].items.find(item =>
+			!collectedItems.has(`${currentScene}:${item.name}`) &&
+			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
+			canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
+		);
+		if (clickedItem) {
+			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
+			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+			pendingLook = { sceneName: currentScene, item: clickedItem };
+			return;
+		}
+	}
+
 	// If Take verb is active, check if clicking on an item
 	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
 		const clickedItem = sceneData[currentScene].items.find(item =>
@@ -51,6 +67,13 @@ canvas.addEventListener('click', (event) => {
 	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
 });
 
+function lookAtItem(look) {
+	statusBar.textContent = look.item.lookMessage || `You see the ${look.item.name}.`;
+	statusBarLocked = true;
+	if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
+	statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
+}
+
 function collectItem(pickup) {
 	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
 	addToInventory({
@@ -61,9 +84,11 @@ function collectItem(pickup) {
 }
 
 const statusBar = document.getElementById('statusBar');
+let statusBarLocked = false;
+let statusBarLockTimer = null;
 
 canvas.addEventListener('mousemove', (event) => {
-	if (gameState !== "playing") return;
+	if (gameState !== "playing" || statusBarLocked) return;
 
 	const canvasRect = canvas.getBoundingClientRect();
 	const scaleX = canvas.width / canvasRect.width;
@@ -71,8 +96,9 @@ canvas.addEventListener('mousemove', (event) => {
 	const canvasX = (event.clientX - canvasRect.left) * scaleX;
 	const canvasY = (event.clientY - canvasRect.top) * scaleY;
 
-	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
+	if ((getCurrentVerb() === 'take' || getCurrentVerb() === 'look') && sceneData[currentScene] && sceneData[currentScene].items) {
 		const hoveredItem = sceneData[currentScene].items.find(item =>
+			!collectedItems.has(`${currentScene}:${item.name}`) &&
 			canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
 			canvasY >= item.y - 20 && canvasY <= item.y + 20
 		);

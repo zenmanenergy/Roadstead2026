@@ -53,6 +53,10 @@ function movePlayer() {
 				collectItem(pendingPickup);
 				pendingPickup = null;
 			}
+			if (pendingLook) {
+				lookAtItem(pendingLook);
+				pendingLook = null;
+			}
 		} else {
 			// Move towards target
 			const moveX = (deltaX / distance) * speed;

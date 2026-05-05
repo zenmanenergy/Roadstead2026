@@ -169,7 +169,7 @@ function changeScene(sceneName) {
 
     setPlayerStartPoint(currentScene)
 
-    currentBackgroundImage = new image();
+    currentBackgroundImage = new Image();
     currentBackgroundImage.src = sceneData[currentScene].image;
 
     currentBackgroundImage.onerror = () => {

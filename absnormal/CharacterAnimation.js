@@ -15,8 +15,6 @@ const absImages = {
 	right: [new Image(), new Image()],
 };
 
-//character image setup
-
 absImages.down[0].src =
 "assets/characters/abs_normal/absnormal_down_walk_1.png";
 absImages.down[1].src =
@@ -34,93 +32,101 @@ absImages.right[0].src =
 absImages.right[1].src =
 "assets/characters/abs_normal/absnormal_right_walk_2.png";
 
-//drawing functions
 function movePlayer() {
 	lastX = absX;
 	lastY = absY;
-    moving = false;
-    let newX = absX;
-    let newY = absY;
-    
-    if (targetX !== null && targetY !== null){
+	moving = false;
+	let newX = absX;
+	let newY = absY;
+	
+	// Click-based movement
+	if (targetX !== null && targetY !== null) {
 		const deltaX = targetX - absX;
 		const deltaY = targetY - absY;
 		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
+		
 		// If at target, stop moving
 		if (distance < speed) {
 			targetX = null;
 			targetY = null;
 			if (pendingPickup) {
 				collectItem(pendingPickup);
-				pendingPickup = null
+				pendingPickup = null;
 			}
 			if (pendingLook) {
 				lookAtItem(pendingLook);
 				pendingLook = null;
 			}
 		} else {
-				// Move toward target
+			// Move towards target
 			const moveX = (deltaX / distance) * speed;
 			const moveY = (deltaY / distance) * speed;
-
+			
 			newX = absX + moveX;
 			newY = absY + moveY;
-
+			
 			// Determine direction based on movement
 			if (Math.abs(deltaX) > Math.abs(deltaY)) {
-					absDirection = deltaX > 0 ? "right" : "left";
+				absDirection = deltaX > 0 ? "right" : "left";
 			} else {
-					absDirection = deltaY > 0 ? "down" : "up";
+				absDirection = deltaY > 0 ? "down" : "up";
 			}
+			
 			moving = true;
 		}
 	}
-	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)){
-			absX = newX;
-			absY = newY;
+	
+	if (canMoveTo(newX, newY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT)) {
+		absX = newX;
+		absY = newY;
 	} else {
-			// Blocked by wall, stop animating
-			moving = false;
+		// Blocked by wall, stop animating
+		moving = false;
 	}
-	// only animate if character actually moved
+	
+	// Only animate if character actually moved
 	if (moving && (absX !== lastX || absY !== lastY)) {
-			frameCount++;
-			if (frameCount >= frameDelay) {
-					frameCount = 0;
-					frame = frame === 1 ? 2 : 1;
-			}
+		frameCount++;
+		if (frameCount >= frameDelay) {
+			frameCount = 0;
+			frame = frame === 1 ? 2 : 1;
 		}
-
+	}
 }
+
 function drawScene() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		if (currentBackgroundImage) {
-			ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
-		}
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (currentBackgroundImage) {
+		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+	}
 
-		if (sceneData[currentScene] && sceneData[currentScene].items) {
-			sceneData[currentScene].items.forEach(item => {
-				if(collectedItems.has(`${currentScene}:${item.name}`)) return;
-				if (item.imageOBj && item.imageObj.complete && item.imageObj.naturalWidth > 0) {
-					ctx.drawImage (image.imageObj, item.x - 20, item.y - 20, 40, 40);
-				}
-			});
-		}
- 		drawPlayer();
+	// Draw items for current scene (skip already collected ones)
+	if (sceneData[currentScene] && sceneData[currentScene].items) {
+		sceneData[currentScene].items.forEach(item => {
+			if (collectedItems.has(`${currentScene}:${item.name}`)) return;
+			if (item.imageObj && item.imageObj.complete && item.imageObj.naturalWidth > 0) {
+				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
+			}
+		});
+	}
+
+	drawPlayer();
 }
+
 function drawPlayer(){
-		const img = frame === 1
-			? absImages[absDirection][0]
-			: absImages[absDirection][1];
-		ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+	const img = frame === 1
+		? absImages[absDirection][0]
+		: absImages[absDirection][1];
+	ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
 }
+
 function update(){
 	if (currentScene !== "title"){
-			movePlayer();
-			checkTransitions();
-			checkDoor();
-		}
+		movePlayer(); 
+		checkTransitions();
+		checkDoor();
+	}
 	drawScene();
 	requestAnimationFrame(update);
 }
+
