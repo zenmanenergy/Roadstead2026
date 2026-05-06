@@ -4,7 +4,7 @@ let frameDelay = 15;
 let frameCount = 0;
 let frame = 1;
 let moving = false;
-let speed = 5;
+let speed = 10;
 let targetX = null;
 let targetY = null;
 
