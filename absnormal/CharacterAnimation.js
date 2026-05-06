@@ -114,10 +114,27 @@ function drawScene() {
 }
 
 function drawPlayer(){
-	const img = frame === 1
-		? absImages[absDirection][0]
-		: absImages[absDirection][1];
-	ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+    const img = frame === 1
+        ? absImages[absDirection][0]
+        : absImages[absDirection][1];
+    ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+
+    const center = HITBOX.getCenter(absX, absY);
+    const feet = HITBOX.getFeet(absX, absY);
+
+    // Center hitbox (red)
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, 30, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Feet hitbox (blue)
+    ctx.strokeStyle = "rgba(0, 100, 255, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(feet.x, feet.y, 10, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 function update(){
