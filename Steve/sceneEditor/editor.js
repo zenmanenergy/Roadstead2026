@@ -20,9 +20,9 @@ const scenes = [
 	'room_pharmacy'
 ];
 
+
 // ===== Initialization =====
 document.addEventListener('DOMContentLoaded', () => {
-	console.log('DOMContentLoaded event fired');
 	
 	// Initialize canvas after DOM is loaded
 	canvas = document.getElementById('canvas');

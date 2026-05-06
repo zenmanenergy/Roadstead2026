@@ -20,6 +20,7 @@ const scenes = [
 
 // ===== Initialization =====
 document.addEventListener('DOMContentLoaded', () => {
+<<<<<<< Updated upstream
 	console.log('DOMContentLoaded event fired');
 
 	// Initialize canvas after DOM is loaded
@@ -76,6 +77,35 @@ document.addEventListener('DOMContentLoaded', () => {
 	//Initialized NPCs module
 	initializeNPCSelect();
 	console.log('NPCs module initialized');
+=======
+    console.log("jkfbsha")
+    // canvas = document.getElementById('canvas');
+    // ctx = canvas.getContext('2d');
+    // canvas.addEventListener('click', handleCanvasClick);
+    // canvas.addEventListener('mousemove', handleCanvasMouseMove);
+    // document.querySelectorAll('.tab-button').forEach(button => {
+    //     button.addEventListener('click', () => {
+    //         document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    //         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    //         button.classList.add('active');
+    //         const tabName = button.dataset.tab;
+    //         document.getElementById(`tab-${tabName}`).classList.add('active');
+
+    //         currentMode = tabName;
+    //         points = [];
+    //         redraw();
+    //     });
+    // });
+
+    // const sceneSelect = document.getElementById('sceneSelect');
+    // scenes.forEach(scene => {
+    //     const option = document.createElement('option');
+    //     option.value = scene;
+    //     option.textContent = scene.charAt(0).toUpperCase() + scene.slice(1);
+    //     sceneSelect.appendChild(option);
+    // });
+    // initializeImageSelect();
+>>>>>>> Stashed changes
 });
 
 // ===== Canvas Events ====
@@ -309,6 +339,7 @@ function loadScene(sceneName) {
 	const sceneFile = `../absnormal/data/${sceneName}.json`;
 	console.log('Loading scene from:', sceneFile);
 
+<<<<<<< Updated upstream
 	fetch(sceneFile)
 		.then(response => {
 			console.log('Fetch responce status:' , response.status);
@@ -329,6 +360,26 @@ function loadScene(sceneName) {
 				alert('Error loading scene: ' + error.message);
 			}
 		});
+=======
+    fetch(sceneFile)
+        .then(response => {
+            console.log("fetch");
+            if (!response.ok) {
+                inializeEmptyScene(sceneName);
+                return Promise.reject(new Error('File not found - using empty scene'));
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("loadSceneData");
+            loadSceneData(sceneName, data);
+        })
+       .catch(error => {
+           if (!error.message.includes('File not found')) {
+               alert('Error loading scene: ' + error.message);
+           }
+       });
+>>>>>>> Stashed changes
 }
 
 function initializeEmptyScene(sceneName) {
@@ -351,6 +402,7 @@ function initializeEmptyScene(sceneName) {
 
 
 function loadSceneData(sceneName, data) {
+<<<<<<< Updated upstream
 		console.log('loadSceneData called with sceneName:', sceneName, 'data', data);
 	clearWalkableAreas();
 	clearDoors();
@@ -358,6 +410,14 @@ function loadSceneData(sceneName, data) {
 	clearItems();
 	clearStartPoints();
 	clearBackgroundImage();
+=======
+    console.log(data)
+    clearWalkableAreas();
+    clearDoors();
+    clearNPCs();
+    clearStartPoints();
+    clearBackgroundImage();
+>>>>>>> Stashed changes
 
 	// load walkable areas 
 	if (data.walkableAreas && Array.isArray(data.walkableAreas)) {
