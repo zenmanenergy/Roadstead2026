@@ -195,7 +195,7 @@ function redraw() {
 	npcs.forEach((npc) => {
 		if (npc.imageObj) {
 			// Draw the actual NPC image
-			ctx.drawImage(npc.imageObj, npc.x - 48, npc.y - 48, 96, 96);
+			ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
 		} else {
 			// Fallback: draw a yellow square if image hasn't loaded yet
 			ctx.fillStyle = '#ffff00';
@@ -245,7 +245,7 @@ function redraw() {
 
 	// Draw NPC preview at mouse cursor when in NPC mode
 	if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null && currentNPCImage) {
-		ctx.drawImage(currentNPCImage, currentMouseX - 48, currentMouseY - 48, 96, 96);
+		ctx.drawImage(currentNPCImage, currentMouseX - 96, currentMouseY - 96, 192, 192);
 	}
 
 	// Draw current points being drawn
@@ -416,13 +416,17 @@ function loadSceneData(sceneName, data) {
 				x: npc.x,
 				y: npc.y,
 				name: npc.name || 'NPC',
+				npcFolder: npc.npcFolder || '',
 				npcImage: npc.npcImage || ''
 			};
 			
-			// Load the NPC image
+			// Load the NPC image — support both folder/image and flat image paths
 			if (npc.npcImage) {
+				const imgPath = npc.npcFolder
+					? `../absnormal/assets/characters/${npc.npcFolder}/${npc.npcImage}`
+					: `../absnormal/assets/characters/${npc.npcImage}`;
 				const img = new Image();
-				img.src = `../absnormal/assets/characters/${npc.npcImage}`;
+				img.src = imgPath;
 				img.onload = () => {
 					npcObj.imageObj = img;
 					redraw();

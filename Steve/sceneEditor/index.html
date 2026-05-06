@@ -66,11 +66,17 @@
 
                     <div class="tab-panel" id="tab-npc">
                         <h3>NPCs</h3>
-                        <p class="hint">Select NPC image, enter name, then click canvas to place.</p>
+                        <p class="hint">Select NPC folder, then display frame, enter name, then click canvas to place.</p>
                         <div class="form-group">
-                            <label>NPC Image:</label>
+                            <label>NPC Character:</label>
+                            <select id="npcFolderSelect" onchange="onNPCFolderChange(this.value)">
+                                <option value="">-- Select NPC --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Display Frame:</label>
                             <select id="npcImageSelect">
-                                <option value="">-- Loading NPCs --</option>
+                                <option value="">-- Select Folder First --</option>
                             </select>
                         </div>
                         <div class="form-group">
