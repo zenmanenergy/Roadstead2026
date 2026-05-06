@@ -88,5 +88,3 @@ function canMoveTo(newX, newY, width, height) {
 	}
 	return false;
 }
-
-

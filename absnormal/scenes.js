@@ -1,42 +1,44 @@
 const scenes = [
-    'bedroom',
-    'lab',
-    'city_0',
-    'city_1',
-    'doctor',
-    'pharmacy'
+	'bedroom',
+	'lab',
+	'city_0',
+	'city_1',
+	'doctor',
+	'pharmacy'
 ];
 
 let sceneData = {};
 let currentScene = "title";
 
+
 async function loadSceneData() {
-    const fileMap = {
-        'bedroom' : 'bedroom',
-        'lab': 'room_lab',
-        'city_0': 'room_city_0',
-        'city_1': 'room_city_1',
-        'doctor': 'room_doctor',
-        'pharmacy': 'room_pharmacy'
-    };
-    for (const sceneName of scenes) { 
-        const fileName = fileMap[sceneName];
-        const response= await fetch(`/absnormal/data/${fileName}.json`);
-        console.log (response);
-        if (response.ok) {
-            sceneData[sceneName] = await response.json();
-            if (sceneData[sceneName].items){
-              sceneData[sceneName].items.forEach(item => {
-                if (item.ingameImage) {
-                    const img= new Image();
-                    img.src = `/absnormal/assets/items/ingame/${item.ingameImage}`;
-                    item.imageObj = img;
-                }
-              }); 
-            }
-            console.log(`✓ Loaded scene: ${sceneName}`);
-        }else{
-        	console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
+	const fileMap = {
+		'bedroom': 'bedroom',
+		'lab': 'room_lab',
+		'city_0': 'room_city_0',
+		'city_1': 'room_city_1',
+		'doctor': 'room_doctor',
+		'pharmacy': 'room_pharmacy'
+	};
+	
+	for (const sceneName of scenes) {
+		const fileName = fileMap[sceneName];
+		const response = await fetch(`/absnormal/data/${fileName}.json`);
+		if (response.ok) {
+			sceneData[sceneName] = await response.json();
+			// Pre-load item images
+			if (sceneData[sceneName].items) {
+				sceneData[sceneName].items.forEach(item => {
+					if (item.ingameImage) {
+						const img = new Image();
+						img.src = `/absnormal/assets/items/ingame/${item.ingameImage}`;
+						item.imageObj = img;
+					}
+				});
+			}
+			console.log(`✓ Loaded scene: ${sceneName}`);
+		} else {
+			console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
 		}
 	}
 }

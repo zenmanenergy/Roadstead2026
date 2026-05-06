@@ -112,12 +112,14 @@ function placeItem(x, y) {
 			name: itemName,
 			ingameImage,
 			inventoryImage,
+			lookMessage,
 			imageObj: img
 		});
 		
 		// Reset selections after placing
 		document.getElementById('itemIngameSelect').value = '';
 		document.getElementById('itemInventorySelect').value = '';
+		document.getElementById('itemLookMessage').value = '';
 		
 		// Clear preview
 		currentItemIngameImage = null;
@@ -152,6 +154,7 @@ function populateItemsPanel() {
 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
 					<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage}</span></div>
 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
+					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
 				</div>
 				<button onclick="deleteItem(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
 			</div>
@@ -166,11 +169,15 @@ function clearItems() {
 }
 
 function getItemsForOutput() {
-	return items.map(item => ({
-		name: item.name,
-		ingameImage: item.ingameImage,
-		inventoryImage: item.inventoryImage,
-		x: item.x,
-		y: item.y
-	}));
+	return items.map(item => {
+		const out = {
+			name: item.name,
+			ingameImage: item.ingameImage,
+			inventoryImage: item.inventoryImage,
+			x: item.x,
+			y: item.y
+		};
+		if (item.lookMessage) out.lookMessage = item.lookMessage;
+		return out;
+	});
 }

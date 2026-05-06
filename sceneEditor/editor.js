@@ -412,7 +412,8 @@ function loadSceneData(sceneName, data) {
 							y:item.y,
 							name: item.name || 'Item',
 							ingameImage: item.ingameImage || '',
-							inventoryImage: item.inventoryImage || ''
+							inventoryImage: item.inventoryImage || '',
+							lookMessage: item.lookMessage || ''
 					};
 
 						// Load the ingame image

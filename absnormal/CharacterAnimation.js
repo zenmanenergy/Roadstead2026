@@ -4,7 +4,7 @@ let frameDelay = 15;
 let frameCount = 0;
 let frame = 1;
 let moving = false;
-let speed = 30;
+let speed = 5;
 let targetX = null;
 let targetY = null;
 
@@ -52,6 +52,10 @@ function movePlayer() {
 			if (pendingPickup) {
 				collectItem(pendingPickup);
 				pendingPickup = null;
+			}
+			if (pendingLook) {
+				lookAtItem(pendingLook);
+				pendingLook = null;
 			}
 		} else {
 			// Move towards target
