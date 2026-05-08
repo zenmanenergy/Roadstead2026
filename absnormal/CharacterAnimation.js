@@ -130,7 +130,7 @@ function drawPlayer(){
     ctx.stroke();
 
     // Feet hitbox (blue)
-    ctx.strokeStyle = "rgba(0, 100, 255, 0.8)";
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.8)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(feet.x, feet.y, 10, 0, Math.PI * 2);
