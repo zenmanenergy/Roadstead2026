@@ -201,7 +201,7 @@ function redraw() {
 
 	// Draw all items
 	items.forEach((item) => {
-		if (item.imgageObj) {
+		if (item.imageObj) {
 				//Draw the actual ingame image
 				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
 		} else {
