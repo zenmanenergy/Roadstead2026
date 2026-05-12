@@ -4,13 +4,13 @@ const HITBOX = {
 	SPRITE_HEIGHT: 192,
 	CENTER_OFFSET_X: 96,  // Half of sprite width
 	CENTER_OFFSET_Y: 96,  // Half of sprite height
-	FEET_OFFSET: 84,      // Distance from center to feet
+	FEET_OFFSET: 20,      // Distance from center to feet
 	
 	// Get center hitbox position
 	getCenter(x, y) {
 		return {
 			x: x + this.CENTER_OFFSET_X,
-			y: y + this.CENTER_OFFSET_Y
+			y:	 y + this.CENTER_OFFSET_Y
 		};
 	},
 	

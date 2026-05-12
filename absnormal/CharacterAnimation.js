@@ -4,7 +4,7 @@ let frameDelay = 15;
 let frameCount = 0;
 let frame = 1;
 let moving = false;
-let speed = 3;
+let speed = 10;
 let targetX = null;
 let targetY = null;
 
@@ -52,6 +52,10 @@ function movePlayer() {
 			if (pendingPickup) {
 				collectItem(pendingPickup);
 				pendingPickup = null;
+			}
+			if (pendingLook) {
+				lookAtItem(pendingLook);
+				pendingLook = null;
 			}
 		} else {
 			// Move towards target
@@ -110,10 +114,27 @@ function drawScene() {
 }
 
 function drawPlayer(){
-	const img = frame === 1
-		? absImages[absDirection][0]
-		: absImages[absDirection][1];
-	ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+    const img = frame === 1
+        ? absImages[absDirection][0]
+        : absImages[absDirection][1];
+    ctx.drawImage(img, absX, absY, HITBOX.SPRITE_WIDTH, HITBOX.SPRITE_HEIGHT);
+
+    const center = HITBOX.getCenter(absX, absY);
+    const feet = HITBOX.getFeet(absX, absY);
+
+    // Center hitbox (red)
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, 30, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Feet hitbox (blue)
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(feet.x, feet.y, 10, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 function update(){

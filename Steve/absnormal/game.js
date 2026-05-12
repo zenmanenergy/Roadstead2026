@@ -126,8 +126,9 @@ window.addEventListener('load', () => {
 });
 
 function update() {
+	requestAnimationFrame(update);
+
 	if (gameState !== "playing") {
-		requestAnimationFrame(update);
 		return;
 	}
 
@@ -139,9 +140,21 @@ function update() {
 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 	}
 
+	drawNPCs();
 	drawAbsNormal();
+}
 
-	requestAnimationFrame(update);
+function drawNPCs() {
+	if (!sceneData[currentScene] || !sceneData[currentScene].npcs) return;
+	sceneData[currentScene].npcs.forEach(npc => {
+		if (npc.imageObj && npc.imageObj.complete && npc.imageObj.naturalWidth > 0) {
+			try {
+				ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
+			} catch (e) {
+				console.warn(`drawNPCs: failed to draw ${npc.name}:`, e);
+			}
+		}
+	});
 }
 
 function drawAbsNormal() {

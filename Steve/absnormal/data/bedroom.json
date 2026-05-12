@@ -106,7 +106,29 @@
       "nextScene": "city_1"
     }
   ],
-  "npcs": [],
+  "npcs": [
+    {
+      "x": 532.228368435691,
+      "y": 409.87730201768,
+      "name": "doctor",
+      "npcFolder": "",
+      "npcImage": "doctor.png"
+    },
+    {
+      "x": 370.0565353970822,
+      "y": 452.79069944869644,
+      "name": "doctor",
+      "npcFolder": "doctor",
+      "npcImage": "Doctor_down_walk1.png"
+    },
+    {
+      "x": 543.4478051271616,
+      "y": 467.90697851846386,
+      "name": "degen",
+      "npcFolder": "degen_animation",
+      "npcImage": "degen_down1.png"
+    }
+  ],
   "items": [
     {
       "name": "potion",

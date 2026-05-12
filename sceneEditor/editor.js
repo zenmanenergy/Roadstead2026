@@ -309,26 +309,24 @@ function loadScene(sceneName) {
 	const sceneFile = `../absnormal/data/${sceneName}.json`;
 	console.log('Loading scene from:', sceneFile);
 
-	fetch(sceneFile)
-		.then(response => {
-			console.log('Fetch responce status:' , response.status);
-			if (!response.ok) {
-				console.log('Scene file not found, creating empty scene');
-				initializeEmptyScene(sceneName);
-				return Promise.reject(new Error('File not found - using empty scene'));
-			}
-			return response.json();
-		})
-		.then(data => {
-			console.log("Scene data loaded", data);
-			loadSceneData(sceneName, data);
-		})
-		.catch(error => {
-			console.warn('Error loading scene:', error.message);
-			if (!error.message.includes('File not found')) {
-				alert('Error loading scene: ' + error.message);
-			}
-		});
+    fetch(sceneFile)
+        .then(response => {
+            console.log("fetch");
+            if (!response.ok) {
+                inializeEmptyScene(sceneName);
+                return Promise.reject(new Error('File not found - using empty scene'));
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("loadSceneData");
+            loadSceneData(sceneName, data);
+        })
+       .catch(error => {
+           if (!error.message.includes('File not found')) {
+               alert('Error loading scene: ' + error.message);
+           }
+       });
 }
 
 function initializeEmptyScene(sceneName) {
@@ -351,13 +349,12 @@ function initializeEmptyScene(sceneName) {
 
 
 function loadSceneData(sceneName, data) {
-		console.log('loadSceneData called with sceneName:', sceneName, 'data', data);
-	clearWalkableAreas();
-	clearDoors();
-	clearNPCs();
-	clearItems();
-	clearStartPoints();
-	clearBackgroundImage();
+    console.log(data)
+    clearWalkableAreas();
+    clearDoors();
+    clearNPCs();
+    clearStartPoints();
+    clearBackgroundImage();
 
 	// load walkable areas 
 	if (data.walkableAreas && Array.isArray(data.walkableAreas)) {
@@ -412,7 +409,8 @@ function loadSceneData(sceneName, data) {
 							y:item.y,
 							name: item.name || 'Item',
 							ingameImage: item.ingameImage || '',
-							inventoryImage: item.inventoryImage || ''
+							inventoryImage: item.inventoryImage || '',
+							lookMessage: item.lookMessage || ''
 					};
 
 						// Load the ingame image

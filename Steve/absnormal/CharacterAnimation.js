@@ -4,7 +4,7 @@ let frameDelay = 15;
 let frameCount = 0;
 let frame = 1;
 let moving = false;
-let speed = 3;
+let speed = 7;
 let targetX = null;
 let targetY = null;
 
@@ -110,6 +110,7 @@ function drawScene() {
 		});
 	}
 
+	drawNPCs();
 	drawPlayer();
 }
 

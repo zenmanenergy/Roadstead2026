@@ -36,6 +36,21 @@ async function loadSceneData() {
 					}
 				});
 			}
+			// Pre-load NPC images
+			if (sceneData[sceneName].npcs) {
+				sceneData[sceneName].npcs.forEach(npc => {
+					if (npc.npcImage) {
+						const img = new Image();
+						const src = npc.npcFolder
+							? `assets/characters/${npc.npcFolder}/${npc.npcImage}`
+							: `assets/characters/${npc.npcImage}`;
+						img.src = src;
+						img.onload = () => console.log(`NPC loaded: ${src}`);
+						img.onerror = () => console.warn(`NPC FAILED to load: ${src}`);
+						npc.imageObj = img;
+					}
+				});
+			}
 			console.log(`✓ Loaded scene: ${sceneName}`);
 		} else {
 			console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
@@ -73,5 +88,3 @@ function canMoveTo(newX, newY, width, height) {
 	}
 	return false;
 }
-
-
