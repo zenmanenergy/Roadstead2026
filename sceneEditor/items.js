@@ -93,7 +93,6 @@ function addItem() {
 function placeItem(x, y) {
 	const ingameImage = document.getElementById('itemIngameSelect').value;
 	const inventoryImage = document.getElementById('itemInventorySelect').value;
-	
 	if (!ingameImage || !inventoryImage) {
 		alert('Please select both images first');
 		return;
@@ -101,6 +100,7 @@ function placeItem(x, y) {
     
 	// Extract item name from inventory image (without extension)
 	const itemName = inventoryImage.replace(/\.(png|jpg|jpeg)$/i, '');
+	const lookMessage = document.getElementById('itemLookMessage').value.trim();
 	
 	// Load the ingame image
 	const img = new Image();

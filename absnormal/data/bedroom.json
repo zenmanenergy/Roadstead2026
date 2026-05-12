@@ -83,6 +83,16 @@
     }
   ],
   "npcs": [],
+  "items": [
+    {
+      "name": "can",
+      "ingameImage": "can.png",
+      "inventoryImage": "can.png",
+      "x": 524.0697579335846,
+      "y": 473.1343362423511,
+      "lookMessage": "cant"
+    }
+  ],
   "startPoint": [
     50.872817955112225,
     545.9459459459459
