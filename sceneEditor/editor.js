@@ -451,7 +451,7 @@ function loadSceneData(sceneName, data) {
 		img.src = `../absnormal/assets/backgrounds/${imageName}`;
 		console.log(img.src);
 		img.onload = () => {
-			console.log("Charly is a fat chud");
+			console.log("steve is a smelly stinky boy");
 			currentBackgroundImage = img;
 			redraw();
 		};
