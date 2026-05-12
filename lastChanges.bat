@@ -1,0 +1,1 @@
+git log --author="snelson@zenmanenergy.org" -p -2 > changes.txt

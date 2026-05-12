@@ -201,7 +201,9 @@ function redraw() {
 
 	// Draw all items
 	items.forEach((item) => {
-		if (item.imageObj) {
+		console.log(item);
+		if (item.imgageObj) {
+		console.log(item.imgageObj);
 				//Draw the actual ingame image
 				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
 		} else {
@@ -229,7 +231,7 @@ function redraw() {
 	}
 
 	//Draw item preview at mouse curson when in item mode 
-	if (currentMode === 'item && currentMouseX !== null && currentMouseY !== null && currentImageIngameImage') {
+	if (currentMode === 'item' && currentMouseX !== null && currentMouseY !== null && currentImageIngameImage) {
 			ctx.globalAlpha = 0.7;
 			ctx.drawImage(currentItemIngameImage, currentMouseX - 20, currentMouseY - 20, 40, 40);
 			ctx.globalAlpha = 1;
@@ -244,7 +246,7 @@ function redraw() {
 	if (points.length > 0) {
 		drawPolygon(points, '#0099ff', 0.5);
 		points.forEach((point) => {
-			ctx.fillStyle = '# 0099ff';
+			ctx.fillStyle = '#0099ff';
 			ctx.beginPath();
 			ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
 			ctx.fill();
@@ -294,6 +296,7 @@ function updateOutput() {
 		walkableAreas: getWalkableAreasForOutput(),
 		doors: getDoorsForOutput(),
 		npcs: getNPCsForOutput(),
+		items: getItemsForOutput(),
 		startPoint: getStartPointForOutput()
 	};
 
@@ -353,6 +356,7 @@ function loadSceneData(sceneName, data) {
     clearWalkableAreas();
     clearDoors();
     clearNPCs();
+	clearItems();
     clearStartPoints();
     clearBackgroundImage();
 
@@ -449,9 +453,7 @@ function loadSceneData(sceneName, data) {
 
 		const img = new Image();
 		img.src = `../absnormal/assets/backgrounds/${imageName}`;
-		console.log(img.src);
 		img.onload = () => {
-			console.log("steve is a smelly stinky boy");
 			currentBackgroundImage = img;
 			redraw();
 		};
