@@ -78,7 +78,9 @@ function collectItem(pickup) {
 	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
 	addToInventory({
 		name: pickup.item.name,
-		imagePath: `assets/items/inventory/${pickup.item.inventoryImage}`
+		imagePath: `assets/items/inventory/${pickup.item.inventoryImage1}`,
+		inventoryImage1: pickup.item.inventoryImage1,
+		inventoryImage2: pickup.item.inventoryImage2
 	});
 	statusBar.textContent = '';
 }

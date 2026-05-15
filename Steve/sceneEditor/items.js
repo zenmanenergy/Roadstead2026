@@ -34,17 +34,19 @@ function initializeItemSelect() {
 			});
 		}
 		
-		// Populate inventory image dropdown
-		const inventorySelect = document.getElementById('itemInventorySelect');
-		if (inventorySelect) {
-			inventorySelect.innerHTML = '<option value="">-- Select Inventory Image --</option>';
-			inventoryFiles.forEach(file => {
-				const option = document.createElement('option');
-				option.value = file;
-				option.textContent = file;
-				inventorySelect.appendChild(option);
-			});
-		}
+		// Populate inventory image dropdowns
+		['itemInventorySelect1', 'itemInventorySelect2'].forEach(id => {
+			const inventorySelect = document.getElementById(id);
+			if (inventorySelect) {
+				inventorySelect.innerHTML = '<option value="">-- Select Inventory Image --</option>';
+				inventoryFiles.forEach(file => {
+					const option = document.createElement('option');
+					option.value = file;
+					option.textContent = file;
+					inventorySelect.appendChild(option);
+				});
+			}
+		});
 	});
 }
 
@@ -60,10 +62,11 @@ function extractFilenames(html) {
 
 function addItem() {
 	const ingameImage = document.getElementById('itemIngameSelect').value;
-	const inventoryImage = document.getElementById('itemInventorySelect').value;
+	const inventoryImage1 = document.getElementById('itemInventorySelect1').value;
+	const inventoryImage2 = document.getElementById('itemInventorySelect2').value;
 
-	if (!ingameImage || !inventoryImage) {
-		alert('Please select both in-game and inventory images');
+	if (!ingameImage || !inventoryImage1 || !inventoryImage2) {
+		alert('Please select in-game image, inventory image 1, and inventory image 2');
 		return false;
 	}
 
@@ -93,15 +96,16 @@ function addItem() {
 
 function placeItem(x, y) {
 	const ingameImage = document.getElementById('itemIngameSelect').value;
-	const inventoryImage = document.getElementById('itemInventorySelect').value;
-	
-	if (!ingameImage || !inventoryImage) {
-		alert('Please select both images first');
+	const inventoryImage1 = document.getElementById('itemInventorySelect1').value;
+	const inventoryImage2 = document.getElementById('itemInventorySelect2').value;
+
+	if (!ingameImage || !inventoryImage1 || !inventoryImage2) {
+		alert('Please select in-game image, inventory image 1, and inventory image 2');
 		return;
 	}
 	
-	// Extract item name from inventory image (without extension)
-	const itemName = inventoryImage.replace(/\.(png|jpg|jpeg)$/i, '');
+	// Extract item name from inventory image 1 (without extension)
+	const itemName = inventoryImage1.replace(/\.(png|jpg|jpeg)$/i, '');
 	const lookMessage = document.getElementById('itemLookMessage').value.trim();
 	
 	// Load the ingame image
@@ -113,14 +117,16 @@ function placeItem(x, y) {
 			y, 
 			name: itemName,
 			ingameImage,
-			inventoryImage,
+			inventoryImage1,
+			inventoryImage2,
 			lookMessage,
 			imageObj: img
 		});
 		
 		// Reset selections after placing
 		document.getElementById('itemIngameSelect').value = '';
-		document.getElementById('itemInventorySelect').value = '';
+		document.getElementById('itemInventorySelect1').value = '';
+		document.getElementById('itemInventorySelect2').value = '';
 		document.getElementById('itemLookMessage').value = '';
 		
 		// Clear preview
@@ -154,7 +160,8 @@ function populateItemsPanel() {
 				<div>
 					<div><strong>${item.name}</strong></div>
 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
-					<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage}</span></div>
+				<div>Inventory 1: <span style="color: #ce9178;">${item.inventoryImage1}</span></div>
+				<div>Inventory 2: <span style="color: #ce9178;">${item.inventoryImage2}</span></div>
 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
 					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
 				</div>
@@ -175,7 +182,8 @@ function getItemsForOutput() {
 		const out = {
 			name: item.name,
 			ingameImage: item.ingameImage,
-			inventoryImage: item.inventoryImage,
+			inventoryImage1: item.inventoryImage1,
+			inventoryImage2: item.inventoryImage2,
 			x: item.x,
 			y: item.y
 		};
