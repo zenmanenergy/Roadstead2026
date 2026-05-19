@@ -152,7 +152,7 @@ function populateItemsPanel() {
 				<div>
 					<div><strong>${item.name}</strong></div>
 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
-					<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage}</span></div>
+				<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage1}</span></div>\
 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
 					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
 				</div>

@@ -67,7 +67,7 @@
 
 					<div class="tab-panel" id="tab-npc">
 						<h3>NPCs</h3>
-						<p class="hint">Select NPC image, enter name, then click canvas to place.</p>
+						<p class="hint">Select NPC folder, then display frame, enter name, then click canvas to place.</p>
 						<div class="form-group">
 							<label>NPC Image:</label>
 							<select id=""npcImagesSelect">
@@ -75,16 +75,28 @@
 							</select>
 						</div>
 						<div class="form-group">
-							<label>NPC Name:</label>
-								<input type=""text" id=""npcName" placeholder=""e.g., Doctor, Guard...">"]
+							<label>NPC character:</label>
+							<select id="npcFolderSelect" onchange="onNPCFolderChange(this.value)">
+								<option value="">-- Select NPC --</option>
+							</select>
 						</div>
-						<button onclick="addNPC()" class="btn-primary">Add NPC</button>
-
-						<div id="npcsListContainer" style="margin-top: 16px; display: none;">
-							<h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px; ">Existing NPCs:</h4>
-							<div id="npcsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+						<div class="form-group">
+							<label>Display Frame:</label>
+							<select id="'npcImageSelect">
+								<option value="">-- Select Folder First --</option>
+							</select>
 						</div>
-					</div>
+                        <div class="form-group">
+                            <label>NPC Name:</label>
+                            <input type="text" id="npcName" placeholder="e.g., Doctor, Guard...">
+                        </div>
+                        <button onclick="addNPC()" class="btn-primary">Add NPC</button>
+                        
+                        <div id="npcsListContainer" style="margin-top: 16px; display: none;">
+                            <h4 style="margin: 0 0 8px 0; color: #cccccc; font-size: 13px;">Existing NPCs:</h4>
+                            <div id="npcsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #3e3e42; border-radius: 3px; background: #1e1e1e; padding: 8px;"></div>
+                        </div>
+                    </div>
 
 					<div class="tab-panel" id="tab-item">
 						<h3>Items</h3>
