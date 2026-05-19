@@ -187,7 +187,7 @@ function redraw() {
 	npcs.forEach((npc) => {
 		if (npc.imageObj) {
 				// Draw the actual NPC image
-				ctx.drawImage(npc.imageObj, npc.x - npc.y - 48, 96, 96);
+				ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
 		} else {
 				// Fallback: draw a yellow square if image hasnt loaded yet
 				  ctx.fillStyle = '#ffff00';
@@ -201,7 +201,9 @@ function redraw() {
 
 	// Draw all items
 	items.forEach((item) => {
-		if (item.imgageObj) {
+		console.log(item);
+		if (item.imageObj) {
+		console.log(item.imgageObj);
 				//Draw the actual ingame image
 				ctx.drawImage(item.imageObj, item.x - 20, item.y - 20, 40, 40);
 		} else {
@@ -229,22 +231,22 @@ function redraw() {
 	}
 
 	//Draw item preview at mouse curson when in item mode 
-	if (currentMode === 'item && currentMouseX !== null && currentMouseY !== null && currentImageIngameImage') {
+	if (currentMode === 'item' && currentMouseX !== null && currentMouseY !== null && currentImageIngameImage) {
 			ctx.globalAlpha = 0.7;
 			ctx.drawImage(currentItemIngameImage, currentMouseX - 20, currentMouseY - 20, 40, 40);
 			ctx.globalAlpha = 1;
 	}
 
 	//Draw NPC preview at mouse cursor when in NPC mode
-	if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null&& currentNPCImage) {
-			ctx.drawImage(currentNPCImage, currentMouseX - 48, currentMouseY - 48, 96, 96);
+	if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null && currentNPCImage) {
+			ctx.drawImage(currentNPCImage, currentMouseX - 96, currentMouseY - 96, 192, 192);
 	}
 
 	//Draw current points being drawn 
 	if (points.length > 0) {
 		drawPolygon(points, '#0099ff', 0.5);
 		points.forEach((point) => {
-			ctx.fillStyle = '# 0099ff';
+			ctx.fillStyle = '#0099ff';
 			ctx.beginPath();
 			ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
 			ctx.fill();
@@ -294,6 +296,7 @@ function updateOutput() {
 		walkableAreas: getWalkableAreasForOutput(),
 		doors: getDoorsForOutput(),
 		npcs: getNPCsForOutput(),
+		items: getItemsForOutput(),
 		startPoint: getStartPointForOutput()
 	};
 
@@ -353,6 +356,7 @@ function loadSceneData(sceneName, data) {
     clearWalkableAreas();
     clearDoors();
     clearNPCs();
+	clearItems();
     clearStartPoints();
     clearBackgroundImage();
 
@@ -381,20 +385,24 @@ function loadSceneData(sceneName, data) {
 	if (data.npcs && Array.isArray(data.npcs)) {
 		data.npcs.forEach(npc => {
 			const npcObj = {
-					 x: npc.x,
+					x: npc.x,
 					y: npc.y,
 					name: npc.name || 'NPC',
+					npcFolder: npc.npcFolder || '',
 					npcImage: npc.npcImage || ''
 			};
 
-			// Load the NPC image
+			// Load the NPC image support both folder/image and flat image paths
 			if (npc.npcImage) {
-					const img = new Image();
-					img.src = '../absnormal/assets/characters/${npc.npcImage}';
-					img.onload = () => {
-							npcObj.imageObj = img;
-							redraw();
-					 };
+				const imgPath = npc.npcFolder
+					? `../absnormal/assets/characters/${npc.npcFolder}/${npcImage}`
+					: `../absnormal/assets/characters/${npc.npcImage}`;
+				const img = new Image();
+				img.src = imgPath;
+				img.onload = () => {
+						npcObj.imageObj = img;
+						redraw();
+					};
 			}
 			npcs.push(npcObj);
 		});
@@ -449,9 +457,7 @@ function loadSceneData(sceneName, data) {
 
 		const img = new Image();
 		img.src = `../absnormal/assets/backgrounds/${imageName}`;
-		console.log(img.src);
 		img.onload = () => {
-			console.log("Charly is a fat chud");
 			currentBackgroundImage = img;
 			redraw();
 		};

@@ -47,7 +47,7 @@ canvas.addEventListener('click', (event) => {
     if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
         const clickedItem = sceneData[currentScene].items.find(item=>
             !collectedItems.has(`${currentScene}:${item.name}`) && 
-            canvasClickX >= item.x - 20 && canvasCLickX <= item.x + 20 &&
+            canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
             canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20 
         ); 
         if (clickedItem) { 
@@ -62,13 +62,13 @@ canvas.addEventListener('click', (event) => {
 });
 
 function lookAtItem(look) {
-    statusBar.textContent = look.item.lookMessage || `you see the ${look.item.name}.`;
+    statusBar.textContent = look.item.lookMessage || `You see the ${look.item.name}.`;
     statusBarLocked = true;
     if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
     statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
 }
  
-function collectedItem(pickup) {
+function collectItem(pickup) {
     collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
     addToInvetory({
         name: pickup.item.name,
@@ -119,8 +119,9 @@ window.addEventListener('load', () => {
     });
 }); 
 function update() { 
+    requestAnimationFrame(update);
+
     if (gameState !== "playing") { 
-        requestAnimationFrame(update);
         return;
     }
     checkDoorCollision();
@@ -130,9 +131,22 @@ function update() {
         ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
 
     }
-    drawAbsNormal();
 
-    requestAnimationFrame(update);
+    drawNPCs();
+    drawAbsNormal();
+}
+
+function drawNPCs(){
+    if (!sceneData[currentScene] || !sceneData[currentScene].npcs) return;
+    sceneData[currentScene].npcs.forEach(npc => {
+        if (npc.imageObj && npc.imageObj.complete && npc.imageObj.naturalWidth > 0) {
+            try {
+                ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
+            } catch (e) {
+                console.warn(`drawNPCs: failed to draw ${npc.name}.name:`, e);
+            }
+        }
+    });
 }
 function drawAbsnormal() {
 	const center = HITBOX.getCenter(absX, absY);

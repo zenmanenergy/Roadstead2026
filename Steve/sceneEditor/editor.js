@@ -78,6 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize NPCs module
 	initializeNPCSelect();
 	console.log('NPCs module initialized');
+
+	// Build verb action rows for items and NPCs
+	buildVerbActionRows('itemVerbActions', 'item');
+	buildVerbActionRows('npcVerbActions', 'npc');
+	console.log('Verb action rows initialized');
 });
 
 // ===== Canvas Events =====
@@ -417,7 +422,8 @@ function loadSceneData(sceneName, data) {
 				y: npc.y,
 				name: npc.name || 'NPC',
 				npcFolder: npc.npcFolder || '',
-				npcImage: npc.npcImage || ''
+				npcImage: npc.npcImage || '',
+				actions: npc.actions || {}
 			};
 			
 			// Load the NPC image — support both folder/image and flat image paths
@@ -446,8 +452,10 @@ function loadSceneData(sceneName, data) {
 				y: item.y,
 				name: item.name || 'Item',
 				ingameImage: item.ingameImage || '',
-				inventoryImage: item.inventoryImage || '',
-				lookMessage: item.lookMessage || ''
+				inventoryImage1: item.inventoryImage1 || item.inventoryImage || '',
+				inventoryImage2: item.inventoryImage2 || '',
+				lookMessage: item.lookMessage || '',
+				actions: item.actions || {}
 			};
 			
 			// Load the ingame image
