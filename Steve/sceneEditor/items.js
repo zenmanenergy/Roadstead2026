@@ -107,6 +107,7 @@ function placeItem(x, y) {
 	// Extract item name from inventory image 1 (without extension)
 	const itemName = inventoryImage1.replace(/\.(png|jpg|jpeg)$/i, '');
 	const lookMessage = document.getElementById('itemLookMessage').value.trim();
+	const actions = readAllVerbActions('item');
 	
 	// Load the ingame image
 	const img = new Image();
@@ -120,6 +121,7 @@ function placeItem(x, y) {
 			inventoryImage1,
 			inventoryImage2,
 			lookMessage,
+			actions,
 			imageObj: img
 		});
 		
@@ -128,6 +130,7 @@ function placeItem(x, y) {
 		document.getElementById('itemInventorySelect1').value = '';
 		document.getElementById('itemInventorySelect2').value = '';
 		document.getElementById('itemLookMessage').value = '';
+		resetVerbActions('item');
 		
 		// Clear preview
 		currentItemIngameImage = null;
@@ -155,19 +158,26 @@ function populateItemsPanel() {
 	
 	if (items.length > 0) {
 		itemsContainer.style.display = 'block';
-		itemsList.innerHTML = items.map((item, index) => `
+		itemsList.innerHTML = items.map((item, index) => {
+			const actionKeys = item.actions ? Object.keys(item.actions) : [];
+			const actionsHtml = actionKeys.length > 0
+				? actionKeys.map(v => `<div>on ${v}: <span style="color:#4ec9b0;">${item.actions[v].action}</span></div>`).join('')
+				: '';
+			return `
 			<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
 				<div>
 					<div><strong>${item.name}</strong></div>
 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
-				<div>Inventory 1: <span style="color: #ce9178;">${item.inventoryImage1}</span></div>
-				<div>Inventory 2: <span style="color: #ce9178;">${item.inventoryImage2}</span></div>
+					<div>Inventory 1: <span style="color: #ce9178;">${item.inventoryImage1}</span></div>
+					<div>Inventory 2: <span style="color: #ce9178;">${item.inventoryImage2}</span></div>
 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
 					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
+					${actionsHtml}
 				</div>
 				<button onclick="deleteItem(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
 			</div>
-		`).join('');
+			`;
+		}).join('');
 	} else {
 		itemsContainer.style.display = 'none';
 	}
@@ -188,6 +198,7 @@ function getItemsForOutput() {
 			y: item.y
 		};
 		if (item.lookMessage) out.lookMessage = item.lookMessage;
+		if (item.actions && Object.keys(item.actions).length > 0) out.actions = item.actions;
 		return out;
 	});
 }

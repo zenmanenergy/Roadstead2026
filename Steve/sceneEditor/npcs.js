@@ -92,6 +92,7 @@ function placeNPC(x, y) {
 	const npcFolder = document.getElementById('npcFolderSelect').value;
 	const npcImage = document.getElementById('npcImageSelect').value;
 	const name = document.getElementById('npcName').value;
+	const actions = readAllVerbActions('npc');
 
 	// Load and place the NPC image
 	const img = new Image();
@@ -103,6 +104,7 @@ function placeNPC(x, y) {
 			name,
 			npcFolder,
 			npcImage,
+			actions,
 			imageObj: img
 		});
 		
@@ -110,6 +112,7 @@ function placeNPC(x, y) {
 		document.getElementById('npcFolderSelect').value = '';
 		document.getElementById('npcImageSelect').innerHTML = '<option value="">-- Select Folder First --</option>';
 		document.getElementById('npcName').value = '';
+		resetVerbActions('npc');
 		
 		// Clear preview
 		currentNPCImage = null;
@@ -134,17 +137,24 @@ function populateNPCsPanel() {
 	
 	if (npcs.length > 0) {
 		npcsContainer.style.display = 'block';
-		npcsList.innerHTML = npcs.map((npc, index) => `
-		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
-			<div>
-				<div><strong>${npc.name}</strong></div>
-				<div>Folder: <span style="color: #ce9178;">${npc.npcFolder || ''}</span></div>
-				<div>Frame: <span style="color: #ce9178;">${npc.npcImage}</span></div>
-				<div>Position: (${Math.round(npc.x)}, ${Math.round(npc.y)})</div>
+		npcsList.innerHTML = npcs.map((npc, index) => {
+			const actionKeys = npc.actions ? Object.keys(npc.actions) : [];
+			const actionsHtml = actionKeys.length > 0
+				? actionKeys.map(v => `<div>on ${v}: <span style="color:#4ec9b0;">${npc.actions[v].action}</span></div>`).join('')
+				: '';
+			return `
+			<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+				<div>
+					<div><strong>${npc.name}</strong></div>
+					<div>Folder: <span style="color: #ce9178;">${npc.npcFolder || ''}</span></div>
+					<div>Frame: <span style="color: #ce9178;">${npc.npcImage}</span></div>
+					<div>Position: (${Math.round(npc.x)}, ${Math.round(npc.y)})</div>
+					${actionsHtml}
+				</div>
+				<button onclick="deleteNPC(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
 			</div>
-			<button onclick="deleteNPC(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
-		</div>
-		`).join('');
+			`;
+		}).join('');
 	} else {
 		npcsContainer.style.display = 'none';
 	}
@@ -155,11 +165,15 @@ function clearNPCs() {
 }
 
 function getNPCsForOutput() {
-	return npcs.map(npc => ({
-		x: npc.x,
-		y: npc.y,
-		name: npc.name,
-		npcFolder: npc.npcFolder || '',
-		npcImage: npc.npcImage
-	}));
+	return npcs.map(npc => {
+		const out = {
+			x: npc.x,
+			y: npc.y,
+			name: npc.name,
+			npcFolder: npc.npcFolder || '',
+			npcImage: npc.npcImage
+		};
+		if (npc.actions && Object.keys(npc.actions).length > 0) out.actions = npc.actions;
+		return out;
+	});
 }
