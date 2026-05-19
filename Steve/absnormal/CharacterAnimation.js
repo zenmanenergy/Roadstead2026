@@ -49,13 +49,9 @@ function movePlayer() {
 		if (distance < speed) {
 			targetX = null;
 			targetY = null;
-			if (pendingPickup) {
-				collectItem(pendingPickup);
-				pendingPickup = null;
-			}
-			if (pendingLook) {
-				lookAtItem(pendingLook);
-				pendingLook = null;
+			if (pendingAction) {
+				executePendingAction(pendingAction);
+				pendingAction = null;
 			}
 		} else {
 			// Move towards target
