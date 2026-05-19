@@ -83,6 +83,24 @@
     }
   ],
   "npcs": [],
+  "items": [
+    {
+      "name": "can",
+      "ingameImage": "can.png",
+      "inventoryImage": "can.png",
+      "x": 524.0697579335846,
+      "y": 473.1343362423511,
+      "lookMessage": "cant"
+    },
+    {
+      "name": "phone",
+      "ingameImage": "can.png",
+      "inventoryImage": "phone.png",
+      "x": 462.495661236927,
+      "y": 474.9588097541368,
+      "lookMessage": "thats not a can its a phone"
+    }
+  ],
   "startPoint": [
     50.872817955112225,
     545.9459459459459

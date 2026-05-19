@@ -83,6 +83,7 @@
                             <label>NPC Name:</label>
                             <input type="text" id="npcName" placeholder="e.g., Doctor, Guard...">
                         </div>
+                        <div id="npcVerbActions" style="margin-top:10px;"></div>
                         <button onclick="addNPC()" class="btn-primary">Add NPC</button>
                         
                         <div id="npcsListContainer" style="margin-top: 16px; display: none;">
@@ -101,8 +102,14 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Inventory Image (60x60px):</label>
-                            <select id="itemInventorySelect">
+                            <label>Inventory Image 1 (60x60px):</label>
+                            <select id="itemInventorySelect1">
+                                <option value="">-- Loading items --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Inventory Image 2 (60x60px):</label>
+                            <select id="itemInventorySelect2">
                                 <option value="">-- Loading items --</option>
                             </select>
                         </div>
@@ -110,6 +117,7 @@
                             <label>Look Message:</label>
                             <input type="text" id="itemLookMessage" placeholder="e.g., It's a mysterious potion...">
                         </div>
+                        <div id="itemVerbActions" style="margin-top:10px;"></div>
                         <button onclick="addItem()" class="btn-primary">Add Item</button>
                         
                         <div id="itemsListContainer" style="margin-top: 16px; display: none;">
@@ -144,6 +152,7 @@
             </div>
         </div>
     </div>
+    <script src="actionDefs.js"></script>
     <script src="walkableAreas.js"></script>
     <script src="doors.js"></script>
     <script src="npcs.js"></script>

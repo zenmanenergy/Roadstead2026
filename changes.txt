@@ -1,205 +1,527 @@
-commit 1542c94ff109fbec78dca70e919025d1f1d039cc
+commit 8ca5cf15107a5958808baa073cfb0e2988002b4b
+Merge: 1f36066 1b5a721
 Author: Steve Nelson <snelson@zenmanenergy.org>
-Date:   Tue May 5 09:01:32 2026 -0400
+Date:   Wed May 6 09:03:42 2026 -0400
 
-    added look message to the scene editor
+    Merge branch 'main' of https://github.com/zenmanenergy/Roadstead2026
 
-diff --git a/Steve/absnormal/data/bedroom.json b/Steve/absnormal/data/bedroom.json
-index 30a3e42..c12f2be 100644
---- a/Steve/absnormal/data/bedroom.json
-+++ b/Steve/absnormal/data/bedroom.json
-@@ -112,9 +112,9 @@
-       "name": "potion",
-       "ingameImage": "potion.png",
-       "inventoryImage": "potion.jpg",
--      "x": 101.28913586146368,
--      "y": 529.5092038581707,
--      "lookMessage": "It's a mysterious potion. The liquid inside seems to glow faintly."
-+      "x": 679.5580205978199,
-+      "y": 520.3067498704407,
-+      "lookMessage": "a mysterious potion"
-     }
-   ],
-   "startPoint": [
+commit 1f36066810663648743998159e98936ee7ea9aed
+Author: Steve Nelson <snelson@zenmanenergy.org>
+Date:   Wed May 6 09:03:08 2026 -0400
+
+    npc bug fix
+
+diff --git a/Steve/absnormal/CharacterAnimation.js b/Steve/absnormal/CharacterAnimation.js
+index c4c612a..f173882 100644
+--- a/Steve/absnormal/CharacterAnimation.js
++++ b/Steve/absnormal/CharacterAnimation.js
+@@ -4,7 +4,7 @@ let frameDelay = 15;
+ let frameCount = 0;
+ let frame = 1;
+ let moving = false;
+-let speed = 3;
++let speed = 7;
+ let targetX = null;
+ let targetY = null;
+ 
+@@ -110,6 +110,7 @@ function drawScene() {
+ 		});
+ 	}
+ 
++	drawNPCs();
+ 	drawPlayer();
+ }
+ 
+
+diff --git a/Steve/absnormal/game.js b/Steve/absnormal/game.js
+index fcd88b3..446a105 100644
+--- a/Steve/absnormal/game.js
++++ b/Steve/absnormal/game.js
+@@ -126,8 +126,9 @@ window.addEventListener('load', () => {
+ });
+ 
+ function update() {
++	requestAnimationFrame(update);
++
+ 	if (gameState !== "playing") {
+-		requestAnimationFrame(update);
+ 		return;
+ 	}
+ 
+@@ -139,9 +140,21 @@ function update() {
+ 		ctx.drawImage(currentBackgroundImage, 0, 0, canvas.width, canvas.height);
+ 	}
+ 
++	drawNPCs();
+ 	drawAbsNormal();
++}
+ 
+-	requestAnimationFrame(update);
++function drawNPCs() {
++	if (!sceneData[currentScene] || !sceneData[currentScene].npcs) return;
++	sceneData[currentScene].npcs.forEach(npc => {
++		if (npc.imageObj && npc.imageObj.complete && npc.imageObj.naturalWidth > 0) {
++			try {
++				ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
++			} catch (e) {
++				console.warn(`drawNPCs: failed to draw ${npc.name}:`, e);
++			}
++		}
++	});
+ }
+ 
+ function drawAbsNormal() {
+diff --git a/Steve/absnormal/scenes.js b/Steve/absnormal/scenes.js
+index 01cd556..9855781 100644
+--- a/Steve/absnormal/scenes.js
++++ b/Steve/absnormal/scenes.js
+@@ -36,6 +36,21 @@ async function loadSceneData() {
+ 					}
+ 				});
+ 			}
++			// Pre-load NPC images
++			if (sceneData[sceneName].npcs) {
++				sceneData[sceneName].npcs.forEach(npc => {
++					if (npc.npcImage) {
++						const img = new Image();
++						const src = npc.npcFolder
++							? `assets/characters/${npc.npcFolder}/${npc.npcImage}`
++							: `assets/characters/${npc.npcImage}`;
++						img.src = src;
++						img.onload = () => console.log(`NPC loaded: ${src}`);
++						img.onerror = () => console.warn(`NPC FAILED to load: ${src}`);
++						npc.imageObj = img;
++					}
++				});
++			}
+ 			console.log(`✓ Loaded scene: ${sceneName}`);
+ 		} else {
+ 			console.warn(`✗ Failed to load ${sceneName}: HTTP ${response.status}`);
 diff --git a/Steve/sceneEditor/editor.js b/Steve/sceneEditor/editor.js
-index 69d4b32..37a4d45 100644
+index 37a4d45..81221f6 100644
 --- a/Steve/sceneEditor/editor.js
 +++ b/Steve/sceneEditor/editor.js
-@@ -442,7 +442,8 @@ function loadSceneData(sceneName, data) {
- 				y: item.y,
- 				name: item.name || 'Item',
- 				ingameImage: item.ingameImage || '',
--				inventoryImage: item.inventoryImage || ''
-+				inventoryImage: item.inventoryImage || '',
-+				lookMessage: item.lookMessage || ''
+@@ -195,7 +195,7 @@ function redraw() {
+ 	npcs.forEach((npc) => {
+ 		if (npc.imageObj) {
+ 			// Draw the actual NPC image
+-			ctx.drawImage(npc.imageObj, npc.x - 48, npc.y - 48, 96, 96);
++			ctx.drawImage(npc.imageObj, npc.x - 96, npc.y - 96, 192, 192);
+ 		} else {
+ 			// Fallback: draw a yellow square if image hasn't loaded yet
+ 			ctx.fillStyle = '#ffff00';
+@@ -245,7 +245,7 @@ function redraw() {
+ 
+ 	// Draw NPC preview at mouse cursor when in NPC mode
+ 	if (currentMode === 'npc' && currentMouseX !== null && currentMouseY !== null && currentNPCImage) {
+-		ctx.drawImage(currentNPCImage, currentMouseX - 48, currentMouseY - 48, 96, 96);
++		ctx.drawImage(currentNPCImage, currentMouseX - 96, currentMouseY - 96, 192, 192);
+ 	}
+ 
+ 	// Draw current points being drawn
+@@ -416,13 +416,17 @@ function loadSceneData(sceneName, data) {
+ 				x: npc.x,
+ 				y: npc.y,
+ 				name: npc.name || 'NPC',
++				npcFolder: npc.npcFolder || '',
+ 				npcImage: npc.npcImage || ''
  			};
  			
- 			// Load the ingame image
+-			// Load the NPC image
++			// Load the NPC image — support both folder/image and flat image paths
+ 			if (npc.npcImage) {
++				const imgPath = npc.npcFolder
++					? `../absnormal/assets/characters/${npc.npcFolder}/${npc.npcImage}`
++					: `../absnormal/assets/characters/${npc.npcImage}`;
+ 				const img = new Image();
+-				img.src = `../absnormal/assets/characters/${npc.npcImage}`;
++				img.src = imgPath;
+ 				img.onload = () => {
+ 					npcObj.imageObj = img;
+ 					redraw();
 diff --git a/Steve/sceneEditor/index.html b/Steve/sceneEditor/index.html
-index 5c20bac..83e4485 100644
+index 83e4485..f8910b7 100644
 --- a/Steve/sceneEditor/index.html
 +++ b/Steve/sceneEditor/index.html
-@@ -100,6 +100,10 @@
-                                 <option value="">-- Loading items --</option>
+@@ -66,11 +66,17 @@
+ 
+                     <div class="tab-panel" id="tab-npc">
+                         <h3>NPCs</h3>
+-                        <p class="hint">Select NPC image, enter name, then click canvas to place.</p>
++                        <p class="hint">Select NPC folder, then display frame, enter name, then click canvas to place.</p>
+                         <div class="form-group">
+-                            <label>NPC Image:</label>
++                            <label>NPC Character:</label>
++                            <select id="npcFolderSelect" onchange="onNPCFolderChange(this.value)">
++                                <option value="">-- Select NPC --</option>
++                            </select>
++                        </div>
++                        <div class="form-group">
++                            <label>Display Frame:</label>
+                             <select id="npcImageSelect">
+-                                <option value="">-- Loading NPCs --</option>
++                                <option value="">-- Select Folder First --</option>
                              </select>
                          </div>
-+                        <div class="form-group">
-+                            <label>Look Message:</label>
-+                            <input type="text" id="itemLookMessage" placeholder="e.g., It's a mysterious potion...">
-+                        </div>
-                         <button onclick="addItem()" class="btn-primary">Add Item</button>
-                         
-                         <div id="itemsListContainer" style="margin-top: 16px; display: none;">
-diff --git a/Steve/sceneEditor/items.js b/Steve/sceneEditor/items.js
-index efb2fb9..d114dcf 100644
---- a/Steve/sceneEditor/items.js
-+++ b/Steve/sceneEditor/items.js
-@@ -102,6 +102,7 @@ function placeItem(x, y) {
- 	
- 	// Extract item name from inventory image (without extension)
- 	const itemName = inventoryImage.replace(/\.(png|jpg|jpeg)$/i, '');
-+	const lookMessage = document.getElementById('itemLookMessage').value.trim();
- 	
- 	// Load the ingame image
+                         <div class="form-group">
+diff --git a/Steve/sceneEditor/npcs.js b/Steve/sceneEditor/npcs.js
+index 02df9cc..c312520 100644
+--- a/Steve/sceneEditor/npcs.js
++++ b/Steve/sceneEditor/npcs.js
+@@ -4,47 +4,66 @@ let npcs = [];
+ let npcFiles = [];
+ 
+ function initializeNPCSelect() {
+-	// Fetch list of NPCs from characters folder
++	// Fetch list of NPC subfolders from characters folder
+ 	fetch('../absnormal/assets/characters/')
+ 		.then(r => r.text())
+ 		.catch(() => '')
+ 		.then((html) => {
+-			// Extract filenames from directory listing
+-			npcFiles = extractFilenames(html);
+-			
+-			// Sort for easier browsing
+-			npcFiles.sort();
+-			
+-			// Populate NPC image dropdown
+-			const npcSelect = document.getElementById('npcImageSelect');
+-			if (npcSelect) {
+-				npcSelect.innerHTML = '<option value="">-- Select NPC Image --</option>';
+-				npcFiles.forEach(file => {
++			const folders = extractFolderNames(html);
++			folders.sort();
++
++			const folderSelect = document.getElementById('npcFolderSelect');
++			if (folderSelect) {
++				folderSelect.innerHTML = '<option value="">-- Select NPC --</option>';
++				folders.forEach(folder => {
+ 					const option = document.createElement('option');
+-					option.value = file;
+-					option.textContent = file;
+-					npcSelect.appendChild(option);
++					option.value = folder;
++					option.textContent = folder;
++					folderSelect.appendChild(option);
+ 				});
+ 			}
+ 		});
+ }
+ 
+-function extractFilenames(html) {
+-	const fileRegex = /href="([^"]+\.(png|jpg|jpeg))"/gi;
++function onNPCFolderChange(folder) {
++	const frameSelect = document.getElementById('npcImageSelect');
++	frameSelect.innerHTML = '<option value="">-- Loading frames... --</option>';
++	if (!folder) return;
++
++	fetch(`../absnormal/assets/characters/${folder}/`)
++		.then(r => r.text())
++		.catch(() => '')
++		.then(html => {
++			const files = extractFilenames(html);
++			files.sort();
++			frameSelect.innerHTML = '<option value="">-- Select Frame --</option>';
++			files.forEach(file => {
++				const option = document.createElement('option');
++				option.value = file;
++				option.textContent = file;
++				frameSelect.appendChild(option);
++			});
++		});
++}
++
++function extractFolderNames(html) {
++	const folderRegex = /href="([a-zA-Z0-9][^"]*\/)"/gi;
+ 	const matches = [];
+ 	let match;
+-	while ((match = fileRegex.exec(html)) !== null) {
+-		matches.push(match[1]);
++	while ((match = folderRegex.exec(html)) !== null) {
++		const name = match[1].replace(/\/$/, '');
++		matches.push(name);
+ 	}
+ 	return matches;
+ }
+ 
+ function addNPC() {
++	const npcFolder = document.getElementById('npcFolderSelect').value;
+ 	const npcImage = document.getElementById('npcImageSelect').value;
+ 	const name = document.getElementById('npcName').value;
+ 
+-	if (!npcImage || !name) {
+-		alert('Please select an NPC image and enter a name');
++	if (!npcFolder || !npcImage || !name) {
++		alert('Please select an NPC, a display frame, and enter a name');
+ 		return false;
+ 	}
+ 
+@@ -54,10 +73,9 @@ function addNPC() {
+ 
+ 	// Load the NPC image for preview
  	const img = new Image();
-@@ -113,12 +114,14 @@ function placeItem(x, y) {
- 			name: itemName,
- 			ingameImage,
- 			inventoryImage,
-+			lookMessage,
+-	img.src = `../absnormal/assets/characters/${npcImage}`;
++	img.src = `../absnormal/assets/characters/${npcFolder}/${npcImage}`;
+ 	img.onload = () => {
+ 		currentNPCImage = img;
+-		// Reset mouse to trigger redraw if it was moved
+ 		if (currentMouseX !== null) {
+ 			redraw();
+ 		}
+@@ -71,23 +89,26 @@ function addNPC() {
+ }
+ 
+ function placeNPC(x, y) {
++	const npcFolder = document.getElementById('npcFolderSelect').value;
+ 	const npcImage = document.getElementById('npcImageSelect').value;
+ 	const name = document.getElementById('npcName').value;
+-	
++
+ 	// Load and place the NPC image
+ 	const img = new Image();
+-	img.src = `../absnormal/assets/characters/${npcImage}`;
++	img.src = `../absnormal/assets/characters/${npcFolder}/${npcImage}`;
+ 	img.onload = () => {
+ 		npcs.push({ 
+ 			x, 
+ 			y, 
+ 			name,
++			npcFolder,
+ 			npcImage,
  			imageObj: img
  		});
  		
  		// Reset selections after placing
- 		document.getElementById('itemIngameSelect').value = '';
- 		document.getElementById('itemInventorySelect').value = '';
-+		document.getElementById('itemLookMessage').value = '';
+-		document.getElementById('npcImageSelect').value = '';
++		document.getElementById('npcFolderSelect').value = '';
++		document.getElementById('npcImageSelect').innerHTML = '<option value="">-- Select Folder First --</option>';
+ 		document.getElementById('npcName').value = '';
  		
  		// Clear preview
- 		currentItemIngameImage = null;
-@@ -153,6 +156,7 @@ function populateItemsPanel() {
- 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
- 					<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage}</span></div>
- 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
-+					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
- 				</div>
- 				<button onclick="deleteItem(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
+@@ -114,14 +135,15 @@ function populateNPCsPanel() {
+ 	if (npcs.length > 0) {
+ 		npcsContainer.style.display = 'block';
+ 		npcsList.innerHTML = npcs.map((npc, index) => `
+-			<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+-				<div>
+-					<div><strong>${npc.name}</strong></div>
+-					<div>Image: <span style="color: #ce9178;">${npc.npcImage}</span></div>
+-					<div>Position: (${Math.round(npc.x)}, ${Math.round(npc.y)})</div>
+-				</div>
+-				<button onclick="deleteNPC(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
++		<div style="padding: 8px; background: #2d2d30; margin-bottom: 6px; border-radius: 3px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
++			<div>
++				<div><strong>${npc.name}</strong></div>
++				<div>Folder: <span style="color: #ce9178;">${npc.npcFolder || ''}</span></div>
++				<div>Frame: <span style="color: #ce9178;">${npc.npcImage}</span></div>
++				<div>Position: (${Math.round(npc.x)}, ${Math.round(npc.y)})</div>
  			</div>
-@@ -167,11 +171,15 @@ function clearItems() {
++			<button onclick="deleteNPC(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
++		</div>
+ 		`).join('');
+ 	} else {
+ 		npcsContainer.style.display = 'none';
+@@ -137,6 +159,7 @@ function getNPCsForOutput() {
+ 		x: npc.x,
+ 		y: npc.y,
+ 		name: npc.name,
++		npcFolder: npc.npcFolder || '',
+ 		npcImage: npc.npcImage
+ 	}));
  }
+diff --git a/absnormal/CharacterAnimation.js b/absnormal/CharacterAnimation.js
+index ad96bfe..8982e30 100644
+--- a/absnormal/CharacterAnimation.js
++++ b/absnormal/CharacterAnimation.js
+@@ -4,7 +4,7 @@ let frameDelay = 15;
+ let frameCount = 0;
+ let frame = 1;
+ let moving = false;
+-let speed = 3;
++let speed = 30;
+ let targetX = null;
+ let targetY = null;
  
- function getItemsForOutput() {
--	return items.map(item => ({
--		name: item.name,
--		ingameImage: item.ingameImage,
--		inventoryImage: item.inventoryImage,
--		x: item.x,
--		y: item.y
--	}));
-+	return items.map(item => {
-+		const out = {
-+			name: item.name,
-+			ingameImage: item.ingameImage,
-+			inventoryImage: item.inventoryImage,
-+			x: item.x,
-+			y: item.y
-+		};
-+		if (item.lookMessage) out.lookMessage = item.lookMessage;
-+		return out;
-+	});
- }
 
-commit 0092df906ed47175870ec825a2bd6c6edaec7b41
-Author: Steve Nelson <snelson@zenmanenergy.org>
-Date:   Tue May 5 08:53:48 2026 -0400
-
-    Added item text
-
-diff --git a/Steve/absnormal/CharacterAnimation.js b/Steve/absnormal/CharacterAnimation.js
-index a846d72..c4c612a 100644
---- a/Steve/absnormal/CharacterAnimation.js
-+++ b/Steve/absnormal/CharacterAnimation.js
-@@ -53,6 +53,10 @@ function movePlayer() {
- 				collectItem(pendingPickup);
- 				pendingPickup = null;
- 			}
-+			if (pendingLook) {
-+				lookAtItem(pendingLook);
-+				pendingLook = null;
-+			}
- 		} else {
- 			// Move towards target
- 			const moveX = (deltaX / distance) * speed;
-
-diff --git a/Steve/absnormal/game.js b/Steve/absnormal/game.js
-index 3eac093..fcd88b3 100644
---- a/Steve/absnormal/game.js
-+++ b/Steve/absnormal/game.js
-@@ -5,6 +5,7 @@ let gameState = "title";
- 
- let collectedItems = new Set(); // "sceneName:itemName"
- let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
-+let pendingLook = null;         // { sceneName, item } — set when walking to look at
- 
- let absDirection = "down";
- let absX = 368;
-@@ -31,6 +32,21 @@ canvas.addEventListener('click', (event) => {
- 	const canvasClickX = clickX * scaleX;
- 	const canvasClickY = clickY * scaleY;
- 
-+	// If Look verb is active, check if clicking on an item
-+	if (getCurrentVerb() === 'look' && sceneData[currentScene] && sceneData[currentScene].items) {
-+		const clickedItem = sceneData[currentScene].items.find(item =>
-+			!collectedItems.has(`${currentScene}:${item.name}`) &&
-+			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
-+			canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
-+		);
-+		if (clickedItem) {
-+			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
-+			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
-+			pendingLook = { sceneName: currentScene, item: clickedItem };
-+			return;
-+		}
-+	}
++diff --git a/Steve/sceneEditor/editor.js b/Steve/sceneEditor/editor.js
++index 69d4b32..37a4d45 100644
++--- a/Steve/sceneEditor/editor.js
+++++ b/Steve/sceneEditor/editor.js
++@@ -442,7 +442,8 @@ function loadSceneData(sceneName, data) {
++ 				y: item.y,
++ 				name: item.name || 'Item',
++ 				ingameImage: item.ingameImage || '',
++-				inventoryImage: item.inventoryImage || ''
+++				inventoryImage: item.inventoryImage || '',
+++				lookMessage: item.lookMessage || ''
++ 			};
++ 			
++ 			// Load the ingame image
++diff --git a/Steve/sceneEditor/index.html b/Steve/sceneEditor/index.html
++index 5c20bac..83e4485 100644
++--- a/Steve/sceneEditor/index.html
+++++ b/Steve/sceneEditor/index.html
++@@ -100,6 +100,10 @@
++                                 <option value="">-- Loading items --</option>
++                             </select>
++                         </div>
+++                        <div class="form-group">
+++                            <label>Look Message:</label>
+++                            <input type="text" id="itemLookMessage" placeholder="e.g., It's a mysterious potion...">
+++                        </div>
++                         <button onclick="addItem()" class="btn-primary">Add Item</button>
++                         
++                         <div id="itemsListContainer" style="margin-top: 16px; display: none;">
++diff --git a/Steve/sceneEditor/items.js b/Steve/sceneEditor/items.js
++index efb2fb9..d114dcf 100644
++--- a/Steve/sceneEditor/items.js
+++++ b/Steve/sceneEditor/items.js
++@@ -102,6 +102,7 @@ function placeItem(x, y) {
++ 	
++ 	// Extract item name from inventory image (without extension)
++ 	const itemName = inventoryImage.replace(/\.(png|jpg|jpeg)$/i, '');
+++	const lookMessage = document.getElementById('itemLookMessage').value.trim();
++ 	
++ 	// Load the ingame image
++ 	const img = new Image();
++@@ -113,12 +114,14 @@ function placeItem(x, y) {
++ 			name: itemName,
++ 			ingameImage,
++ 			inventoryImage,
+++			lookMessage,
++ 			imageObj: img
++ 		});
++ 		
++ 		// Reset selections after placing
++ 		document.getElementById('itemIngameSelect').value = '';
++ 		document.getElementById('itemInventorySelect').value = '';
+++		document.getElementById('itemLookMessage').value = '';
++ 		
++ 		// Clear preview
++ 		currentItemIngameImage = null;
++@@ -153,6 +156,7 @@ function populateItemsPanel() {
++ 					<div>In-Game: <span style="color: #ce9178;">${item.ingameImage}</span></div>
++ 					<div>Inventory: <span style="color: #ce9178;">${item.inventoryImage}</span></div>
++ 					<div>Position: (${Math.round(item.x)}, ${Math.round(item.y)})</div>
+++					${item.lookMessage ? `<div>Look: <span style="color: #9cdcfe;">${item.lookMessage}</span></div>` : ''}
++ 				</div>
++ 				<button onclick="deleteItem(${index})" style="padding: 4px 8px; font-size: 10px; background: #d13438; color: white; border: none; border-radius: 2px; cursor: pointer;">Delete</button>
++ 			</div>
++@@ -167,11 +171,15 @@ function clearItems() {
++ }
++ 
++ function getItemsForOutput() {
++-	return items.map(item => ({
++-		name: item.name,
++-		ingameImage: item.ingameImage,
++-		inventoryImage: item.inventoryImage,
++-		x: item.x,
++-		y: item.y
++-	}));
+++	return items.map(item => {
+++		const out = {
+++			name: item.name,
+++			ingameImage: item.ingameImage,
+++			inventoryImage: item.inventoryImage,
+++			x: item.x,
+++			y: item.y
+++		};
+++		if (item.lookMessage) out.lookMessage = item.lookMessage;
+++		return out;
+++	});
++ }
 +
- 	// If Take verb is active, check if clicking on an item
- 	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
- 		const clickedItem = sceneData[currentScene].items.find(item =>
-@@ -51,6 +67,13 @@ canvas.addEventListener('click', (event) => {
- 	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
- });
- 
-+function lookAtItem(look) {
-+	statusBar.textContent = look.item.lookMessage || `You see the ${look.item.name}.`;
-+	statusBarLocked = true;
-+	if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
-+	statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
-+}
++commit 0092df906ed47175870ec825a2bd6c6edaec7b41
++Author: Steve Nelson <snelson@zenmanenergy.org>
++Date:   Tue May 5 08:53:48 2026 -0400
 +
- function collectItem(pickup) {
- 	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
- 	addToInventory({
-@@ -61,9 +84,11 @@ function collectItem(pickup) {
- }
- 
- const statusBar = document.getElementById('statusBar');
-+let statusBarLocked = false;
-+let statusBarLockTimer = null;
- 
- canvas.addEventListener('mousemove', (event) => {
--	if (gameState !== "playing") return;
-+	if (gameState !== "playing" || statusBarLocked) return;
- 
- 	const canvasRect = canvas.getBoundingClientRect();
- 	const scaleX = canvas.width / canvasRect.width;
-@@ -71,8 +96,9 @@ canvas.addEventListener('mousemove', (event) => {
- 	const canvasX = (event.clientX - canvasRect.left) * scaleX;
- 	const canvasY = (event.clientY - canvasRect.top) * scaleY;
- 
--	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
-+	if ((getCurrentVerb() === 'take' || getCurrentVerb() === 'look') && sceneData[currentScene] && sceneData[currentScene].items) {
- 		const hoveredItem = sceneData[currentScene].items.find(item =>
-+			!collectedItems.has(`${currentScene}:${item.name}`) &&
- 			canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
- 			canvasY >= item.y - 20 && canvasY <= item.y + 20
- 		);
++    Added item text
++
++diff --git a/Steve/absnormal/CharacterAnimation.js b/Steve/absnormal/CharacterAnimation.js
++index a846d72..c4c612a 100644
++--- a/Steve/absnormal/CharacterAnimation.js
+++++ b/Steve/absnormal/CharacterAnimation.js
++@@ -53,6 +53,10 @@ function movePlayer() {
++ 				collectItem(pendingPickup);
++ 				pendingPickup = null;
++ 			}
+++			if (pendingLook) {
+++				lookAtItem(pendingLook);
+++				pendingLook = null;
+++			}
++ 		} else {
++ 			// Move towards target
++ 			const moveX = (deltaX / distance) * speed;
++
++diff --git a/Steve/absnormal/game.js b/Steve/absnormal/game.js
++index 3eac093..fcd88b3 100644
++--- a/Steve/absnormal/game.js
+++++ b/Steve/absnormal/game.js
++@@ -5,6 +5,7 @@ let gameState = "title";
++ 
++ let collectedItems = new Set(); // "sceneName:itemName"
++ let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
+++let pendingLook = null;         // { sceneName, item } — set when walking to look at
++ 
++ let absDirection = "down";
++ let absX = 368;
++@@ -31,6 +32,21 @@ canvas.addEventListener('click', (event) => {
++ 	const canvasClickX = clickX * scaleX;
++ 	const canvasClickY = clickY * scaleY;
++ 
+++	// If Look verb is active, check if clicking on an item
+++	if (getCurrentVerb() === 'look' && sceneData[currentScene] && sceneData[currentScene].items) {
+++		const clickedItem = sceneData[currentScene].items.find(item =>
+++			!collectedItems.has(`${currentScene}:${item.name}`) &&
+++			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
+++			canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
+++		);
+++		if (clickedItem) {
+++			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
+++			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
+++			pendingLook = { sceneName: currentScene, item: clickedItem };
+++			return;
+++		}
+++	}
+++
++ 	// If Take verb is active, check if clicking on an item
++ 	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
++ 		const clickedItem = sceneData[currentScene].items.find(item =>
++@@ -51,6 +67,13 @@ canvas.addEventListener('click', (event) => {
++ 	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
++ });
++ 
+++function lookAtItem(look) {
+++	statusBar.textContent = look.item.lookMessage || `You see the ${look.item.name}.`;
+++	statusBarLocked = true;
+++	if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
+++	statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
+++}
+++
++ function collectItem(pickup) {
++ 	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
++ 	addToInventory({
++@@ -61,9 +84,11 @@ function collectItem(pickup) {
++ }
++ 
++ const statusBar = document.getElementById('statusBar');
+++let statusBarLocked = false;
+++let statusBarLockTimer = null;
++ 
++ canvas.addEventListener('mousemove', (event) => {
++-	if (gameState !== "playing") return;
+++	if (gameState !== "playing" || statusBarLocked) return;
++ 
++ 	const canvasRect = canvas.getBoundingClientRect();
++ 	const scaleX = canvas.width / canvasRect.width;
++@@ -71,8 +96,9 @@ canvas.addEventListener('mousemove', (event) => {
++ 	const canvasX = (event.clientX - canvasRect.left) * scaleX;
++ 	const canvasY = (event.clientY - canvasRect.top) * scaleY;
++ 
++-	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
+++	if ((getCurrentVerb() === 'take' || getCurrentVerb() === 'look') && sceneData[currentScene] && sceneData[currentScene].items) {
++ 		const hoveredItem = sceneData[currentScene].items.find(item =>
+++			!collectedItems.has(`${currentScene}:${item.name}`) &&
++ 			canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
++ 			canvasY >= item.y - 20 && canvasY <= item.y + 20
++ 		);

@@ -47,7 +47,7 @@ canvas.addEventListener('click', (event) => {
     if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
         const clickedItem = sceneData[currentScene].items.find(item=>
             !collectedItems.has(`${currentScene}:${item.name}`) && 
-            canvasClickX >= item.x - 20 && canvasCLickX <= item.x + 20 &&
+            canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
             canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20 
         ); 
         if (clickedItem) { 

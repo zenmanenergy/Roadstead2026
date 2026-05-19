@@ -4,8 +4,7 @@ const ctx = canvas.getContext("2d");
 let gameState = "title";
 
 let collectedItems = new Set(); // "sceneName:itemName"
-let pendingPickup = null;       // { sceneName, item } — set when walking to pick up
-let pendingLook = null;         // { sceneName, item } — set when walking to look at
+let pendingAction = null;       // { verb, target, targetType, sceneName }
 
 let absDirection = "down";
 let absX = 368;
@@ -22,18 +21,15 @@ canvas.addEventListener('click', (event) => {
 	if (gameState !== "playing") return;
 
 	const canvasRect = canvas.getBoundingClientRect();
-	const clickX = event.clientX - canvasRect.left;
-	const clickY = event.clientY - canvasRect.top;
-
-	// Scale click position to actual canvas resolution (800x600)
 	const scaleX = canvas.width / canvasRect.width;
 	const scaleY = canvas.height / canvasRect.height;
+	const canvasClickX = (event.clientX - canvasRect.left) * scaleX;
+	const canvasClickY = (event.clientY - canvasRect.top) * scaleY;
 
-	const canvasClickX = clickX * scaleX;
-	const canvasClickY = clickY * scaleY;
+	const verb = getCurrentVerb();
 
-	// If Look verb is active, check if clicking on an item
-	if (getCurrentVerb() === 'look' && sceneData[currentScene] && sceneData[currentScene].items) {
+	// Check if clicking on an item
+	if (sceneData[currentScene] && sceneData[currentScene].items) {
 		const clickedItem = sceneData[currentScene].items.find(item =>
 			!collectedItems.has(`${currentScene}:${item.name}`) &&
 			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
@@ -42,30 +38,79 @@ canvas.addEventListener('click', (event) => {
 		if (clickedItem) {
 			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
 			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
-			pendingLook = { sceneName: currentScene, item: clickedItem };
+			pendingAction = { verb, target: clickedItem, targetType: 'item', sceneName: currentScene };
 			return;
 		}
 	}
 
-	// If Take verb is active, check if clicking on an item
-	if (getCurrentVerb() === 'take' && sceneData[currentScene] && sceneData[currentScene].items) {
-		const clickedItem = sceneData[currentScene].items.find(item =>
-			!collectedItems.has(`${currentScene}:${item.name}`) &&
-			canvasClickX >= item.x - 20 && canvasClickX <= item.x + 20 &&
-			canvasClickY >= item.y - 20 && canvasClickY <= item.y + 20
+	// Check if clicking on an NPC
+	if (sceneData[currentScene] && sceneData[currentScene].npcs) {
+		const clickedNPC = sceneData[currentScene].npcs.find(npc =>
+			canvasClickX >= npc.x - 48 && canvasClickX <= npc.x + 48 &&
+			canvasClickY >= npc.y - 96 && canvasClickY <= npc.y + 96
 		);
-		if (clickedItem) {
-			targetX = clickedItem.x - HITBOX.CENTER_OFFSET_X;
-			targetY = clickedItem.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
-			pendingPickup = { sceneName: currentScene, item: clickedItem };
+		if (clickedNPC) {
+			targetX = clickedNPC.x - HITBOX.CENTER_OFFSET_X;
+			targetY = clickedNPC.y - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET + 50;
+			pendingAction = { verb, target: clickedNPC, targetType: 'npc', sceneName: currentScene };
 			return;
 		}
 	}
 
 	// Default: move to clicked position
+	pendingAction = null;
 	targetX = canvasClickX - HITBOX.CENTER_OFFSET_X;
 	targetY = canvasClickY - HITBOX.CENTER_OFFSET_Y - HITBOX.FEET_OFFSET;
 });
+
+function setStatusMessage(msg) {
+	statusBar.textContent = msg;
+	statusBarLocked = true;
+	if (statusBarLockTimer) clearTimeout(statusBarLockTimer);
+	statusBarLockTimer = setTimeout(() => { statusBarLocked = false; }, 3000);
+}
+
+function buildActionContext(target, targetType, sceneName) {
+	return {
+		item: target,
+		targetType,
+		sceneName,
+		showMessage: (msg) => setStatusMessage(msg),
+		collectItem: (item) => collectItem({ sceneName, item }),
+		hasItem: (name) => inventory.some(i => i.name === name),
+		changeScene: (scene) => changeScene(scene)
+	};
+}
+
+function executePendingAction(pending) {
+	const { verb, target, targetType, sceneName } = pending;
+
+	// If the target has a custom action for this verb, use it
+	if (target.actions && target.actions[verb]) {
+		const ctx = buildActionContext(target, targetType, sceneName);
+		executeAction(target.actions[verb], ctx);
+		return;
+	}
+
+	// Default behaviors
+	if (targetType === 'item') {
+		if (verb === 'look') {
+			lookAtItem({ sceneName, item: target });
+		} else if (verb === 'take') {
+			collectItem({ sceneName, item: target });
+		} else {
+			setStatusMessage(`You can't ${verb} the ${target.name}.`);
+		}
+	} else if (targetType === 'npc') {
+		if (verb === 'look') {
+			setStatusMessage(`You look at ${target.name}.`);
+		} else if (verb === 'talk') {
+			setStatusMessage(`${target.name} has nothing to say.`);
+		} else {
+			setStatusMessage(`You can't ${verb} ${target.name}.`);
+		}
+	}
+}
 
 function lookAtItem(look) {
 	statusBar.textContent = look.item.lookMessage || `You see the ${look.item.name}.`;
@@ -78,7 +123,9 @@ function collectItem(pickup) {
 	collectedItems.add(`${pickup.sceneName}:${pickup.item.name}`);
 	addToInventory({
 		name: pickup.item.name,
-		imagePath: `assets/items/inventory/${pickup.item.inventoryImage}`
+		imagePath: `assets/items/inventory/${pickup.item.inventoryImage1}`,
+		inventoryImage1: pickup.item.inventoryImage1,
+		inventoryImage2: pickup.item.inventoryImage2
 	});
 	statusBar.textContent = '';
 }
@@ -96,16 +143,25 @@ canvas.addEventListener('mousemove', (event) => {
 	const canvasX = (event.clientX - canvasRect.left) * scaleX;
 	const canvasY = (event.clientY - canvasRect.top) * scaleY;
 
-	if ((getCurrentVerb() === 'take' || getCurrentVerb() === 'look') && sceneData[currentScene] && sceneData[currentScene].items) {
-		const hoveredItem = sceneData[currentScene].items.find(item =>
-			!collectedItems.has(`${currentScene}:${item.name}`) &&
-			canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
-			canvasY >= item.y - 20 && canvasY <= item.y + 20
-		);
-		statusBar.textContent = hoveredItem ? hoveredItem.name : '';
-	} else {
-		statusBar.textContent = '';
+	let hoveredName = '';
+	if (sceneData[currentScene]) {
+		if (sceneData[currentScene].items) {
+			const hoveredItem = sceneData[currentScene].items.find(item =>
+				!collectedItems.has(`${currentScene}:${item.name}`) &&
+				canvasX >= item.x - 20 && canvasX <= item.x + 20 &&
+				canvasY >= item.y - 20 && canvasY <= item.y + 20
+			);
+			if (hoveredItem) hoveredName = hoveredItem.name;
+		}
+		if (!hoveredName && sceneData[currentScene].npcs) {
+			const hoveredNPC = sceneData[currentScene].npcs.find(npc =>
+				canvasX >= npc.x - 48 && canvasX <= npc.x + 48 &&
+				canvasY >= npc.y - 96 && canvasY <= npc.y + 96
+			);
+			if (hoveredNPC) hoveredName = hoveredNPC.name;
+		}
 	}
+	statusBar.textContent = hoveredName;
 });
 
 titleScreen.onload = () => drawTitle();
